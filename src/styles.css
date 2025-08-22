@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Sono", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-[url(/bg.png)] bg-fixed;
+  }
+
+  a {
+    @apply text-blue-500;
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "ep133-export-to-daw",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check --apply src",
+    "format": "biome format --write src"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.85.5",
+    "clsx": "^2.1.1",
+    "jotai": "^2.13.1",
+    "jstoxml": "^7.0.1",
+    "jszip": "^3.10.1",
+    "preact": "^10.27.1",
+    "react-error-boundary": "^6.0.0",
+    "tailwindcss": "^4.1.12"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.0",
+    "@preact/preset-vite": "^2.10.2",
+    "@tailwindcss/vite": "^4.1.12",
+    "@types/jstoxml": "^5.0.0",
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.2",
+    "vite-plugin-svgr": "^4.3.0"
+  },
+  "packageManager": "pnpm@10.14.0+sha512.ad27a79641b49c3e481a16a805baa71817a04bbe06a38d17e60e2eaee83f6a146c6a688125f5792e48dd5ba30e7da52a5cda4c3992b9ccf333f9ce223af84748"
+}
