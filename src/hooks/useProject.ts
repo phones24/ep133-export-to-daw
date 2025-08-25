@@ -34,7 +34,7 @@ function useProject(id: number | string) {
       // const arrBuf = await blobReader.blob.arrayBuffer();
 
       const files = await untar(blobReader.blob);
-      console.log(files);
+      // console.log(files);
       // console.log(files[54].data);
       const pads = collectPads(files);
       const scenes = collectScenesAndPatterns(files);

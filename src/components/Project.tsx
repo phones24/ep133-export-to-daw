@@ -14,8 +14,8 @@ function Project({ projectId }: { projectId: string }) {
     return null;
   }
 
-  console.log('data', renderViewTransformer(data, allSounds));
-  // console.log('data', data);
+  // console.log('data', renderViewTransformer(data, allSounds));
+  console.log('data', data);
 
   return (
     <div className="flex gap-4">

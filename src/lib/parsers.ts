@@ -24,8 +24,8 @@ export type Pad = {
   file: TarFile;
   rawData: Uint8Array;
   soundNumber: number;
+  volume: number;
   panning?: number;
-  volume?: number;
 };
 
 const GROUPS = [

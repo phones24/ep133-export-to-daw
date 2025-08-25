@@ -1,6 +1,7 @@
 import { Sound } from '../hooks/useAllSounds';
 import { ProjectRawData } from '../hooks/useProject';
-import { Note, Pad, Pattern } from './parsers';
+import { Note, Pad } from './parsers';
+import { calcMaxLength } from './utils';
 
 export type ViewPattern = {
   pad: string;
@@ -46,10 +47,6 @@ function findSoundByPad(pad: string, pads: Record<string, Pad[]>, sounds: Sound[
   const soundNumber = findSoundNumberByPad(pad, pads);
 
   return sounds.find((s) => s.id === soundNumber) || null;
-}
-
-function calcMaxLength(patterns: Pattern[]) {
-  return Math.max(...patterns.flatMap((p) => p.notes.map((n) => n.position + n.duration)));
 }
 
 function renderViewTransformer(data: ProjectRawData, sounds: Sound[]) {

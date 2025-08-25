@@ -9,7 +9,7 @@ export type ExportFormatId = 'dawproject' | 'midi';
 export type ExportFormat = {
   name: string;
   value: ExportFormatId;
-  exportFn: (data: ProjectRawData, sounds: Sound[]) => Promise<void>;
+  exportFn: (data: ProjectRawData, sounds: Sound[]) => Promise<Blob>;
 };
 
 export const exportFormats: ExportFormat[] = [
@@ -39,7 +39,14 @@ function useExportProject(format: ExportFormatId) {
     setPercentage(1);
     setPendingStatus('Collecting data...');
 
-    await formatData.exportFn(projectRawData, allSounds);
+    const result = await formatData.exportFn(projectRawData, allSounds);
+
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(result);
+    link.download = `project${projectId}.dawproject`;
+    link.click();
+
+    URL.revokeObjectURL(link.href);
 
     setIsPending(false);
     setPercentage(100);

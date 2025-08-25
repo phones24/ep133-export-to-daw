@@ -1,6 +1,7 @@
 import { JSX } from 'preact';
 import { useState } from 'preact/hooks';
 import { APP_STATES, useAppState } from '../hooks/useAppState';
+import useDevice from '../hooks/useDevice';
 import useExportProject, { ExportFormatId, exportFormats } from '../hooks/useExportProject';
 import Button from './ui/Button';
 import Dialog from './ui/Dialog';
@@ -10,6 +11,7 @@ function ExportProject() {
   const [open, setOpen] = useState(false);
   const [format, setFormat] = useState<ExportFormatId>(exportFormats[0].value);
   const appState = useAppState();
+  const { device } = useDevice();
   const { startExport, isPending, pendingStatus, percentage } = useExportProject(format);
 
   return (
@@ -23,7 +25,7 @@ function ExportProject() {
         </Button>
       </div>
 
-      <Dialog isOpen={open} onClose={() => setOpen(false)}>
+      <Dialog isOpen={open && !!device} onClose={() => setOpen(false)}>
         <div className="flex flex-col gap-2">
           <p>
             Select file format
