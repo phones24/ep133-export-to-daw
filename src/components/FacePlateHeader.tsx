@@ -6,7 +6,7 @@ function FacePlateHeader() {
   return (
     <div className="flex gap-2 bg-[#dbdddb] px-3 py-2 border-1 border-black">
       <img src="/ep133.png" className="h-[100px] w-auto" alt="ep133" />
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 relative">
         <p className="text-[30px] font-semibold leading-6">
           EP-133 K.O. II: <i>Export To DAW</i>
         </p>
@@ -24,6 +24,9 @@ function FacePlateHeader() {
             Connected
           </div>
         )}
+        <p className="text-xs absolute right-0 bottom-0 opacity-40">
+          Fimware version: {device?.metadata.os_version || 'N/A'}
+        </p>
       </div>
     </div>
   );
