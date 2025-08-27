@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { Component } from 'preact';
 
 interface ErrorBoundaryProps {
@@ -23,6 +24,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   componentDidCatch(error: Error, errorInfo: any) {
+    Sentry.captureReactException(error, errorInfo);
     console.error('ErrorBoundary caught an error:', error, errorInfo);
   }
 

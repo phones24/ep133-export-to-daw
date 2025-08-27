@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { useEffect, useState } from 'preact/hooks';
 import { api } from '../ep133/api';
 import { DeviceService } from '../ep133/device-service';
@@ -25,6 +26,9 @@ function DeviceProvider({ children }: any) {
           setFileHandler(_fileHandler);
           setDevice(_device);
           setDeviceService(_deviceService);
+
+          Sentry.setTag('device.os_version', _device?.metadata?.os_version);
+          Sentry.setTag('device.serial', _device?.metadata?.serial);
         }
       },
       onDeviceUpdated: (_device: any) => {
