@@ -62,7 +62,7 @@ function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
         track = {
           soundId,
           pad: pattern.pad,
-          name: sound?.meta.name || pattern.pad,
+          name: sound?.meta?.name || pattern.pad || 'sound',
           volume: pad.volume * (2 / 200),
         };
 

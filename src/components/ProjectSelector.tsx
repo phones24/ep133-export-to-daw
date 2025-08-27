@@ -6,7 +6,7 @@ import useProject from '../hooks/useProject';
 import Button from './ui/Button';
 import Select from './ui/Select';
 
-const PROJECTS = [1, 2, 3, 4, 5, 6, 7, 8];
+const PROJECTS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 function ProjectSelector() {
   const [projectId, setProjectId] = useAtom(projectIdAtom);

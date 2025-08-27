@@ -48,7 +48,7 @@ function webViewTransformer(data: ProjectRawData, sounds: Sound[]) {
   for (const scene of newScenes) {
     scene.patterns = scenes[scene.name].patterns.map((pattern) => ({
       ...pattern,
-      soundName: findSoundByPad(pattern.pad, pads, sounds)?.meta.name || '',
+      soundName: findSoundByPad(pattern.pad, pads, sounds)?.meta?.name || 'n/a',
       group: pattern.pad[0],
       padNumber: parseInt(pattern.pad.slice(1), 10),
     }));
