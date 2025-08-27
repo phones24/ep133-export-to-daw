@@ -3,6 +3,8 @@
 This tool allows you to export your EP-133 K.O.II (EP-1320) project into a DAW (Digital Audio Workstation).
 At the moment, the only supported format is DAWproject (https://github.com/bitwig/dawproject).
 
+Try it out on https://ep133-to-daw.cc/
+
 ## Motivation
 
 If you’ve been producing with the EP-133 (or EP-1320), you already know the frustration: there’s no clear way to export your projects directly into a DAW.
@@ -39,4 +41,4 @@ Please feel free to open an Issues or drop your ideas in the Discussions.
 ## Donate
 
 If you like this tool, please consider donating to support the development.
-Use "Donate" button on the website.
+Use "Donate" button on the [website](https://ep133-to-daw.cc/).
