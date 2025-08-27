@@ -25,7 +25,7 @@ function FacePlateHeader() {
           </div>
         )}
         <p className="text-xs absolute right-0 bottom-0 opacity-40">
-          Fimware version: {device?.metadata.os_version || 'N/A'}
+          Firmware version: {device?.metadata.os_version || 'N/A'}
         </p>
       </div>
     </div>
