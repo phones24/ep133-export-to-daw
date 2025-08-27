@@ -24,3 +24,5 @@ dist
 *.sw?
 
 raw.js
+
+.env
