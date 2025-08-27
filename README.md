@@ -1,116 +1,35 @@
-* PADS
+# EP-133 K.O. II: Export To DAW
 
-data: [
-  0,
-  0, // INSTRUMENT NUM
-  0, // INSTRUMENT NUM
-  0,
-  0, // TRIM LEFT
-  0, // TRIM LEFT
-  0,
-  0,
-  0, // TRIM RIGHT
-  0, // TRIM RIGHT
-  0,
-  0,
-  0,
-  0,
-  248,
-  66,
-  100, // VOLUME (0-200)
-  0,
-  0, // SIGN - PITCH / PAN
-  0, // ATACK
-  255, // ONE - 255, KEY - 255, LEG - 15   //  RELEASE
-  0,
-  0,
-  0, // KEY - 1, LEG - 2,
-  60, // PAD ID
-  0,
-  0 // PITCH B
-]
+This is the tool that allows you to export your EP-133 K.O.2 project to DAW (Digital Audio Workstation).
+Currently supporting format is DAWproject (https://github.com/bitwig/dawproject).
 
+## Motivation
+
+If you’ve been producing with the EP-133 (or EP-1320), you already know the frustration: there’s no clear way to export your projects directly into a DAW.
+The official EP Sample Tool only lets you manage samples and backups. That’s it.
+
+Sure, you could record MIDI notes or capture audio track by track, but it’s slow, tedious, and not fun.
+
+At some point, I started digging through the backup files created by Sample Tool and realized there is the way to get data/notes/settings/etc. The EP-133 actually has its own internal filesystem. Everything - projects, notes, settings - is stored there, and the backup tool simply copies these files into an archive when backing up.
+
+So I started digging through the file format and trying to reuse the logic from the Sample Tool, since Teenage Engineering doesn’t publish its source code.
+I spent a lot of time de-obfuscating it (AI helps a lot there), reverse-engineering the files, and eventually building a working library (check src/ep133 folder).
+Then building the web application was easy.
+
+## Description
+
+What exported:
+- bpm
+- patterns/clips
+- samples (as wav files in archive)
+
+*Unfortunately, DAWproject currently not supporting "Sampler" device, which means you need to assign the samples yourself in your DAW.*
+
+## TODO
+- export to Ableton Live
+- export to MIDI
 
 
+## Help and support
 
-u = (a << 8) | b
-pitch = u - 65536 if u >= 32768 else u
-
-//12
-{
-    "0": 0,
-    "1": 2, // bars
-    "2": 8, // notes count
-    "3": 0,
-
-    "4": 0,   // position HB
-    "5": 0,   // position LB
-    "6": 80,  // N / 8 - pad number
-    "7": 60,  // note
-    "8": 100, // velocity
-    "9": 43,  // duration
-    "10": 0,
-    "11": 0,
-
-    "12": 96,
-    "13": 0,
-    "14": 80,  // instrument id or pad id
-    "15": 60, // note
-    "16": 100, // velocity
-    "17": 44, // duration
-    "18": 0,
-    "19": 245,
-
-    "20": 192,
-    "21": 0,
-    "22": 80,  // instrument id or pad id
-    "23": 60,
-    "24": 100,
-    "25": 56,
-    "26": 0,
-    "27": 16,
-
-    "28": 32,
-    "29": 1,
-    "30": 80,
-    "31": 60,
-    "32": 100,
-    "33": 53,
-    "34": 0,
-    "35": 0,
-    "36": 128,
-
-    "37": 1,
-    "38": 80,
-    "39": 60,
-    "40": 100,
-    "41": 55,
-    "42": 0,
-    "43": 0,
-    "44": 224,
-
-    "45": 1,
-    "46": 80,
-    "47": 60,
-    "48": 100,
-    "49": 53,
-    "50": 0,
-    "51": 16,
-    "52": 64,
-
-    "53": 2,
-    "54": 80,
-    "55": 60,
-    "56": 100,
-    "57": 54,
-    "58": 0,
-    "59": 0,
-    "60": 160,
-    "61": 2,
-    "62": 80,
-    "63": 60,
-    "64": 100,
-    "65": 43,
-    "66": 0,
-    "67": 129
-}
+Please feel free to open an Issue or drop your ideas in the Discussions.

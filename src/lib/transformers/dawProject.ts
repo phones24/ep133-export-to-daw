@@ -1,16 +1,17 @@
-import { Sound } from '../hooks/useAllSounds';
-import { ProjectRawData } from '../hooks/useProject';
-import { Note, Pad } from './parsers';
+import { Note, ProjectRawData, Sound } from '../../types';
+import { findPad, findSoundByPad, findSoundIdByPad } from '../utils';
 
 export type DawData = {
   tracks: [];
   lanes: [];
+  scenes: DawScene[];
 };
 
 export type DawTrack = {
   pad: string;
   name: string;
   volume: number;
+  soundId: number;
 };
 
 export type DawLane = {
@@ -22,55 +23,44 @@ export type DawClip = {
   notes: Note[];
   bars: number;
   offset: number;
+  sceneBars: number;
 };
 
-function findPad(pad: string, pads: Record<string, Pad[]>) {
-  const group = pad[0];
-  const padNumber = parseInt(pad.slice(1), 10);
-  const padData = pads[group][padNumber];
+export type DawClipSlot = {
+  clip: DawClip[];
+  track: DawTrack;
+  bars: number;
+};
 
-  return padData;
-}
-
-function findSoundNumberByPad(pad: string, pads: Record<string, Pad[]>) {
-  const padData = findPad(pad, pads);
-
-  if (!padData) {
-    return null;
-  }
-
-  if (padData.soundNumber === 0) {
-    return null;
-  }
-
-  return padData.soundNumber;
-}
-
-function findSoundByPad(pad: string, pads: Record<string, Pad[]>, sounds: Sound[]) {
-  const soundNumber = findSoundNumberByPad(pad, pads);
-
-  return sounds.find((s) => s.id === soundNumber) || null;
-}
+export type DawScene = {
+  name: string;
+  clipSlot: DawClipSlot[];
+};
 
 function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
   const { pads, scenes } = data;
   const tracks: DawTrack[] = [];
   const lanes: DawLane[] = [];
-
-  console.log('---------', data);
-
+  const dawScenes: DawScene[] = [];
   let offset = 0;
+
   Object.values(scenes).forEach((scene) => {
     const sceneBars = Math.max(...scene.patterns.map((p) => p.bars));
+    const dawScene: DawScene = {
+      name: scene.name,
+      clipSlot: [],
+    };
 
     for (const pattern of scene.patterns) {
       let track = tracks.find((c) => c.pad === pattern.pad);
 
       if (!track) {
+        const soundId = findSoundIdByPad(pattern.pad, pads) || 0;
         const sound = findSoundByPad(pattern.pad, pads, sounds);
         const pad = findPad(pattern.pad, pads);
 
         track = {
+          soundId,
           pad: pattern.pad,
           name: sound?.meta.name || pattern.pad,
           volume: pad.volume * (2 / 200),
@@ -94,26 +84,26 @@ function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
         offset,
         notes: pattern.notes,
         bars: pattern.bars,
+        sceneBars,
       });
 
-      if (pattern.bars < sceneBars) {
-        for (let i = 0; i < sceneBars - pattern.bars; i += pattern.bars) {
-          lane.clips.push({
-            offset: offset + pattern.bars + i,
-            notes: pattern.notes,
-            bars: pattern.bars,
-          });
-        }
-      }
+      dawScene.clipSlot.push({
+        clip: lane.clips,
+        track: track,
+        bars: pattern.bars,
+      });
     }
 
     offset += sceneBars;
+
+    dawScenes.push(dawScene);
   });
 
   return {
     tracks,
     lanes,
-  };
+    scenes: dawScenes,
+  } as DawData;
 }
 
 export default dawProjectTransformer;

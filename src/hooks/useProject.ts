@@ -1,18 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { BlobReader } from '../ep133/stream';
-import { collectPads, collectScenesAndPatterns, Pad, Scene } from '../lib/parsers';
+import { collectPads, collectScenesAndPatterns, collectSettings } from '../lib/parsers';
 import { untar } from '../lib/untar';
+import { ProjectRawData } from '../types';
 import useDevice from './useDevice';
-
-export type ProjectRawData = {
-  pads: Record<string, Pad[]>;
-  scenes: Record<string, Scene>;
-};
 
 function useProject(id: number | string) {
   const { device, deviceService } = useDevice();
 
-  const result = useQuery({
+  const result = useQuery<ProjectRawData | null>({
     queryKey: ['project', id],
     queryFn: async () => {
       if (!deviceService) {
@@ -24,34 +20,18 @@ function useProject(id: number | string) {
       );
 
       const projectFile = new File([...archive.data], `project${archive.name}.tar`);
-
       const blobReader = new BlobReader(projectFile);
-      // const fileReader = new FileReader();
-
-      // fileReader.readAsArrayBuffer(blobReader.blob);
-
-      // console.log('=========== READER', fileReader);
-      // const arrBuf = await blobReader.blob.arrayBuffer();
-
       const files = await untar(blobReader.blob);
-      // console.log(files);
-      // console.log(files[54].data);
+
+      const settings = collectSettings(files);
       const pads = collectPads(files);
       const scenes = collectScenesAndPatterns(files);
-
-      // const pads = files.filter((f) => f.name.startsWith('pad') && f.type === 'file');
-
-      // for(const group of GROUPS) {
-      //   const groupPads = pads.filter((f) => f.name.startsWith(group.id) && f.type === 'file');
-      //   console.log('=========== GROUP', group.id, groupPads);
-      // }
-
-      // console.log('=========== scenes', scenes);
 
       return {
         pads,
         scenes,
-      } as ProjectRawData;
+        settings,
+      };
     },
     retry: false,
     enabled: !!id && !!device && !!deviceService,

@@ -1,32 +1,5 @@
+import { Note, Pad, ProjectSettings, Scene } from '../types';
 import { TarFile } from './untar';
-
-export type Pattern = {
-  pad: string;
-  notes: Note[];
-  bars: number;
-};
-
-export type Scene = {
-  name: string;
-  patterns: Pattern[];
-};
-
-export type Note = {
-  note: number;
-  position: number;
-  duration: number;
-  velocity: number;
-};
-
-export type Pad = {
-  pad: number;
-  name: string;
-  file: TarFile;
-  rawData: Uint8Array;
-  soundNumber: number;
-  volume: number;
-  panning?: number;
-};
 
 const GROUPS = [
   {
@@ -86,7 +59,7 @@ export function collectPads(files: TarFile[]) {
           name: PADS[i - 1],
           file,
           rawData: file.data,
-          soundNumber: (file.data[2] << 8) + file.data[1],
+          soundId: (file.data[2] << 8) + file.data[1],
           volume: file.data[16],
         });
       }
@@ -149,4 +122,16 @@ export function collectScenesAndPatterns(files: TarFile[]) {
   }
 
   return scenes;
+}
+
+export function collectSettings(files: TarFile[]): ProjectSettings {
+  const settings = files.find((f) => f.name === 'settings' && f.type === 'file');
+
+  if (!settings || !settings.data) {
+    throw new Error('Could not find settings file');
+  }
+
+  return {
+    bpm: settings.data[6] / 2,
+  };
 }

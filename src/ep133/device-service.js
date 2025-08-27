@@ -510,7 +510,7 @@ export class DeviceService extends EventTarget {
       const iter = this.fileHandler.iterNodes(this.device.serial, parentNodeId);
       let foundId = null;
       for await (const node of iter) {
-        const nodePath = parentPath + `/${node.name}`;
+        const nodePath = `${parentPath}/${node.name}`;
         this.fileNodes.set(nodePath, node.id);
         if (node.name === lastSegment) {
           foundId = node.id;
@@ -527,7 +527,7 @@ export class DeviceService extends EventTarget {
       const iter = this.fileHandler.iterNodes(this.device.serial, currentId);
       let foundNode = null;
       for await (const node of iter) {
-        const nodePath = partialPath + `/${node.name}`;
+        const nodePath = `${partialPath}/${node.name}`;
         this.fileNodes.set(nodePath, node.id);
         if (!foundNode && path.startsWith(nodePath)) foundNode = node;
       }

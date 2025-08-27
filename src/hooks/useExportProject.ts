@@ -1,21 +1,21 @@
 import { useAtomValue } from 'jotai';
 import { useState } from 'preact/hooks';
 import { projectIdAtom } from '../atoms/project';
-import { exportDawProject } from '../lib/exporter';
-import useAllSounds, { Sound } from './useAllSounds';
-import useProject, { ProjectRawData } from './useProject';
-
-export type ExportFormatId = 'dawproject' | 'midi';
-export type ExportFormat = {
-  name: string;
-  value: ExportFormatId;
-  exportFn: (data: ProjectRawData, sounds: Sound[]) => Promise<Blob>;
-};
+import { exportDawProject } from '../lib/exporters/dawProject';
+import { ExportFormat, ExportFormatId, ExportResult } from '../types';
+import useAllSounds from './useAllSounds';
+import useDevice from './useDevice';
+import useProject from './useProject';
 
 export const exportFormats: ExportFormat[] = [
   {
-    name: 'DAWproject',
+    name: 'DAWproject + samples',
     value: 'dawproject',
+    exportFn: exportDawProject,
+  },
+  {
+    name: 'DAWproject (with clips) + samples',
+    value: 'dawproject_with_clips',
     exportFn: exportDawProject,
   },
 ];
@@ -25,36 +25,60 @@ function useExportProject(format: ExportFormatId) {
   const { data: projectRawData } = useProject(projectId);
   const { data: allSounds } = useAllSounds();
   const [isPending, setIsPending] = useState(false);
-  const [pendingStatus, setPendingStatus] = useState('Exporting...');
+  const [pendingStatus, setPendingStatus] = useState('');
   const [percentage, setPercentage] = useState(0);
+  const [error, setError] = useState<any>(null);
+  const [result, setResult] = useState<ExportResult | null>(null);
+  const { deviceService } = useDevice();
 
   const startExport = async () => {
-    const formatData = exportFormats.find((f) => f.value === format);
+    try {
+      const formatData = exportFormats.find((f) => f.value === format);
 
-    if (!formatData || !projectRawData || !allSounds) {
+      if (!formatData || !projectRawData || !allSounds || !deviceService) {
+        return;
+      }
+
+      setIsPending(true);
+      setPercentage(1);
+
+      const result = await formatData.exportFn(
+        format,
+        projectId,
+        projectRawData,
+        allSounds,
+        deviceService,
+        (stat) => {
+          setPercentage(stat.progress);
+          setPendingStatus(stat.status);
+        },
+      );
+
+      setResult(result);
+      setIsPending(false);
+    } catch (err) {
+      setError(err);
+    }
+  };
+
+  const reset = () => {
+    setError(null);
+    setIsPending(false);
+    setPercentage(0);
+    setPendingStatus('');
+
+    if (!result) {
       return;
     }
 
-    setIsPending(true);
-    setPercentage(1);
-    setPendingStatus('Collecting data...');
+    for (const file of result.files) {
+      URL.revokeObjectURL(file.url);
+    }
 
-    const result = await formatData.exportFn(projectRawData, allSounds);
-
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(result);
-    link.download = `project${projectId}.dawproject`;
-    link.click();
-
-    URL.revokeObjectURL(link.href);
-
-    setIsPending(false);
-    setPercentage(100);
-    setPendingStatus('Completed');
-    // console.log(data);
+    setResult(null);
   };
 
-  return { startExport, isPending, pendingStatus, percentage };
+  return { startExport, reset, isPending, pendingStatus, percentage, result, error };
 }
 
 export default useExportProject;

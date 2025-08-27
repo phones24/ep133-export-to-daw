@@ -1,4 +1,4 @@
-import { ViewPattern } from '../lib/renderViewTransformer';
+import { ViewPattern } from '../lib/transformers/webView';
 
 function TrackMeta({ pattern }: { pattern: ViewPattern }) {
   return (

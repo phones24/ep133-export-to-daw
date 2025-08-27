@@ -190,11 +190,7 @@ export class Midi {
   }
 
   _onMidiReady(midiAccess) {
-    console.debug('************* _onMidiReady 1', midiAccess);
-
     this.io.onFirstMidiAccess(midiAccess);
-
-    console.debug('************* _onMidiReady 2', this._midiAccess);
 
     if (this._midiAccess) {
       if (this._statechangeMidiEventHandler !== null) {

@@ -3,9 +3,10 @@ import { Provider, useAtom } from 'jotai';
 import { projectIdAtom } from '../atoms/project';
 import { APP_STATES, useAppState } from '../hooks/useAppState';
 import useDevice from '../hooks/useDevice';
-import queryClient from '../utils/queryClient';
+import queryClient from '../lib/queryClient';
 import AppStateDisplay from './AppStateDisplay';
 import DeviceProvider from './DeviceProvider';
+import Donate from './Donate';
 import ErrorBoundary from './ErrorBoundary';
 import ErrorFallback from './ErrorFallback';
 import ExportProject from './ExportProject';
@@ -24,15 +25,19 @@ function Main() {
       <header className="flex flex-col gap-2">
         <div className="flex justify-between">
           <FacePlateHeader />
-          <a
-            href="https://github.com/phones24/ep133-export-to-daw"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:opacity-80 transition-opacity"
-            title="View on GitHub"
-          >
-            <IconGitHub className="text-gray-700" />
-          </a>
+
+          <div className="flex gap-4 self-start">
+            <Donate />
+            <a
+              href="https://github.com/phones24/ep133-export-to-daw"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:opacity-80 transition-opacity"
+              title="View on GitHub"
+            >
+              <IconGitHub className="text-gray-700" />
+            </a>
+          </div>
         </div>
         <div className="flex justify-between">
           <ProjectSelector />

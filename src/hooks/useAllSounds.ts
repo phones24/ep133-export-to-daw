@@ -1,14 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { FSNode } from '../ep133/fs';
 import { SoundMetadata } from '../ep133/types';
+import { Sound } from '../types';
 import useDevice from './useDevice';
-
-export type Sound = {
-  path: string;
-  id: number;
-  node: FSNode;
-  meta: any;
-};
 
 function useAllSounds() {
   const { device, deviceService } = useDevice();

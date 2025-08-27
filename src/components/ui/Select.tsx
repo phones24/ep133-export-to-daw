@@ -1,5 +1,5 @@
-import { JSX } from 'preact';
 import clsx from 'clsx';
+import { JSX } from 'preact';
 
 interface SelectProps extends JSX.SelectHTMLAttributes<HTMLSelectElement> {
   children: any;

@@ -1,12 +1,9 @@
-import { Sound } from '../hooks/useAllSounds';
-import { ProjectRawData } from '../hooks/useProject';
-import { Note, Pad } from './parsers';
-import { calcMaxLength } from './utils';
+import { Note, Pad, ProjectRawData, Sound } from '../../types';
+import { findSoundByPad } from '../utils';
 
 export type ViewPattern = {
   pad: string;
   bars: number;
-  maxLength: number;
   soundName: string;
   notes: Note[];
   group: string;
@@ -16,7 +13,6 @@ export type ViewPattern = {
 export type ViewScene = {
   name: string;
   patterns: ViewPattern[];
-  maxLength: number;
   maxBars: number;
 };
 
@@ -27,29 +23,7 @@ export type ViewData = {
   scenes: Record<string, ViewScene[]>;
 };
 
-function findSoundNumberByPad(pad: string, pads: Record<string, Pad[]>) {
-  const group = pad[0];
-  const padNumber = parseInt(pad.slice(1), 10);
-  const padData = pads[group][padNumber];
-
-  if (!padData) {
-    return null;
-  }
-
-  if (padData.soundNumber === 0) {
-    return null;
-  }
-
-  return padData.soundNumber;
-}
-
-function findSoundByPad(pad: string, pads: Record<string, Pad[]>, sounds: Sound[]) {
-  const soundNumber = findSoundNumberByPad(pad, pads);
-
-  return sounds.find((s) => s.id === soundNumber) || null;
-}
-
-function renderViewTransformer(data: ProjectRawData, sounds: Sound[]) {
+function webViewTransformer(data: ProjectRawData, sounds: Sound[]) {
   const { pads, scenes } = data;
   const newScenes: ViewScene[] = [];
   const usedPads = new Set<string>();
@@ -59,7 +33,6 @@ function renderViewTransformer(data: ProjectRawData, sounds: Sound[]) {
   for (const scene in scenes) {
     newScenes[Number(scene) - 1] = {
       name: scene,
-      maxLength: calcMaxLength(scenes[scene].patterns),
       maxBars: Math.max(...scenes[scene].patterns.map((p) => p.bars)),
       patterns: [],
     };
@@ -75,12 +48,7 @@ function renderViewTransformer(data: ProjectRawData, sounds: Sound[]) {
   for (const scene of newScenes) {
     scene.patterns = scenes[scene.name].patterns.map((pattern) => ({
       ...pattern,
-      maxLength:
-        pattern.notes.length > 0
-          ? pattern.notes[pattern.notes.length - 1].position +
-            pattern.notes[pattern.notes.length - 1].duration
-          : 0,
-      soundName: findSoundByPad(pattern.pad, pads, sounds)?.meta.name,
+      soundName: findSoundByPad(pattern.pad, pads, sounds)?.meta.name || '',
       group: pattern.pad[0],
       padNumber: parseInt(pattern.pad.slice(1), 10),
     }));
@@ -101,7 +69,6 @@ function renderViewTransformer(data: ProjectRawData, sounds: Sound[]) {
           group,
           padNumber,
           soundName: '',
-          maxLength: 0,
         });
       }
     });
@@ -127,4 +94,4 @@ function renderViewTransformer(data: ProjectRawData, sounds: Sound[]) {
   };
 }
 
-export default renderViewTransformer;
+export default webViewTransformer;

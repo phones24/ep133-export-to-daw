@@ -95,7 +95,7 @@ function parseTarHeader(buffer: ArrayBuffer, offset: number): TarHeader | null {
 
   let fullName = header.name;
   if (header.prefix) {
-    fullName = header.prefix + '/' + header.name;
+    fullName = `${header.prefix}/${header.name}`;
   }
   header.fullName = fullName;
 

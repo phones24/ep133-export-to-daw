@@ -1,5 +1,5 @@
-import { JSX } from 'preact';
 import clsx from 'clsx';
+import { JSX } from 'preact';
 
 interface ButtonProps extends JSX.HTMLAttributes<HTMLButtonElement> {
   children: any;

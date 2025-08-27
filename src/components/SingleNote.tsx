@@ -1,4 +1,5 @@
-import { Note, noteNumberToName } from '../lib/parsers';
+import { noteNumberToName } from '../lib/parsers';
+import { Note } from '../types';
 
 export function SingleNote({ note }: { note: Note }) {
   return (

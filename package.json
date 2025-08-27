@@ -17,7 +17,6 @@
     "jstoxml": "^7.0.1",
     "jszip": "^3.10.1",
     "preact": "^10.27.1",
-    "react-error-boundary": "^6.0.0",
     "tailwindcss": "^4.1.12"
   },
   "devDependencies": {

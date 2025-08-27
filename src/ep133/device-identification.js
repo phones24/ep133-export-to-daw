@@ -11,11 +11,11 @@ export class DeviceIdentification {
     this.debug = midi.debug;
   }
 
-  // log(...args) {
-  // 	if (this.debug) {
-  // 		console.log('MIDI:Ident', ...args);
-  // 	}
-  // }
+  log(...args) {
+    if (this.debug) {
+      console.log('MIDI:Ident', ...args);
+    }
+  }
 
   setDebug(enabled) {
     this.debug = enabled;
@@ -27,7 +27,7 @@ export class DeviceIdentification {
   }
 
   onIdentityResponse(inputPort, idResponse) {
-    console.log('MIDI:Ident', 'identity_response', idResponse);
+    this.log('identity_response', idResponse);
 
     if (this.activeDeviceIdCallback !== null) {
       this.activeDeviceIdCallback(inputPort, idResponse);
@@ -42,7 +42,7 @@ export class DeviceIdentification {
 
   identify(outputPort) {
     const sendIdRequest = (port) => {
-      console.log('MIDI:Ident', 'sending id request');
+      this.log('sending id request');
       port.send([240, 126, 127, 6, 1, 247]); // Standard MIDI Identity Request SysEx
     };
 
@@ -59,20 +59,20 @@ export class DeviceIdentification {
 
       const retry = () => {
         if (triesLeft--) {
-          console.log('MIDI:Ident', `trying again, tries left ${triesLeft}/${maxTries}`);
+          this.log(`trying again, tries left ${triesLeft}/${maxTries}`);
           sendIdRequest(outputPort);
           this.activeDeviceIdTimeout = setTimeout(retry, totalTimeout / maxTries);
         } else {
           this.activeDeviceIdCallback = null;
           this.activeDeviceIdTimeout = null;
-          console.log('MIDI:Ident', 'device id timed out');
+          this.log('device id timed out');
         }
       };
 
       this.activeDeviceIdTimeout = setTimeout(retry, totalTimeout / maxTries);
 
       this.activeDeviceIdCallback = (inputPort, idResponse) => {
-        console.log('MIDI:Ident', 'got device id response', idResponse);
+        this.log('got device id response', idResponse);
         this.activeDeviceIdCallback = null;
         resolve({
           output: outputPort,
@@ -86,10 +86,10 @@ export class DeviceIdentification {
   }
 
   handle() {
-    console.log('MIDI:Ident', 'midiIdentHandle');
+    this.log('midiIdentHandle');
 
     const greetDevice = async (deviceInfo) => {
-      console.log('MIDI:Ident', 'greeting');
+      this.log('greeting');
       const greetResponse = await this.midi.client.sendAndReceive(
         deviceInfo.output,
         deviceInfo.id_response.id,
@@ -97,7 +97,7 @@ export class DeviceIdentification {
         [],
       );
 
-      console.log('MIDI:Ident', 'greetResponse', greetResponse);
+      this.log('greetResponse', greetResponse);
 
       return new MidiDevice(
         this.midi.client.sendAndReceive.bind(this.midi.client),
