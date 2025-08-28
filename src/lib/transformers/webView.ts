@@ -90,7 +90,6 @@ function webViewTransformer(data: ProjectRawData, sounds: Sound[]) {
     });
   }
 
-  console.log(newScenes);
   return {
     pads,
     scenes: newScenes,
