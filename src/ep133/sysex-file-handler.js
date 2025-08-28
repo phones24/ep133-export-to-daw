@@ -39,7 +39,7 @@ import {
   SysexFileInfoResponse,
   SysexGetFileInitResponse,
 } from './sysex-protocol';
-import { calculateMaxPayloadLength, crc32 } from './utils';
+import { calculateMaxPayloadLength, crc32, sanitizeBrokenJson } from './utils';
 
 export class SysExFileHandler {
   constructor(sysExApi, subscribeToEvents = true, timeoutMs = 5000) {
@@ -284,7 +284,7 @@ export class SysExFileHandler {
           if (response.data.slice(-1)[0] === 0) break;
         }
         try {
-          Object.assign(result, JSON.parse(metadataStr));
+          Object.assign(result, JSON.parse(sanitizeBrokenJson(metadataStr)));
         } catch (err) {
           throw new MetadataParseError(`could not parse ${metadataStr}: ${err.message}`);
         }

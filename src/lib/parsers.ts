@@ -22,6 +22,10 @@ const GROUPS = [
 
 const PADS = ['9', '8', '7', '6', '5', '4', '3', '2', '1', '.', '0', 'E'];
 
+const defaultSettings = {
+  bpm: 120,
+};
+
 export function noteNumberToName(noteNumber: number): string {
   const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
   const noteIndex = noteNumber % 12;
@@ -128,7 +132,9 @@ export function collectSettings(files: TarFile[]): ProjectSettings {
   const settings = files.find((f) => f.name === 'settings' && f.type === 'file');
 
   if (!settings || !settings.data) {
-    throw new Error('Could not find settings file');
+    console.error('Could not find settings file');
+
+    return defaultSettings;
   }
 
   return {

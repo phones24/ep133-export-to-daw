@@ -409,3 +409,10 @@ export const crc32 = (data, initial = 0) => {
 
   return normalize(crc ^ 0xffffffff);
 };
+
+export function sanitizeBrokenJson(input) {
+  return input.replace(/:"([^"]*?)"([^,}]*)/g, (_, part1, part2) => {
+    const fixed = (part1 + part2).replace(/"/g, '\\"');
+    return `:"${fixed}"`;
+  });
+}

@@ -30,28 +30,30 @@ function webViewTransformer(data: ProjectRawData, sounds: Sound[]) {
 
   // construct new scenes array
   // and collect the used pads
-  for (const scene in scenes) {
-    newScenes[Number(scene) - 1] = {
-      name: scene,
-      maxBars: Math.max(...scenes[scene].patterns.map((p) => p.bars)),
+  Object.values(scenes).forEach((scene, idx) => {
+    newScenes[idx] = {
+      name: scene.name,
+      maxBars: Math.max(...scene.patterns.map((p) => p.bars)),
       patterns: [],
     };
 
-    for (const pattern of scenes[scene].patterns) {
+    for (const pattern of scene.patterns) {
       if (pattern.notes.length > 0) {
         usedPads.add(pattern.pad);
       }
     }
-  }
+  });
 
   // copy patterns and add some additional fields
   for (const scene of newScenes) {
-    scene.patterns = scenes[scene.name].patterns.map((pattern) => ({
-      ...pattern,
-      soundName: findSoundByPad(pattern.pad, pads, sounds)?.meta?.name || 'n/a',
-      group: pattern.pad[0],
-      padNumber: parseInt(pattern.pad.slice(1), 10),
-    }));
+    scene.patterns = scenes[scene.name].patterns.map((pattern) => {
+      return {
+        ...pattern,
+        soundName: findSoundByPad(pattern.pad, pads, sounds)?.meta?.name || '',
+        group: pattern.pad[0],
+        padNumber: parseInt(pattern.pad.slice(1), 10),
+      };
+    });
   }
 
   // make sure each scene have the same tracks/pads
@@ -68,7 +70,7 @@ function webViewTransformer(data: ProjectRawData, sounds: Sound[]) {
           bars: 0,
           group,
           padNumber,
-          soundName: '',
+          soundName: findSoundByPad(pad, pads, sounds)?.meta?.name || '',
         });
       }
     });
@@ -88,6 +90,7 @@ function webViewTransformer(data: ProjectRawData, sounds: Sound[]) {
     });
   }
 
+  console.log(newScenes);
   return {
     pads,
     scenes: newScenes,
