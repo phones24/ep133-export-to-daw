@@ -5,6 +5,7 @@ import { DeviceService } from '../ep133/device-service';
 import { MIDIDisallowedError, MIDINotSupportedError } from '../ep133/errors';
 import { SysExFileHandler } from '../ep133/sysex-file-handler';
 import { Device } from '../ep133/types';
+import { trackEvent } from '../lib/ga';
 import DeviceContext from './DeviceContext';
 
 const skuFilter = ['TE032AS001', 'TE032AS005'];
@@ -19,6 +20,8 @@ function DeviceProvider({ children }: any) {
     api.init({
       debug: false,
       onDeviceFound: (_device: Device) => {
+        trackEvent('device-found', _device.metadata);
+
         if (skuFilter.length === 0 || skuFilter.includes(_device.sku)) {
           const _fileHandler = new SysExFileHandler(api, true, 1000);
           const _deviceService = new DeviceService(_device, _fileHandler, null, false);
@@ -27,8 +30,8 @@ function DeviceProvider({ children }: any) {
           setDevice(_device);
           setDeviceService(_deviceService);
 
-          Sentry.setTag('device.os_version', _device?.metadata?.os_version);
-          Sentry.setTag('device.serial', _device?.metadata?.serial);
+          Sentry.setTag('device.os_version', _device.metadata?.os_version);
+          Sentry.setTag('device.serial', _device.metadata?.serial);
         }
       },
       onDeviceUpdated: (_device: any) => {

@@ -2,6 +2,7 @@ import { useAtomValue } from 'jotai';
 import { useState } from 'preact/hooks';
 import { projectIdAtom } from '../atoms/project';
 import { exportDawProject } from '../lib/exporters/dawProject';
+import { trackEvent } from '../lib/ga';
 import { ExportFormat, ExportFormatId, ExportResult } from '../types';
 import useAllSounds from './useAllSounds';
 import useDevice from './useDevice';
@@ -32,6 +33,8 @@ function useExportProject(format: ExportFormatId) {
   const { deviceService } = useDevice();
 
   const startExport = async () => {
+    trackEvent('export-start');
+
     try {
       const formatData = exportFormats.find((f) => f.value === format);
 
@@ -56,8 +59,12 @@ function useExportProject(format: ExportFormatId) {
 
       setResult(result);
       setIsPending(false);
+
+      trackEvent('export-end');
     } catch (err) {
       setError(err);
+
+      trackEvent('export-error');
     }
   };
 
