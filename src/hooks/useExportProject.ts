@@ -1,7 +1,8 @@
 import { useAtomValue } from 'jotai';
 import { useState } from 'preact/hooks';
 import { projectIdAtom } from '../atoms/project';
-import { exportDawProject } from '../lib/exporters/dawProject';
+import exportDawProject from '../lib/exporters/dawProject';
+import exportMidi from '../lib/exporters/midi';
 import { trackEvent } from '../lib/ga';
 import { ExportFormat, ExportFormatId, ExportResult } from '../types';
 import useAllSounds from './useAllSounds';
@@ -19,6 +20,11 @@ export const exportFormats: ExportFormat[] = [
     value: 'dawproject_with_clips',
     exportFn: exportDawProject,
   },
+  {
+    name: 'MIDI + samples',
+    value: 'midi',
+    exportFn: exportMidi,
+  },
 ];
 
 function useExportProject(format: ExportFormatId) {
@@ -33,7 +39,7 @@ function useExportProject(format: ExportFormatId) {
   const { deviceService } = useDevice();
 
   const startExport = async () => {
-    trackEvent('export-start');
+    trackEvent('export_start');
 
     try {
       const formatData = exportFormats.find((f) => f.value === format);
@@ -60,11 +66,11 @@ function useExportProject(format: ExportFormatId) {
       setResult(result);
       setIsPending(false);
 
-      trackEvent('export-end');
+      trackEvent('export_end');
     } catch (err) {
       setError(err);
 
-      trackEvent('export-error');
+      trackEvent('export_error');
     }
   };
 

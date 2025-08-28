@@ -1,7 +1,6 @@
 # EP-133 K.O. II: Export To DAW
 
 This tool allows you to export your EP-133 K.O.II (EP-1320) project into a DAW (Digital Audio Workstation).
-At the moment, the only supported format is DAWproject (https://github.com/bitwig/dawproject).
 
 Try it out on https://ep133-to-daw.cc/
 
@@ -20,18 +19,17 @@ Then building the web application was easy.
 
 ## Description
 
-What is exported:
+Supported formats are:
 
-- BPM
-- Patterns and clips
-- Samples (as WAV files inside an archive)
+- DAWproject
+- MIDI
 
 **Unfortunately, the DAWproject format does not currently support the "Sampler" device, so you will need to manually assign the samples in your DAW.**
 
 ## TODO
+- allow to select whether to export samples or not
 - export to Ableton Live
-- export to MIDI
-
+- fix heavy CPU utilization
 
 ## Help and support
 
