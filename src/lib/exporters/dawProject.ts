@@ -332,6 +332,7 @@ export async function buildProjectXml(
     _name: 'Application',
     _attrs: {
       name: PROJECT_NAME,
+      version: '1.0',
     },
   };
 
