@@ -20,7 +20,7 @@ function DeviceProvider({ children }: any) {
     api.init({
       debug: false,
       onDeviceFound: (_device: Device) => {
-        trackEvent('device-found', _device.metadata);
+        trackEvent('device_found', _device.metadata);
 
         if (skuFilter.length === 0 || skuFilter.includes(_device.sku)) {
           const _fileHandler = new SysExFileHandler(api, true, 1000);
