@@ -22,7 +22,6 @@ async function exportMidi(
 ) {
   progressCallback({ progress: 1, status: 'Exporting project data...' });
 
-  console.log(data);
   const transformedData = midiTransformer(data, sounds);
   const midi = new Midi();
 

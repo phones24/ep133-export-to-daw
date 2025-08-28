@@ -36,6 +36,7 @@ function midiTransformer(data: ProjectRawData, sounds: Sound[]) {
           })),
         };
 
+        // copy pattern for the rest of the scene
         if (pattern.bars < sceneMaxBars) {
           for (let i = offset + pattern.bars; i < offset + sceneMaxBars; i++) {
             track.notes = [
@@ -60,6 +61,7 @@ function midiTransformer(data: ProjectRawData, sounds: Sound[]) {
         })),
       );
 
+      // copy pattern for the rest of the scene
       if (pattern.bars < sceneMaxBars) {
         for (let i = offset + pattern.bars; i < offset + sceneMaxBars; i++) {
           track.notes = [
@@ -75,8 +77,6 @@ function midiTransformer(data: ProjectRawData, sounds: Sound[]) {
 
     offset += sceneMaxBars;
   });
-
-  console.log(midiTracks);
 
   return {
     tracks: midiTracks,
