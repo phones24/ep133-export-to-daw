@@ -2,7 +2,7 @@ import { JSX } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { APP_STATES, useAppState } from '../hooks/useAppState';
 import useDevice from '../hooks/useDevice';
-import useExportProject, { exportFormats } from '../hooks/useExportProject';
+import useExportProject, { EXPORT_FORMATS } from '../hooks/useExportProject';
 import { ExportFormatId } from '../types';
 import IconFile from './icons/file.svg?react';
 import Button from './ui/Button';
@@ -11,11 +11,12 @@ import Select from './ui/Select';
 
 function ExportProject() {
   const [open, setOpen] = useState(false);
-  const [format, setFormat] = useState<ExportFormatId>(exportFormats[0].value);
+  const [format, setFormat] = useState<ExportFormatId>(EXPORT_FORMATS[0].value);
+  const [includeArchivedSamples, setIncludeArchivedSamples] = useState(false);
   const appState = useAppState();
   const { device } = useDevice();
   const { startExport, isPending, pendingStatus, percentage, reset, result, error } =
-    useExportProject(format);
+    useExportProject(format, includeArchivedSamples);
 
   useEffect(() => {
     reset();
@@ -46,12 +47,26 @@ function ExportProject() {
               disabled={isPending}
               className="mr-auto"
             >
-              {exportFormats.map((f) => (
+              {EXPORT_FORMATS.map((f) => (
                 <option key={f.value} value={f.value}>
                   {f.name}
                 </option>
               ))}
             </Select>
+
+            <label className="flex items-center gap-2 text-sm" htmlFor="includeArchivedSamples">
+              <input
+                type="checkbox"
+                id="includeArchivedSamples"
+                checked={includeArchivedSamples}
+                onChange={(e: JSX.TargetedEvent<HTMLInputElement>) =>
+                  setIncludeArchivedSamples(e.currentTarget.checked)
+                }
+                disabled={isPending}
+                className="w-4 h-4"
+              />
+              Include archived WAV samples
+            </label>
           </div>
 
           <div className="mt-4 min-h-[54px]">

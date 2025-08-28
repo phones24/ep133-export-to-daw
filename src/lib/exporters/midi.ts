@@ -17,6 +17,7 @@ async function exportMidi(
   data: ProjectRawData,
   sounds: Sound[],
   deviceService: DeviceService,
+  includeArchivedSamples: boolean,
   progressCallback: ({ progress, status }: ExportStatus) => void,
 ) {
   progressCallback({ progress: 1, status: 'Exporting project data...' });
@@ -46,34 +47,44 @@ async function exportMidi(
   // @ts-expect-error wrong typing?
   const midiBlob = new Blob([midi.toArray()], { type: 'audio/midi' });
 
-  const zipSamples = new JSZip();
-  const samples = await collectSamples(data, sounds, deviceService, progressCallback);
+  const files: Array<{
+    name: string;
+    url: string;
+    type: 'project' | 'archive';
+    size: number;
+  }> = [
+    {
+      name: `project${projectId}.mid`,
+      url: URL.createObjectURL(midiBlob),
+      type: 'project',
+      size: midiBlob.size,
+    },
+  ];
 
-  samples.forEach((s) => {
-    zipSamples.file(s.name, s.data);
-  });
+  if (includeArchivedSamples) {
+    const zipSamples = new JSZip();
+    const samples = await collectSamples(data, sounds, deviceService, progressCallback);
 
-  progressCallback({ progress: 90, status: 'Bundle samples...' });
+    samples.forEach((s) => {
+      zipSamples.file(s.name, s.data);
+    });
 
-  const sampleFile = await zipSamples.generateAsync({ type: 'blob' });
+    progressCallback({ progress: 90, status: 'Bundle samples...' });
+
+    const sampleFile = await zipSamples.generateAsync({ type: 'blob' });
+
+    files.push({
+      name: `project${projectId}_samples.zip`,
+      url: URL.createObjectURL(sampleFile),
+      type: 'archive',
+      size: sampleFile.size,
+    });
+  }
 
   progressCallback({ progress: 100, status: 'Done' });
 
   return {
-    files: [
-      {
-        name: `project${projectId}.mid`,
-        url: URL.createObjectURL(midiBlob),
-        type: 'project',
-        size: midiBlob.size,
-      },
-      {
-        name: `project${projectId}_samples.zip`,
-        url: URL.createObjectURL(sampleFile),
-        type: 'archive',
-        size: sampleFile.size,
-      },
-    ],
+    files,
   } as ExportResult;
 }
 

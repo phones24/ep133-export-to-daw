@@ -9,25 +9,25 @@ import useAllSounds from './useAllSounds';
 import useDevice from './useDevice';
 import useProject from './useProject';
 
-export const exportFormats: ExportFormat[] = [
+export const EXPORT_FORMATS: ExportFormat[] = [
   {
-    name: 'DAWproject + samples',
+    name: 'DAWproject',
     value: 'dawproject',
     exportFn: exportDawProject,
   },
   {
-    name: 'DAWproject (with clips) + samples',
+    name: 'DAWproject (with clips)',
     value: 'dawproject_with_clips',
     exportFn: exportDawProject,
   },
   {
-    name: 'MIDI + samples',
+    name: 'MIDI',
     value: 'midi',
     exportFn: exportMidi,
   },
 ];
 
-function useExportProject(format: ExportFormatId) {
+function useExportProject(format: ExportFormatId, includeArchivedSamples: boolean = true) {
   const projectId = useAtomValue(projectIdAtom);
   const { data: projectRawData } = useProject(projectId);
   const { data: allSounds } = useAllSounds();
@@ -42,7 +42,7 @@ function useExportProject(format: ExportFormatId) {
     trackEvent('export_start');
 
     try {
-      const formatData = exportFormats.find((f) => f.value === format);
+      const formatData = EXPORT_FORMATS.find((f) => f.value === format);
 
       if (!formatData || !projectRawData || !allSounds || !deviceService) {
         return;
@@ -57,6 +57,7 @@ function useExportProject(format: ExportFormatId) {
         projectRawData,
         allSounds,
         deviceService,
+        includeArchivedSamples,
         (stat) => {
           setPercentage(stat.progress);
           setPendingStatus(stat.status);

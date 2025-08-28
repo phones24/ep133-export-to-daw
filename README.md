@@ -27,7 +27,6 @@ Supported formats are:
 **Unfortunately, the DAWproject format does not currently support the "Sampler" device, so you will need to manually assign the samples in your DAW.**
 
 ## TODO
-- allow to select whether to export samples or not
 - export to Ableton Live
 - fix heavy CPU utilization
 

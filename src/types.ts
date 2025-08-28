@@ -91,6 +91,7 @@ export type ExportFormat = {
     data: ProjectRawData,
     sounds: Sound[],
     deviceService: DeviceService,
+    includeArchivedSamples: boolean,
     progressCallback: ({ progress, status }: ExportStatus) => void,
   ) => Promise<ExportResult>;
 };
