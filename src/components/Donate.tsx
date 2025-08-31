@@ -74,7 +74,6 @@ function Donate() {
                   )}
                 </li>
               ))}
-              q
             </ul>
           </div>
           <div>
