@@ -1,3 +1,6 @@
+// This file was obtained from the original sources owned by Teenage Engineering
+// and is NOT covered by the GNU Affero General Public License that applies to the rest of the project.
+
 export class TeSysexError extends Error {
   constructor(sysexMessage, device) {
     super(sysexMessage.string); // Error message comes from the SysEx object's string property

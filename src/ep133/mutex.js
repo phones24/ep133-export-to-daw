@@ -1,4 +1,6 @@
-// Manages multiple named mutexes
+// This file was obtained from the original sources owned by Teenage Engineering
+// and is NOT covered by the GNU Affero General Public License that applies to the rest of the project.
+
 export class MutexManager {
   constructor() {
     this.mutexes = new Map();

@@ -1,3 +1,6 @@
+// This file was obtained from the original sources owned by Teenage Engineering
+// and is NOT covered by the GNU Affero General Public License that applies to the rest of the project.
+
 export const BIT_IS_REQUEST = 64;
 export const BIT_REQUEST_ID_AVAILABLE = 32;
 export const MIDI_SYSEX_START = 240;

@@ -1,3 +1,6 @@
+// This file was obtained from the original sources owned by Teenage Engineering
+// and is NOT covered by the GNU Affero General Public License that applies to the rest of the project.
+
 const ERR_ITERATOR_COMPLETED_TOO_SOON = 'Writer iterator completed too soon';
 const HTTP_HEADER_CONTENT_TYPE = 'Content-Type';
 const DEFAULT_CHUNK_SIZE = 64 * 1024;

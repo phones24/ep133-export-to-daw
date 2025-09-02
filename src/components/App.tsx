@@ -21,7 +21,7 @@ function Main() {
   const appState = useAppState();
 
   return (
-    <div className="min-w-[1100px] p-4 min-h-screen grid grid-rows-[auto_1fr] gap-2">
+    <div className="min-w-[1100px] p-4 min-h-screen grid grid-rows-[auto_1fr_auto] gap-2">
       <header className="flex flex-col gap-2">
         <div className="flex justify-between">
           <FacePlateHeader />
@@ -70,6 +70,9 @@ function Main() {
           <AppStateDisplay title="Error" message={error.message} />
         )}
       </main>
+      <div className="bg-[#dbdddb] px-3 py-2 border-1 border-black text-black/50">
+        This project is not affiliated with or officially authorized by Teenage Engineering
+      </div>
     </div>
   );
 }

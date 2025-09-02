@@ -1,3 +1,6 @@
+// This file was obtained from the original sources owned by Teenage Engineering
+// and is NOT covered by the GNU Affero General Public License that applies to the rest of the project.
+
 import { DeviceIdentification } from './device-identification';
 import { eventEmitter } from './events';
 import { MidiIO } from './midi-io';

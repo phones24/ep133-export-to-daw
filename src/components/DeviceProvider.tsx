@@ -1,10 +1,10 @@
 import * as Sentry from '@sentry/react';
 import { useEffect, useState } from 'preact/hooks';
+import { Device } from '../ep133';
 import { api } from '../ep133/api';
 import { DeviceService } from '../ep133/device-service';
 import { MIDIDisallowedError, MIDINotSupportedError } from '../ep133/errors';
 import { SysExFileHandler } from '../ep133/sysex-file-handler';
-import { Device } from '../ep133/types';
 import { trackEvent } from '../lib/ga';
 import DeviceContext from './DeviceContext';
 

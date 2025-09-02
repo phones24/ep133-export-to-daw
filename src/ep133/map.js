@@ -1,4 +1,6 @@
-// Inverse mapping class for BiMap
+// This file was obtained from the original sources owned by Teenage Engineering
+// and is NOT covered by the GNU Affero General Public License that applies to the rest of the project.
+
 export class InverseMap {
   constructor(bimap) {
     this.size = 0;

@@ -1,3 +1,5 @@
+**This project is not affiliated with or officially authorized by Teenage Engineering**
+
 # EP-133 K.O. II: Export To DAW
 
 This tool allows you to export your EP-133 K.O.II (EP-1320) project into a DAW (Digital Audio Workstation).
@@ -40,6 +42,6 @@ Please feel free to open an Issues or drop your ideas in the Discussions.
 If you like this tool, please consider donating to support the development.
 Use "Donate" button on the [website](https://ep133-to-daw.cc/).
 
-Or here directly to Ko-fi:
+Or click to this Ko-fi button:
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M11KIZGJ)

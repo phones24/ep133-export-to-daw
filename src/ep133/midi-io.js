@@ -1,3 +1,6 @@
+// This file was obtained from the original sources owned by Teenage Engineering
+// and is NOT covered by the GNU Affero General Public License that applies to the rest of the project.
+
 const io_to_s = (s) => `t:${s.type} s:${s.state} c:${s.connection} id:${s.id} name: ${s.name}`;
 
 export class MidiIO {
