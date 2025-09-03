@@ -1,5 +1,5 @@
 import { DeviceService } from '../../ep133/device-service';
-import { ExportStatus, ProjectRawData, Sound } from '../../types';
+import { ExportStatus, ProjectRawData, Sound } from '../../types/types';
 import { pcmToWavBlob } from '../pcmToWav';
 import { audioFormatAsBitDepth, getSoundsInfoFromProject } from '../utils';
 
@@ -24,6 +24,17 @@ export async function downloadPcm(
   return combined;
 }
 
+export function getSampleName(name: string | undefined, soundId: number, extension = true) {
+  if (soundId === 0 && !name) {
+    return '';
+  }
+
+  const id = soundId.toString().padStart(3, '0');
+  const n = name ? `${id} ${name}` : `${id} sample`;
+
+  return extension ? `${n}.wav` : n;
+}
+
 export async function collectSamples(
   data: ProjectRawData,
   sounds: Sound[],
@@ -38,7 +49,8 @@ export async function collectSamples(
   let cnt = 0;
 
   for (const snd of projectSounds) {
-    const fileName = snd.soundMeta.name || `sample${snd.soundId}`;
+    const fileName = getSampleName(snd.soundMeta.name, snd.soundId);
+
     progressCallback({
       progress: percentStart + percentPerSound * cnt,
       status: `Downloading sound: ${fileName}`,
@@ -62,7 +74,7 @@ export async function collectSamples(
     cnt++;
 
     samples.push({
-      name: `${fileName}.wav`,
+      name: fileName,
       data: wavBlob,
     });
   }

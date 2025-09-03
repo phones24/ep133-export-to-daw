@@ -1,4 +1,4 @@
-import { Pad, ProjectRawData, Sound, SoundInfo } from '../types';
+import { Pad, ProjectRawData, Sound, SoundInfo } from '../types/types';
 
 let _colorIndex = 0;
 

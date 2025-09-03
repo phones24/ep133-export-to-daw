@@ -10,20 +10,25 @@ function FacePlateHeader() {
         <p className="text-[30px] font-medium leading-6">
           EP-133 K.O. II: <i>Export To DAW</i>
         </p>
+        <p className="text-xs font-medium">
+          Export your projects to Ableton Live, DAWproject or MIDI
+        </p>
 
-        {!device && (
-          <div className="flex gap-2 items-center">
-            <div className="border-1 border-black bg-gray-300 size-4 rounded-full" />
-            No device connected
-          </div>
-        )}
+        <div className="absolute left-0 bottom-0">
+          {!device && (
+            <div className="flex gap-2 items-center">
+              <div className="border-1 border-black bg-gray-300 size-4 rounded-full" />
+              No device connected
+            </div>
+          )}
 
-        {!!device && (
-          <div className="flex gap-2 items-center">
-            <div className="border-1 border-black bg-[#ef4e27] size-4 rounded-full" />
-            Connected
-          </div>
-        )}
+          {!!device && (
+            <div className="flex gap-2 items-center">
+              <div className="border-1 border-black bg-[#ef4e27] size-4 rounded-full" />
+              Connected
+            </div>
+          )}
+        </div>
         <p className="text-xs absolute right-0 bottom-0 opacity-40">
           Firmware version: {device?.metadata.os_version || 'N/A'}
         </p>

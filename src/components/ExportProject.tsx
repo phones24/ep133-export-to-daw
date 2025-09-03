@@ -3,20 +3,40 @@ import { useEffect, useState } from 'preact/hooks';
 import { APP_STATES, useAppState } from '../hooks/useAppState';
 import useDevice from '../hooks/useDevice';
 import useExportProject, { EXPORT_FORMATS } from '../hooks/useExportProject';
-import { ExportFormatId } from '../types';
+import usePersistedState from '../hooks/usePersistedState';
+import { ExportFormatId } from '../types/types';
 import IconFile from './icons/file.svg?react';
 import Button from './ui/Button';
+import CheckBox from './ui/CheckBox';
 import Dialog from './ui/Dialog';
 import Select from './ui/Select';
+
+const NOTES: Record<ExportFormatId, string> = {
+  ableton12: `Please note that the exported project won't sound exactly the same as it does on the device.
+Currently NOT included in export:
+- effects
+- fader automation
+- song mode
+- sidechains
+  `,
+  dawproject: ``,
+  dawproject_with_clips: ``,
+  midi: ``,
+};
 
 function ExportProject() {
   const [open, setOpen] = useState(false);
   const [format, setFormat] = useState<ExportFormatId>(EXPORT_FORMATS[0].value);
-  const [includeArchivedSamples, setIncludeArchivedSamples] = useState(false);
+  const [includeArchivedSamples, setIncludeArchivedSamples] = usePersistedState(
+    'export_includeArchivedSamples',
+    true,
+  );
+  const [useSampler, setUseSampler] = usePersistedState('export_useSampler', false);
+  const [clips, setClips] = usePersistedState('export_clips', false);
   const appState = useAppState();
   const { device } = useDevice();
   const { startExport, isPending, pendingStatus, percentage, reset, result, error } =
-    useExportProject(format, includeArchivedSamples);
+    useExportProject(format, { includeArchivedSamples, useSampler, clips });
 
   useEffect(() => {
     reset();
@@ -37,7 +57,7 @@ function ExportProject() {
       {open && !!device && (
         <Dialog isOpen onClose={() => setOpen(false)}>
           <div className="flex flex-col gap-2 min-w-[600px]">
-            <p>Select file format</p>
+            <p>Select project format</p>
             <Select
               onChange={(e: JSX.TargetedEvent<HTMLSelectElement, Event>) =>
                 setFormat(e.currentTarget.value as ExportFormatId)
@@ -53,20 +73,47 @@ function ExportProject() {
                 </option>
               ))}
             </Select>
+            <div className="flex flex-col gap-2 mt-2">
+              {format !== 'ableton12' && (
+                <CheckBox
+                  checked={includeArchivedSamples}
+                  onChange={(checked) => setIncludeArchivedSamples(checked)}
+                  title="Include archived WAV samples"
+                  disabled={isPending}
+                />
+              )}
 
-            <label className="flex items-center gap-2 text-sm" htmlFor="includeArchivedSamples">
-              <input
-                type="checkbox"
-                id="includeArchivedSamples"
-                checked={includeArchivedSamples}
-                onChange={(e: JSX.TargetedEvent<HTMLInputElement>) =>
-                  setIncludeArchivedSamples(e.currentTarget.checked)
-                }
-                disabled={isPending}
-                className="w-4 h-4"
-              />
-              Include archived WAV samples
-            </label>
+              {format === 'ableton12' && (
+                <>
+                  <CheckBox
+                    checked={includeArchivedSamples}
+                    onChange={(checked) => setIncludeArchivedSamples(checked)}
+                    title="Include samples"
+                    disabled={isPending}
+                  />
+
+                  <CheckBox
+                    checked={useSampler}
+                    onChange={(checked) => setUseSampler(checked)}
+                    title="Use «Sampler» instead of «Simpler»"
+                    disabled={isPending || !includeArchivedSamples}
+                  />
+                  <CheckBox
+                    checked={clips}
+                    onChange={(checked) => setClips(checked)}
+                    title="Session clips instead of arrangements"
+                    disabled={isPending}
+                  />
+                </>
+              )}
+            </div>
+
+            {NOTES[format] && (
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold">Notes</h3>
+                <div className="text-sm whitespace-pre-line">{NOTES[format]}</div>
+              </div>
+            )}
           </div>
 
           <div className="mt-4 min-h-[54px]">
@@ -83,12 +130,12 @@ function ExportProject() {
               <div className="mt-4">
                 <h3 className="text-lg font-semibold">Files to download</h3>
                 {result.files.map((f) => (
-                  <div key={f.name} className="flex gap-2">
+                  <div key={f.name} className="flex gap-2 items-center">
                     <IconFile className="w-6 h-6" />
                     <a href={f.url} download={f.name} className="text-blue-500">
                       {f.name}
                     </a>
-                    <span className="ml-auto text-sm opacity-80">
+                    <span className="mr-auto text-sm opacity-80 ml-2">
                       {(f.size / 1024).toFixed(2)}KB
                     </span>
                   </div>
@@ -106,7 +153,7 @@ function ExportProject() {
             )}
           </div>
 
-          <div className="flex gap-4 justify-end mt-20">
+          <div className="flex gap-4 justify-end mt-2">
             <Button onClick={() => setOpen(false)} variant="secondary" disabled={isPending}>
               Cancel
             </Button>

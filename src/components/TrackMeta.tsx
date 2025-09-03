@@ -7,7 +7,9 @@ function TrackMeta({ pattern }: { pattern: ViewPattern }) {
         {pattern.group}
         {pattern.padNumber}
       </div>
-      <div className="truncate">{pattern.soundName}</div>
+      <div className="truncate text-sm" title={pattern.soundName}>
+        {pattern.soundName}
+      </div>
     </div>
   );
 }

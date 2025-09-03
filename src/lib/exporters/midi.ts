@@ -1,7 +1,14 @@
 import { Midi } from '@tonejs/midi';
 import JSZip from 'jszip';
 import { DeviceService } from '../../ep133/device-service';
-import { ExportFormatId, ExportResult, ExportStatus, ProjectRawData, Sound } from '../../types';
+import {
+  ExporterParams,
+  ExportFormatId,
+  ExportResult,
+  ExportStatus,
+  ProjectRawData,
+  Sound,
+} from '../../types/types';
 import midiTransformer from '../transformers/midi';
 import { collectSamples } from './utils';
 
@@ -17,8 +24,8 @@ async function exportMidi(
   data: ProjectRawData,
   sounds: Sound[],
   deviceService: DeviceService,
-  includeArchivedSamples: boolean,
   progressCallback: ({ progress, status }: ExportStatus) => void,
+  exporterParams: ExporterParams,
 ) {
   progressCallback({ progress: 1, status: 'Exporting project data...' });
 
@@ -60,7 +67,7 @@ async function exportMidi(
     },
   ];
 
-  if (includeArchivedSamples) {
+  if (exporterParams.includeArchivedSamples) {
     const zipSamples = new JSZip();
     const samples = await collectSamples(data, sounds, deviceService, progressCallback);
 

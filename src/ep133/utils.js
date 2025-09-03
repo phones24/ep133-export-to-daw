@@ -16,7 +16,7 @@ import { FirmwareVersionError } from './errors';
  * Convert a byte array to a hex string like: "[0a,ff,32]"
  */
 export function asHexString(byteArray) {
-  return '[' + asHexArray(byteArray).join(',') + ']';
+  return `[${asHexArray(byteArray).join(',')}]`;
 }
 
 /**
@@ -392,7 +392,6 @@ export const throttle = (fn, delay) => {
   return [throttledFn, cancel];
 };
 
-// Pick only specified keys from an object
 export const pick = (obj, ...keys) =>
   Object.fromEntries(keys.filter((key) => key in obj).map((key) => [key, obj[key]]));
 
@@ -418,4 +417,22 @@ export function sanitizeBrokenJson(input) {
     const fixed = (part1 + part2).replace(/"/g, '\\"');
     return `:"${fixed}"`;
   });
+}
+
+export function calculateSoundLength(sound) {
+  const sampleRate = sound.meta?.samplerate;
+  const channels = sound.meta?.channels;
+
+  let fileSize = null;
+  if ('file' in sound) {
+    fileSize = sound.file?.size;
+  } else if ('node' in sound) {
+    fileSize = sound.node.size;
+  }
+
+  if (!sampleRate || !channels || !fileSize) {
+    return 0;
+  }
+
+  return fileSize / 2 / sampleRate / channels;
 }

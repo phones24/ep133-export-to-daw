@@ -1,0 +1,23 @@
+<Scene Id="0">
+  <FollowAction>
+    <FollowTime Value="0" />
+    <IsLinked Value="true" />
+    <LoopIterations Value="1" />
+    <FollowActionA Value="4" />
+    <FollowActionB Value="0" />
+    <FollowChanceA Value="100" />
+    <FollowChanceB Value="0" />
+    <JumpIndexA Value="0" />
+    <JumpIndexB Value="0" />
+    <FollowActionEnabled Value="false" />
+  </FollowAction>
+  <Name Value="" />
+  <Annotation Value="" />
+  <Color Value="-1" />
+  <Tempo Value="120" />
+  <IsTempoEnabled Value="false" />
+  <TimeSignatureId Value="201" />
+  <IsTimeSignatureEnabled Value="false" />
+  <LomId Value="0" />
+  <ClipSlotsListWrapper LomId="0" />
+</Scene>

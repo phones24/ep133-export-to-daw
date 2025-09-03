@@ -38,7 +38,8 @@
         "noArrayIndexKey": "off",
         "noAssignInExpressions": "off",
         "noExplicitAny": "off",
-        "noUnknownAtRules": "off"
+        "noUnknownAtRules": "off",
+        "noEmptyInterface": "off"
       },
       "correctness": {
         "noUnusedImports": "error",

@@ -1,4 +1,5 @@
-import { Note, Pad, ProjectSettings, Scene } from '../types';
+import { calculateSoundLength } from '../ep133/utils';
+import { Note, Pad, PadCode, Pattern, ProjectSettings, Scene, Sound } from '../types/types';
 import { TarFile } from './untar';
 
 const GROUPS = [
@@ -47,7 +48,7 @@ function chunkArray(arr: Uint8Array, size: number, offset = 0) {
   return result;
 }
 
-export function collectPads(files: TarFile[]) {
+export function collectPads(files: TarFile[], sounds: Sound[]) {
   const result: Record<string, Pad[]> = {};
 
   for (const group of GROUPS) {
@@ -57,14 +58,29 @@ export function collectPads(files: TarFile[]) {
 
     for (let i = 1; i <= 12; i++) {
       const file = files.find((f) => f.name === genPadFileName(group.id, i));
+
       if (file?.data) {
+        const soundId = (file.data[2] << 8) + file.data[1];
+        const sound = sounds.find((s) => s.id === soundId);
+        const pitch = file.data[17] <= 12 ? file.data[17] : -(256 - file.data[17]); // pitch from -12 to +12
+        const pitchDecimal = file.data[26];
+        const pan = (file.data[18] >= 240 ? -(256 - file.data[18]) : file.data[18]) / 16; // normalized pan
+
         result[grp].push({
           pad: i,
           name: `${grp.toUpperCase()} ${PADS[i - 1]}`,
           file,
           rawData: file.data,
-          soundId: (file.data[2] << 8) + file.data[1],
+          soundId,
           volume: file.data[16],
+          attack: file.data[19],
+          release: file.data[20],
+          trimLeft: (file.data[6] << 16) + (file.data[5] << 8) + file.data[4],
+          trimRight: (file.data[10] << 16) + (file.data[9] << 8) + file.data[8],
+          soundLength: sound ? calculateSoundLength(sound) : 0,
+          pitch: Math.max(-12, Math.min(12, parseFloat(`${pitch}.${pitchDecimal}`))),
+          rootNote: sound?.meta?.['sound.rootnote'] || 60,
+          pan,
         });
       }
     }
@@ -75,22 +91,21 @@ export function collectPads(files: TarFile[]) {
 
 export function parsePatterns(data: Uint8Array, group: string) {
   const chunks = chunkArray(data, 8, 4);
-  const notes: Record<string, Note[]> = {};
+  const notes: Record<PadCode, Note[]> = {};
 
   chunks.forEach((chunk) => {
     const pad = String(chunk[2] / 8);
-    const patternName = `${group}${pad}`;
+    const patternName = `${group}${pad}` as PadCode;
 
     if (!notes[patternName]) {
       notes[patternName] = [];
     }
 
-    const position = (chunk[1] << 8) + chunk[0];
     notes[patternName].push({
-      position,
       note: chunk[3],
+      position: (chunk[1] << 8) + chunk[0],
+      duration: (chunk[6] << 8) + chunk[5],
       velocity: chunk[4],
-      duration: chunk[5],
     });
   });
 
@@ -98,7 +113,7 @@ export function parsePatterns(data: Uint8Array, group: string) {
     pad,
     notes,
     bars: data[1],
-  }));
+  })) as Pattern[];
 }
 
 export function collectScenesAndPatterns(files: TarFile[]) {
@@ -128,6 +143,17 @@ export function collectScenesAndPatterns(files: TarFile[]) {
   return scenes;
 }
 
+function bytesToFloat32(bytes: Uint8Array): number {
+  const buffer = new ArrayBuffer(4);
+  const view = new DataView(buffer);
+
+  bytes.forEach((b, i) => {
+    view.setUint8(i, b);
+  });
+
+  return view.getFloat32(0, true);
+}
+
 export function collectSettings(files: TarFile[]): ProjectSettings {
   const settings = files.find((f) => f.name === 'settings' && f.type === 'file');
 
@@ -138,6 +164,6 @@ export function collectSettings(files: TarFile[]): ProjectSettings {
   }
 
   return {
-    bpm: settings.data[6] / 2,
+    bpm: Number(bytesToFloat32(settings.data.slice(4, 8)).toFixed(2)),
   };
 }

@@ -6,6 +6,13 @@ This tool allows you to export your EP-133 K.O.II (EP-1320) project into a DAW (
 
 Try it out on https://ep133-to-daw.cc/
 
+## Latest news
+
+- [08/09/2025] Added Ableton 12 support + more note duration bugs are fixed
+- [03/09/2025] Fixed several bugs, including issues with velocities and note durations
+- [29/08/2025] Added MIDI export
+
+
 ## Motivation
 
 If you’ve been producing with the EP-133 (or EP-1320), you already know the frustration: there’s no clear way to export your projects directly into a DAW.
@@ -23,25 +30,9 @@ Then building the web application was easy.
 
 Supported formats are:
 
+- Ableton Live 12
 - DAWproject
 - MIDI
 
 **Unfortunately, the DAWproject format does not currently support the "Sampler" device, so you will need to manually assign the samples in your DAW.**
 
-## TODO
-- export to Ableton Live
-- fix heavy CPU utilization
-
-## Help and support
-
-Please feel free to open an Issues or drop your ideas in the Discussions.
-
-
-## Donate
-
-If you like this tool, please consider donating to support the development.
-Use "Donate" button on the [website](https://ep133-to-daw.cc/).
-
-Or click to this Ko-fi button:
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/M4M11KIZGJ)

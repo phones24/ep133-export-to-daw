@@ -2,13 +2,14 @@ import { toXML } from 'jstoxml';
 import JSZip from 'jszip';
 import { DeviceService } from '../../ep133/device-service';
 import {
+  ExporterParams,
   ExportFormatId,
   ExportResult,
   ExportStatus,
   Note,
   ProjectRawData,
   Sound,
-} from '../../types';
+} from '../../types/types';
 import dawProjectTransformer, {
   DawClip,
   DawClipSlot,
@@ -90,7 +91,7 @@ function buildTrack(track: DawTrack) {
     _name: 'Track',
     _attrs: {
       name: track.soundId ? `${String(track.soundId).padStart(3, '0')} ${track.name}` : track.name,
-      id: `__TRACK_${track.pad}__`,
+      id: `__TRACK_${track.padCode}__`,
       loaded: 'true',
       contentType: 'notes',
       color: getNextColor(),
@@ -221,7 +222,7 @@ function buildLane(lane: DawLane) {
     _name: 'Lanes',
     _attrs: {
       id: genId(),
-      track: `__TRACK_${lane.pad}__`,
+      track: `__TRACK_${lane.padCode}__`,
     },
     _content: {
       _name: 'Clips',
@@ -275,7 +276,7 @@ function buildClipSlot(clipSlot: DawClipSlot) {
   return {
     _name: 'ClipSlot',
     _attrs: {
-      track: `__TRACK_${clipSlot.track.pad}__`,
+      track: `__TRACK_${clipSlot.track.padCode}__`,
       id: genId(),
       hasStop: 'true',
     },
@@ -332,6 +333,7 @@ export async function buildProjectXml(
   withScenes: boolean,
 ) {
   const transformedData = dawProjectTransformer(projectData, sounds);
+  // console.log(transformedData);
   _id = 0;
 
   const application = {
@@ -390,8 +392,8 @@ async function exportDawProject(
   data: ProjectRawData,
   sounds: Sound[],
   deviceService: DeviceService,
-  includeArchivedSamples: boolean,
   progressCallback: ({ progress, status }: ExportStatus) => void,
+  exporterParams: ExporterParams,
 ) {
   progressCallback({ progress: 1, status: 'Exporting project data...' });
 
@@ -421,7 +423,7 @@ async function exportDawProject(
     },
   ];
 
-  if (includeArchivedSamples) {
+  if (exporterParams.includeArchivedSamples) {
     const zipSamples = new JSZip();
     const samples = await collectSamples(data, sounds, deviceService, progressCallback);
 

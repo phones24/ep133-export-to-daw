@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { SoundMetadata } from '../ep133';
-import { Sound } from '../types';
+import { SoundMetadata } from '../types/ep133';
+import { Sound } from '../types/types';
 import useDevice from './useDevice';
 
 function useAllSounds() {

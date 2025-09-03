@@ -4,33 +4,33 @@
 
 ```
 [
-  0,
-  0, // INSTRUMENT NUM
-  0, // INSTRUMENT NUM
-  0,
-  0, // TRIM LEFT
-  0, // TRIM LEFT
-  0,
-  0,
-  0, // TRIM RIGHT
-  0, // TRIM RIGHT
-  0,
-  0,
-  0,
-  0,
-  248,
-  66,
-  100, // VOLUME (0-200)
-  0,
-  0, // SIGN - PITCH / PAN
-  0, // ATACK
-  255, // ONE - 255, KEY - 255, LEG - 15,  RELEASE ... looks like multipurpose byte
-  0,
-  0,
-  0, // KEY - 1, LEG - 2,
-  60, // PAD ID
-  0,
-  0 // PITCH B
+0  0,
+1  0,    // INSTRUMENT NUM
+2  0,    // INSTRUMENT NUM
+3  0,
+4  0,    // TRIM LEFT
+5  0,    // TRIM LEFT
+6  0,    // TRIM LEFT
+7  0,
+8  0,    // TRIM RIGHT
+9  0,    // TRIM RIGHT
+10  0,   // TRIM RIGHT
+11  0,
+12  0,
+13  0,
+14  248,
+15  66,
+16  100,  // VOLUME (0-200)
+17  0,    // PITCH (negative: 254-255, zero: 0, positive: 1-12, )
+18  0,    // PAN (left: 240-255, center: 0, right: 1-16)
+19  0,    // ATACK (0-255), when in KEY/LEG mode
+20  255,  // RELEASE (0-255), when in KEY/LEG mode
+21  0,
+22  0,
+23  0,    // ONE - 0, KEY - 1, LEG - 2,
+24  60,   // PAD ID ?
+25  0,
+26  0     // PITCH DECIMAL PART
 ]
 ```
 
@@ -42,22 +42,22 @@
     "2": 8, // notes count
     "3": 0,
 
-    "4": 0,   // position HB
-    "5": 0,   // position LB
+    "4": 0,   // position LB
+    "5": 0,   // position HB
     "6": 80,  // N / 8 - pad number
     "7": 60,  // note
     "8": 100, // velocity
-    "9": 43,  // duration
-    "10": 0,
+    "9": 43,  // duration LB
+    "10": 0,  // duration HB
     "11": 0,
 
     "12": 96,
     "13": 0,
     "14": 80,  // instrument id or pad id
-    "15": 60, // note
+    "15": 60,  // note
     "16": 100, // velocity
-    "17": 44, // duration
-    "18": 0,
+    "17": 44,  // duration
+    "18": 0,   // duration
     "19": 245,
 
     "20": 192,

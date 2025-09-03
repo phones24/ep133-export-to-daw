@@ -1,6 +1,6 @@
-import { DeviceService } from './ep133/device-service';
-import { FSNode } from './ep133/fs';
-import { TarFile } from './lib/untar';
+import { DeviceService } from '../ep133/device-service';
+import { FSNode } from '../ep133/fs';
+import { TarFile } from '../lib/untar';
 
 export type SoundMetadata = {
   channels: number;
@@ -33,7 +33,7 @@ export type ProjectSettings = {
 };
 
 export type Pattern = {
-  pad: string;
+  pad: PadCode;
   notes: Note[];
   bars: number;
 };
@@ -57,7 +57,14 @@ export type Pad = {
   rawData: Uint8Array;
   soundId: number;
   volume: number;
-  panning?: number;
+  attack: number;
+  release: number;
+  trimLeft: number;
+  trimRight: number;
+  soundLength: number;
+  pan: number;
+  pitch: number;
+  rootNote: number;
 };
 
 export type ProjectRawData = {
@@ -75,7 +82,7 @@ export type ExportResult = {
   }[];
 };
 
-export type ExportFormatId = 'dawproject' | 'dawproject_with_clips' | 'midi';
+export type ExportFormatId = 'ableton12' | 'dawproject' | 'dawproject_with_clips' | 'midi';
 
 export type ExportStatus = {
   status: string;
@@ -91,9 +98,16 @@ export type ExportFormat = {
     data: ProjectRawData,
     sounds: Sound[],
     deviceService: DeviceService,
-    includeArchivedSamples: boolean,
     progressCallback: ({ progress, status }: ExportStatus) => void,
+    exporterParams: ExporterParams,
   ) => Promise<ExportResult>;
+};
+
+export type ExporterParams = {
+  includeArchivedSamples?: boolean;
+  clips?: boolean; // build clips not arrangements
+  noSampler?: boolean; // don't use sampler/simpler at all
+  useSampler?: boolean; // use sampler/simpler
 };
 
 export type SoundInfo = {
@@ -178,3 +192,7 @@ type GtagFunction = {
 
   (command: 'get', targetId: string, fieldName: string, callback: (value: any) => void): void;
 };
+
+export type Group = 'a' | 'b' | 'c' | 'd';
+export type PadNumber = `${number}`;
+export type PadCode = `${Group}${PadNumber}`;

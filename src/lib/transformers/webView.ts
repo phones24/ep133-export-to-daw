@@ -1,5 +1,6 @@
-import { Note, Pad, ProjectRawData, Sound } from '../../types';
-import { findSoundByPad } from '../utils';
+import { Note, Pad, ProjectRawData, Sound } from '../../types/types';
+import { getSampleName } from '../exporters/utils';
+import { findSoundByPad, findSoundIdByPad } from '../utils';
 
 export type ViewPattern = {
   pad: string;
@@ -47,9 +48,12 @@ function webViewTransformer(data: ProjectRawData, sounds: Sound[]) {
   // copy patterns and add some additional fields
   for (const scene of newScenes) {
     scene.patterns = scenes[scene.name].patterns.map((pattern) => {
+      const soundId = findSoundIdByPad(pattern.pad, pads) || 0;
+      const sound = findSoundByPad(pattern.pad, pads, sounds);
+
       return {
         ...pattern,
-        soundName: findSoundByPad(pattern.pad, pads, sounds)?.meta?.name || '',
+        soundName: getSampleName(sound?.meta?.name, soundId, false),
         group: pattern.pad[0],
         padNumber: parseInt(pattern.pad.slice(1), 10),
       };
@@ -64,13 +68,16 @@ function webViewTransformer(data: ProjectRawData, sounds: Sound[]) {
       const padNumber = parseInt(pad.slice(1), 10);
 
       if (!patternByPad) {
+        const soundId = findSoundIdByPad(pad, pads) || 0;
+        const sound = findSoundByPad(pad, pads, sounds);
+
         scene.patterns.push({
           pad,
           notes: [],
           bars: 0,
           group,
           padNumber,
-          soundName: findSoundByPad(pad, pads, sounds)?.meta?.name || '',
+          soundName: getSampleName(sound?.meta?.name, soundId, false),
         });
       }
     });

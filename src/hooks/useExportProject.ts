@@ -1,15 +1,21 @@
 import { useAtomValue } from 'jotai';
 import { useState } from 'preact/hooks';
 import { projectIdAtom } from '../atoms/project';
+import exportAbleton12 from '../lib/exporters/ableton12';
 import exportDawProject from '../lib/exporters/dawProject';
 import exportMidi from '../lib/exporters/midi';
 import { trackEvent } from '../lib/ga';
-import { ExportFormat, ExportFormatId, ExportResult } from '../types';
+import { ExporterParams, ExportFormat, ExportFormatId, ExportResult } from '../types/types';
 import useAllSounds from './useAllSounds';
 import useDevice from './useDevice';
 import useProject from './useProject';
 
 export const EXPORT_FORMATS: ExportFormat[] = [
+  {
+    name: 'Ableton 12',
+    value: 'ableton12',
+    exportFn: exportAbleton12,
+  },
   {
     name: 'DAWproject',
     value: 'dawproject',
@@ -27,7 +33,7 @@ export const EXPORT_FORMATS: ExportFormat[] = [
   },
 ];
 
-function useExportProject(format: ExportFormatId, includeArchivedSamples: boolean = true) {
+function useExportProject(format: ExportFormatId, exporterParams: ExporterParams) {
   const projectId = useAtomValue(projectIdAtom);
   const { data: projectRawData } = useProject(projectId);
   const { data: allSounds } = useAllSounds();
@@ -39,7 +45,9 @@ function useExportProject(format: ExportFormatId, includeArchivedSamples: boolea
   const { deviceService } = useDevice();
 
   const startExport = async () => {
-    trackEvent('export_start');
+    trackEvent('export_start', {
+      format,
+    });
 
     try {
       const formatData = EXPORT_FORMATS.find((f) => f.value === format);
@@ -57,11 +65,11 @@ function useExportProject(format: ExportFormatId, includeArchivedSamples: boolea
         projectRawData,
         allSounds,
         deviceService,
-        includeArchivedSamples,
         (stat) => {
           setPercentage(stat.progress);
           setPendingStatus(stat.status);
         },
+        exporterParams,
       );
 
       setResult(result);
@@ -69,6 +77,8 @@ function useExportProject(format: ExportFormatId, includeArchivedSamples: boolea
 
       trackEvent('export_end');
     } catch (err) {
+      console.error(err);
+
       setError(err);
 
       trackEvent('export_error');

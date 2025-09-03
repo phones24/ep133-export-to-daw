@@ -1,4 +1,4 @@
-import { Note, ProjectRawData, Sound } from '../../types';
+import { Note, ProjectRawData, Sound } from '../../types/types';
 import { findSoundByPad } from '../utils';
 
 export type MidiData = {
@@ -7,7 +7,7 @@ export type MidiData = {
 
 export type MidiTrack = {
   name: string;
-  pad: string;
+  padCode: string;
   notes: Note[];
 };
 
@@ -22,14 +22,14 @@ function midiTransformer(data: ProjectRawData, sounds: Sound[]) {
     const sceneMaxBars = Math.max(...scene.patterns.map((p) => p.bars));
 
     for (const pattern of scene.patterns) {
-      let track = midiTracks.find((t) => t.pad === pattern.pad);
+      let track = midiTracks.find((t) => t.padCode === pattern.pad);
 
       if (!track) {
         const sound = findSoundByPad(pattern.pad, pads, sounds);
 
         track = {
-          name: sound?.meta?.name || pattern.pad || 'sound',
-          pad: pattern.pad,
+          name: sound?.meta.name || pattern.pad,
+          padCode: pattern.pad,
           notes: pattern.notes.map((note) => ({
             ...note,
             position: note.position + offset * UNITS_PER_BAR,
