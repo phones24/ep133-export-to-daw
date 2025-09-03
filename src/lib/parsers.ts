@@ -57,6 +57,7 @@ export function collectPads(files: TarFile[]) {
 
     for (let i = 1; i <= 12; i++) {
       const file = files.find((f) => f.name === genPadFileName(group.id, i));
+
       if (file?.data) {
         result[grp].push({
           pad: i,
