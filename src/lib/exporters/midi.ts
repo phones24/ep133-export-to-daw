@@ -36,8 +36,8 @@ async function exportMidi(
     track.notes.forEach((note) => {
       midiTrack.addNote({
         ticks: unitsToTicks(note.position, midi.header.ppq),
-        durationTicks: unitsToTicks(note.duration, data.settings.bpm),
-        velocity: Math.max(0, Math.min(1, note.velocity / 100)),
+        durationTicks: unitsToTicks(note.duration, midi.header.ppq),
+        velocity: Math.max(0, Math.min(1, note.velocity / 127)),
         midi: note.note + 12,
       });
     });

@@ -60,7 +60,7 @@ export function collectPads(files: TarFile[]) {
       if (file?.data) {
         result[grp].push({
           pad: i,
-          name: PADS[i - 1],
+          name: `${grp.toUpperCase()} ${PADS[i - 1]}`,
           file,
           rawData: file.data,
           soundId: (file.data[2] << 8) + file.data[1],

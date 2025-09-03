@@ -174,16 +174,23 @@ function buildStructure(tracks: DawTrack[]) {
   };
 }
 
-function buildNote(note: Note) {
+function buildNote(note: Note, index: number, notes: Note[]) {
+  let dur = note.duration / 96;
+  const nextNote = notes[index + 1];
+
+  // making sure same notes are not overlapping
+  if (nextNote && nextNote.note === note.note && dur > nextNote.position / 96) {
+    dur = nextNote.position / 96 - note.position / 96;
+  }
+
   return {
     _name: 'Note',
     _attrs: {
       time: note.position / 96,
-      duration: note.duration / 96,
+      duration: dur,
       channel: 0,
       key: note.note,
-      vel: note.velocity / 100,
-      rel: note.velocity / 100,
+      vel: note.velocity / 127,
     },
   };
 }
@@ -204,7 +211,7 @@ function buildClip(clip: DawClip) {
       _attrs: {
         id: genId(),
       },
-      _content: clip.notes.map((note) => buildNote(note)),
+      _content: clip.notes.map(buildNote),
     },
   };
 }
@@ -259,7 +266,7 @@ function buildSceneClip(clip: DawClip) {
       _attrs: {
         id: genId(),
       },
-      _content: clip.notes.map((note) => buildNote(note)),
+      _content: clip.notes.map(buildNote),
     },
   };
 }
@@ -325,7 +332,6 @@ export async function buildProjectXml(
   withScenes: boolean,
 ) {
   const transformedData = dawProjectTransformer(projectData, sounds);
-
   _id = 0;
 
   const application = {
