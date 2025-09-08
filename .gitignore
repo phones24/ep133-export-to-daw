@@ -12,6 +12,7 @@ dist
 .tmp
 .media
 .wrangler
+.proton
 *.local
 
 # Editor directories and files

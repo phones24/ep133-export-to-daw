@@ -12,6 +12,7 @@ import ErrorFallback from './ErrorFallback';
 import ExportProject from './ExportProject';
 import FacePlateHeader from './FacePlateHeader';
 import IconGitHub from './icons/github.svg?react';
+import IconMail from './icons/mail.svg?react';
 import Project from './Project';
 import ProjectSelector from './ProjectSelector';
 
@@ -26,7 +27,7 @@ function Main() {
         <div className="flex justify-between">
           <FacePlateHeader />
 
-          <div className="flex gap-4 self-start">
+          <div className="flex gap-4  self-start items-end">
             <Donate />
             <a
               href="https://github.com/phones24/ep133-export-to-daw"
@@ -36,6 +37,13 @@ function Main() {
               title="View on GitHub"
             >
               <IconGitHub className="text-gray-700" />
+            </a>
+            <a
+              href="mailto:ep133todaw@proton.me"
+              title="Mail me"
+              className="hover:opacity-80 transition-opacity"
+            >
+              <IconMail className="text-gray-700" />
             </a>
           </div>
         </div>
