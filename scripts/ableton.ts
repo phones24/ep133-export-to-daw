@@ -93,9 +93,9 @@ testData.tracks.forEach((koTrack, trackIdx) => {
   const midiTrack = structuredClone(midiTrackTemplate.MidiTrack);
 
   midiTrack._attrs.Id = trackIdx;
-  midiTrack._attrs.SelectedToolPanel = '2';
-  midiTrack._attrs.SelectedTransformationName = '';
-  midiTrack._attrs.SelectedGeneratorName = '';
+  // midiTrack._attrs.SelectedToolPanel = '2';
+  // midiTrack._attrs.SelectedTransformationName = '';
+  // midiTrack._attrs.SelectedGeneratorName = '';
   midiTrack.Name.EffectiveName._attrs.Value = koTrack.name;
   midiTrack.Name.UserName._attrs.Value = koTrack.name;
   midiTrack.Color._attrs.Value = 8 + trackIdx;
@@ -114,6 +114,9 @@ testData.tracks.forEach((koTrack, trackIdx) => {
 
     midiTrack.DeviceChain.DeviceChain.Devices.OriginalSimpler.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleEnd._attrs.Value =
       koTrack.trimRight;
+
+    midiTrack.DeviceChain.DeviceChain.Devices.OriginalSimpler.VolumeAndPan.Envelope.AttackTime.Manual._attrs.Value =
+      koEnvRangeToSeconds(koTrack.attack, koTrack.soundLength) * 1000;
 
     midiTrack.DeviceChain.DeviceChain.Devices.OriginalSimpler.VolumeAndPan.Envelope.ReleaseTime.Manual._attrs.Value =
       koEnvRangeToSeconds(koTrack.release, koTrack.soundLength) * 1000;

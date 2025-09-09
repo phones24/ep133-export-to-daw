@@ -65,6 +65,8 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
         const pitch = file.data[17] <= 12 ? file.data[17] : -(256 - file.data[17]); // pitch from -12 to +12
         const pitchDecimal = file.data[26];
         const pan = (file.data[18] >= 240 ? -(256 - file.data[18]) : file.data[18]) / 16; // normalized pan
+        const trimLeft = (file.data[6] << 16) + (file.data[5] << 8) + file.data[4];
+        const trimRight = trimLeft + (file.data[10] << 16) + (file.data[9] << 8) + file.data[8];
 
         result[grp].push({
           pad: i,
@@ -75,8 +77,8 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
           volume: file.data[16],
           attack: file.data[19],
           release: file.data[20],
-          trimLeft: (file.data[6] << 16) + (file.data[5] << 8) + file.data[4],
-          trimRight: (file.data[10] << 16) + (file.data[9] << 8) + file.data[8],
+          trimLeft,
+          trimRight,
           soundLength: sound ? calculateSoundLength(sound) : 0,
           pitch: Math.max(-12, Math.min(12, parseFloat(`${pitch}.${pitchDecimal}`))),
           rootNote: sound?.meta?.['sound.rootnote'] || 60,

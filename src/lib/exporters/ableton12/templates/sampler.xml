@@ -531,9 +531,9 @@
           <Envelope>
             <AttackTime>
               <LomId Value="0" />
-              <Manual Value="0.1000000015" />
+              <Manual Value="0" />
               <MidiControllerRange>
-                <Min Value="0.1000000015" />
+                <Min Value="0" />
                 <Max Value="20000" />
               </MidiControllerRange>
               <AutomationTarget Id="22286">

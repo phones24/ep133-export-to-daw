@@ -136,6 +136,8 @@ async function buildSamplerDevice(
     koTrack.trimRight;
   device.VolumeAndPan.Envelope.ReleaseTime.Manual._attrs.Value =
     koEnvRangeToSeconds(koTrack.release, koTrack.soundLength) * 1000;
+  device.VolumeAndPan.Envelope.AttackTime.Manual._attrs.Value =
+    koEnvRangeToSeconds(koTrack.attack, koTrack.soundLength) * 1000;
   device.VolumeAndPan.Panorama.Manual._attrs.Value = koTrack.pan;
   device.Pitch.TransposeKey.Manual._attrs.Value = (koTrack.pitch || 0) + (60 - koTrack.rootNote); // root note of the sample should be taken into account
 
@@ -249,6 +251,7 @@ async function buildScenes(scenes: DawScene[], settings: ProjectSettings) {
 
   scenes.forEach((scene, idx) => {
     const sceneContent = structuredClone(sceneTemplate.Scene);
+
     sceneContent._attrs.Id = idx;
     sceneContent.Name._attrs.Value = scene.name;
     sceneContent.Tempo._attrs.Value = settings.bpm;
@@ -265,9 +268,12 @@ async function buildProject(
   exporterParams: ExporterParams,
 ) {
   const transformedData = dawProjectTransformer(projectData, sounds);
-  // console.log(sounds);
-  // console.log(projectData);
-  // console.log(transformedData);
+
+  if (import.meta.env.DEV) {
+    console.log('sound', sounds);
+    console.log('projectData', projectData);
+    console.log('transformedData', transformedData);
+  }
 
   const projectTemplate = await loadTemplate<any>('project');
   const project = structuredClone(projectTemplate);
@@ -306,6 +312,10 @@ async function buildProject(
 
   const fixedRoot = fixIds(project);
   fixedRoot.Ableton.LiveSet.NextPointeeId._attrs.Value = getId() + 1;
+
+  if (import.meta.env.DEV) {
+    console.log('ROOT', fixedRoot);
+  }
 
   const newXml = builder.buildObject(fixedRoot);
   const gzipped = gzipString(newXml);
