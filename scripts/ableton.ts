@@ -85,7 +85,7 @@ const midiClipTemplate = await parser.parseStringPromise(midiClipXml);
 const samplerTemplate = await parser.parseStringPromise(samplerXml);
 const simplerTemplate = await parser.parseStringPromise(simplerXml);
 
-root.Ableton.LiveSet.MainTrack.DeviceChain.Mixer.Tempo.Manual._attrs.Value = '117';
+root.Ableton.LiveSet.MasterTrack.DeviceChain.Mixer.Tempo.Manual._attrs.Value = '117';
 root.Ableton.LiveSet.Tracks.MidiTrack = [];
 // console.log(root.Ableton.LiveSet.Tracks);
 

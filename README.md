@@ -8,7 +8,7 @@ Try it out on https://ep133-to-daw.cc/
 
 ## Latest news
 
-- [09/09/2025] Ableton minumum supported version is now 12.0.20
+- [09/09/2025] Ableton minumum supported version is now 11.3.35
 - [09/09/2025] App is now working offline (PWA mode)
 - [08/09/2025] Added Ableton 12 support + more note duration bugs are fixed
 - [03/09/2025] Fixed several bugs, including issues with velocities and note durations
@@ -32,7 +32,7 @@ Then building the web application was easy.
 
 Supported formats are:
 
-- Ableton Live 12
+- Ableton Live 11+ (minimum version 11.3.35)
 - DAWproject
 - MIDI
 

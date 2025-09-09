@@ -1,7 +1,7 @@
 import { useAtomValue } from 'jotai';
 import { useState } from 'preact/hooks';
 import { projectIdAtom } from '../atoms/project';
-import exportAbleton12 from '../lib/exporters/ableton12';
+import exportAbleton from '../lib/exporters/ableton';
 import exportDawProject from '../lib/exporters/dawProject';
 import exportMidi from '../lib/exporters/midi';
 import { trackEvent } from '../lib/ga';
@@ -12,18 +12,13 @@ import useProject from './useProject';
 
 export const EXPORT_FORMATS: ExportFormat[] = [
   {
-    name: 'Ableton 12',
-    value: 'ableton12',
-    exportFn: exportAbleton12,
+    name: 'Ableton 11+',
+    value: 'ableton',
+    exportFn: exportAbleton,
   },
   {
     name: 'DAWproject',
     value: 'dawproject',
-    exportFn: exportDawProject,
-  },
-  {
-    name: 'DAWproject (with clips)',
-    value: 'dawproject_with_clips',
     exportFn: exportDawProject,
   },
   {
@@ -60,7 +55,6 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
       setPercentage(1);
 
       const result = await formatData.exportFn(
-        format,
         projectId,
         projectRawData,
         allSounds,

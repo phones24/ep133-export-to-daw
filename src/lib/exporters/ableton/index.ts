@@ -3,7 +3,6 @@ import xml2js from 'xml2js';
 import { DeviceService } from '../../../ep133/device-service';
 import {
   ExporterParams,
-  ExportFormatId,
   ExportResult,
   ExportStatus,
   ProjectRawData,
@@ -280,9 +279,9 @@ async function buildProject(
   const maxScenes = transformedData.scenes.length;
 
   // setting up tempo
-  project.Ableton.LiveSet.MainTrack.DeviceChain.Mixer.Tempo.Manual._attrs.Value =
+  project.Ableton.LiveSet.MasterTrack.DeviceChain.Mixer.Tempo.Manual._attrs.Value =
     projectData.settings.bpm;
-  project.Ableton.LiveSet.MainTrack.AutomationEnvelopes.Envelopes.AutomationEnvelope[1].Automation.Events.FloatEvent._attrs.Value =
+  project.Ableton.LiveSet.MasterTrack.AutomationEnvelopes.Envelopes.AutomationEnvelope[1].Automation.Events.FloatEvent._attrs.Value =
     projectData.settings.bpm;
 
   project.Ableton.LiveSet.Tracks.MidiTrack = [];
@@ -323,8 +322,7 @@ async function buildProject(
   return gzipped;
 }
 
-async function exportAbleton12(
-  _: ExportFormatId,
+async function exportAbleton(
   projectId: string,
   data: ProjectRawData,
   sounds: Sound[],
@@ -373,4 +371,4 @@ async function exportAbleton12(
   } as ExportResult;
 }
 
-export default exportAbleton12;
+export default exportAbleton;

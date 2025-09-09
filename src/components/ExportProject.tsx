@@ -12,7 +12,7 @@ import Dialog from './ui/Dialog';
 import Select from './ui/Select';
 
 const NOTES: Record<ExportFormatId, string> = {
-  ableton12: `Please note that the exported project won't sound exactly the same as it does on the device.
+  ableton: `Please note that the exported project won't sound exactly the same as it does on the device.
 Currently NOT included in export:
 - effects
 - fader automation
@@ -20,7 +20,6 @@ Currently NOT included in export:
 - sidechains
   `,
   dawproject: ``,
-  dawproject_with_clips: ``,
   midi: ``,
 };
 
@@ -74,7 +73,7 @@ function ExportProject() {
               ))}
             </Select>
             <div className="flex flex-col gap-2 mt-2">
-              {format !== 'ableton12' && (
+              {format !== 'ableton' && (
                 <CheckBox
                   checked={includeArchivedSamples}
                   onChange={(checked) => setIncludeArchivedSamples(checked)}
@@ -83,7 +82,7 @@ function ExportProject() {
                 />
               )}
 
-              {format === 'ableton12' && (
+              {format === 'ableton' && (
                 <>
                   <CheckBox
                     checked={includeArchivedSamples}
@@ -105,6 +104,15 @@ function ExportProject() {
                     disabled={isPending}
                   />
                 </>
+              )}
+
+              {format === 'dawproject' && (
+                <CheckBox
+                  checked={clips}
+                  onChange={(checked) => setClips(checked)}
+                  title="Export with clips"
+                  disabled={isPending}
+                />
               )}
             </div>
 

@@ -3,7 +3,6 @@ import JSZip from 'jszip';
 import { DeviceService } from '../../ep133/device-service';
 import {
   ExporterParams,
-  ExportFormatId,
   ExportResult,
   ExportStatus,
   Note,
@@ -387,7 +386,6 @@ export async function buildProjectXml(
 }
 
 async function exportDawProject(
-  type: ExportFormatId,
   projectId: string,
   data: ProjectRawData,
   sounds: Sound[],
@@ -398,7 +396,7 @@ async function exportDawProject(
   progressCallback({ progress: 1, status: 'Exporting project data...' });
 
   const metadataXml = await buildMetadataXml();
-  const projectXml = await buildProjectXml(data, sounds, type === 'dawproject_with_clips');
+  const projectXml = await buildProjectXml(data, sounds, exporterParams.clips || false);
 
   progressCallback({ progress: 2, status: 'Creating project file...' });
 

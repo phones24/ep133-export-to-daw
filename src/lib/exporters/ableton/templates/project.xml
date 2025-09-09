@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Ableton MajorVersion="5" MinorVersion="12.0_12049" SchemaChangeCount="12" Creator="Ableton Live 12.0.20" Revision="26c4e6ea8d06bdae332bd2e969252ccce5982845">
+<Ableton MajorVersion="5" MinorVersion="11.0_11300" SchemaChangeCount="7" Creator="Ableton Live 11.3.35" Revision="bf0676fe4473e44109988d233263c751d7332635">
   <LiveSet>
     <NextPointeeId Value="22337" />
     <OverwriteProtectionNumber Value="3075" />
@@ -9,7 +9,7 @@
       <MidiTrack />
       <MidiTrack />
     </Tracks>
-    <MainTrack>
+    <MasterTrack>
       <LomId Value="0" />
       <LomIdView Value="0" />
       <IsContentSelectedInDocument Value="false" />
@@ -19,7 +19,7 @@
         <IsValueSampleBased Value="false" />
       </TrackDelay>
       <Name>
-        <EffectiveName Value="Main" />
+        <EffectiveName Value="Master" />
         <UserName Value="" />
         <Annotation Value="" />
         <MemorizedFirstClipName Value="" />
@@ -109,7 +109,7 @@
           <MpePitchBendUsesTuning Value="true" />
         </MidiInputRouting>
         <AudioOutputRouting>
-          <Target Value="AudioOut/External/S0" />
+          <Target Value="AudioOut/Master" />
           <UpperDisplayString Value="Ext. Out" />
           <LowerDisplayString Value="1/2" />
           <MpeSettings>
@@ -338,7 +338,6 @@
             <MpePitchBendUsesTuning Value="true" />
             <ClipSlotList />
             <MonitoringEnum Value="1" />
-            <KeepRecordMonitoringLatency Value="true" />
             <Sample>
               <ArrangerAutomation>
                 <Events />
@@ -354,9 +353,6 @@
             <TranspositionModulationTarget Id="17">
               <LockEnvelope Value="0" />
             </TranspositionModulationTarget>
-            <TransientEnvelopeModulationTarget Id="22179">
-              <LockEnvelope Value="0" />
-            </TransientEnvelopeModulationTarget>
             <GrainSizeModulationTarget Id="18">
               <LockEnvelope Value="0" />
             </GrainSizeModulationTarget>
@@ -366,12 +362,6 @@
             <SampleOffsetModulationTarget Id="20">
               <LockEnvelope Value="0" />
             </SampleOffsetModulationTarget>
-            <ComplexProFormantsModulationTarget Id="22180">
-              <LockEnvelope Value="0" />
-            </ComplexProFormantsModulationTarget>
-            <ComplexProEnvelopeModulationTarget Id="22181">
-              <LockEnvelope Value="0" />
-            </ComplexProEnvelopeModulationTarget>
             <PitchViewScrollPosition Value="-1073741824" />
             <SampleOffsetModulationScrollPosition Value="-1073741824" />
             <Recorder>
@@ -385,8 +375,7 @@
           <SignalModulations />
         </DeviceChain>
       </DeviceChain>
-    </MainTrack>
-    <!-- <PreHearTrack SelectedToolPanel="7" SelectedTransformationName="" SelectedGeneratorName=""> -->
+    </MasterTrack>
     <PreHearTrack>
       <LomId Value="0" />
       <LomIdView Value="0" />
@@ -834,55 +823,41 @@
     <IsContentSplitterOpen Value="true" />
     <IsExpressionSplitterOpen Value="true" />
     <ExpressionLanes>
-      <MidiEditorLaneModel Id="0">
-        <Type Value="5" />
-        <Size Value="41" />
-        <IsMinimized Value="true" />
-      </MidiEditorLaneModel>
-      <MidiEditorLaneModel Id="1">
+      <ExpressionLane Id="0">
         <Type Value="0" />
         <Size Value="41" />
         <IsMinimized Value="false" />
-      </MidiEditorLaneModel>
-      <MidiEditorLaneModel Id="2">
+      </ExpressionLane>
+      <ExpressionLane Id="1">
         <Type Value="1" />
         <Size Value="41" />
         <IsMinimized Value="false" />
-      </MidiEditorLaneModel>
-      <MidiEditorLaneModel Id="3">
+      </ExpressionLane>
+      <ExpressionLane Id="2">
         <Type Value="2" />
         <Size Value="41" />
         <IsMinimized Value="true" />
-      </MidiEditorLaneModel>
-      <MidiEditorLaneModel Id="4">
+      </ExpressionLane>
+      <ExpressionLane Id="3">
         <Type Value="3" />
         <Size Value="41" />
         <IsMinimized Value="true" />
-      </MidiEditorLaneModel>
+      </ExpressionLane>
     </ExpressionLanes>
     <ContentLanes>
-      <MidiEditorLaneModel Id="0">
-        <Type Value="2" />
+      <ExpressionLane Id="0">
+        <Type Value="4" />
         <Size Value="41" />
         <IsMinimized Value="false" />
-      </MidiEditorLaneModel>
-      <MidiEditorLaneModel Id="2">
-        <Type Value="3" />
+      </ExpressionLane>
+      <ExpressionLane Id="1">
+        <Type Value="5" />
         <Size Value="25" />
         <IsMinimized Value="true" />
-      </MidiEditorLaneModel>
-      <MidiEditorLaneModel Id="1">
-        <Type Value="4" />
-        <Size Value="25" />
-        <IsMinimized Value="true" />
-      </MidiEditorLaneModel>
+      </ExpressionLane>
     </ContentLanes>
     <ViewStateFxSlotCount Value="4" />
     <ViewStateSessionMixerVolumeSectionHeight Value="120" />
-    <ViewStateArrangerMixerVolumeSectionHeight Value="120" />
-    <ShouldSceneTempoAndTimeSignatureBeVisible Value="false" />
-    <WaveformVerticalZoomFactor Value="1" />
-    <IsWaveformVerticalZoomActive Value="true" />
     <Locators>
       <Locators />
 		</Locators>
@@ -1009,10 +984,6 @@
                   <PerNoteEventStore>
                     <EventLists />
                   </PerNoteEventStore>
-                  <NoteProbabilityGroups />
-                  <ProbabilityGroupIdGenerator>
-                    <NextId Value="1" />
-                  </ProbabilityGroupIdGenerator>
                   <NoteIdGenerator>
                     <NextId Value="32" />
                   </NoteIdGenerator>
@@ -1027,7 +998,6 @@
                 <NoteEditorFoldScaleZoom Value="-1" />
                 <NoteEditorFoldScaleScroll Value="0" />
                 <NoteSpellingPreference Value="0" />
-                <AccidentalSpellingPreference Value="3" />
                 <PreferFlatRootNote Value="false" />
                 <ExpressionGrid>
                   <FixedNumerator Value="1" />
@@ -1060,9 +1030,9 @@
     <AutoColorPickerForPlayerAndGroupTracks>
       <NextColorIndex Value="13" />
     </AutoColorPickerForPlayerAndGroupTracks>
-    <AutoColorPickerForReturnAndMainTracks>
+    <AutoColorPickerForReturnAndMasterTracks>
       <NextColorIndex Value="4" />
-    </AutoColorPickerForReturnAndMainTracks>
+    </AutoColorPickerForReturnAndMasterTracks>
     <ViewData Value="{}" />
     <ResetNonautomatedMidiControllersOnClipStarts Value="true" />
     <MidiFoldIn Value="false" />
@@ -1071,305 +1041,13 @@
     <MultiClipLoopBarHeight Value="0" />
     <MidiPrelisten Value="false" />
     <LinkedTrackGroups />
-    <NoteSpellingPreference Value="0" />
     <AccidentalSpellingPreference Value="3" />
     <PreferFlatRootNote Value="false" />
     <UseWarperLegacyHiQMode Value="false" />
     <VideoWindowRect Top="-2147483648" Left="-2147483648" Bottom="-2147483648" Right="-2147483648" />
     <ShowVideoWindow Value="true" />
-    <TuningSystems />
     <TrackHeaderWidth Value="93" />
-    <ViewStateMainWindowClipDetailOpen Value="true" />
-    <ViewStateMainWindowHiddenOtherDocViewTypeClipDetailOpen Value="true" />
-    <ViewStateMainWindowHiddenOtherDocViewTypeDeviceDetailOpen Value="false" />
-    <ViewStateMainWindowDeviceDetailOpen Value="false" />
-    <ViewStateSecondWindowClipDetailOpen Value="false" />
-    <ViewStateSecondWindowDeviceDetailOpen Value="true" />
     <ViewStates>
-      <MixerInArrangement Value="0" />
-      <ArrangerMixerIO Value="1" />
-      <ArrangerMixerSends Value="1" />
-      <ArrangerMixerReturns Value="1" />
-      <ArrangerMixerVolume Value="1" />
-      <ArrangerMixerTrackOptions Value="0" />
-      <ArrangerMixerCrossFade Value="0" />
-      <ArrangerMixerTrackPerformanceImpactMeter Value="0" />
-      <MixerInSession Value="1" />
-      <SessionIO Value="1" />
-      <SessionSends Value="1" />
-      <SessionReturns Value="1" />
-      <SessionVolume Value="1" />
-      <SessionTrackOptions Value="0" />
-      <SessionCrossFade Value="0" />
-      <SessionTrackPerformanceImpactMeter Value="0" />
-      <SessionShowOverView Value="0" />
-      <ArrangerIO Value="1" />
-      <ArrangerReturns Value="1" />
-      <ArrangerVolume Value="1" />
-      <ArrangerTrackOptions Value="0" />
-      <ArrangerShowOverView Value="1" />
     </ViewStates>
-    <NoteAlgorithms>
-      <ArpeggiateAlgorithm Id="0">
-        <NamedKeyMidiRemoteables>
-          <NamedRemoteableKeyMidi Id="20" Name="Rate" />
-          <NamedRemoteableKeyMidi Id="21" Name="Steps" />
-          <NamedRemoteableKeyMidi Id="22" Name="Distance" />
-          <NamedRemoteableKeyMidi Id="23" Name="Gate" />
-          <NamedRemoteableKeyMidi Id="24" Name="Style" />
-        </NamedKeyMidiRemoteables>
-        <Rate Value="10" />
-        <Steps Value="2" />
-        <Distance Value="12" />
-        <Gate Value="1" />
-        <Style Value="0" />
-      </ArpeggiateAlgorithm>
-      <SpanAlgorithm Id="1">
-        <NamedKeyMidiRemoteables>
-          <NamedRemoteableKeyMidi Id="12" Name="Mode" />
-          <NamedRemoteableKeyMidi Id="13" Name="LengthVariation" />
-          <NamedRemoteableKeyMidi Id="14" Name="LengthOffset" />
-        </NamedKeyMidiRemoteables>
-        <Mode Value="1" />
-        <ChordThreshold Value="10" />
-        <LengthVariation Value="0" />
-        <LengthOffset Value="0" />
-      </SpanAlgorithm>
-      <ConnectAlgorithm Id="2">
-        <NamedKeyMidiRemoteables>
-          <NamedRemoteableKeyMidi Id="16" Name="Tie" />
-          <NamedRemoteableKeyMidi Id="17" Name="Density" />
-          <NamedRemoteableKeyMidi Id="18" Name="Spread" />
-          <NamedRemoteableKeyMidi Id="19" Name="Rate" />
-        </NamedKeyMidiRemoteables>
-        <Tie Value="0" />
-        <Density Value="1" />
-        <Spread Value="0" />
-        <Rate Value="0" />
-      </ConnectAlgorithm>
-      <OrnamentAlgorithm Id="3">
-        <NamedKeyMidiRemoteables>
-          <NamedRemoteableKeyMidi Id="36" Name="FlamEnabled" />
-          <NamedRemoteableKeyMidi Id="37" Name="FlamPosition" />
-          <NamedRemoteableKeyMidi Id="38" Name="FlamVelocity" />
-          <NamedRemoteableKeyMidi Id="39" Name="GraceNotesEnabled" />
-          <NamedRemoteableKeyMidi Id="40" Name="GraceNotesChance" />
-          <NamedRemoteableKeyMidi Id="41" Name="GraceNotesVelocity" />
-          <NamedRemoteableKeyMidi Id="42" Name="GraceNotesPosition" />
-          <NamedRemoteableKeyMidi Id="43" Name="GraceNotesAmount" />
-          <NamedRemoteableKeyMidi Id="44" Name="GraceNotesPitch" />
-        </NamedKeyMidiRemoteables>
-        <FlamEnabled Value="true" />
-        <FlamPosition Value="-0.200000003" />
-        <FlamVelocity Value="0.5" />
-        <GraceNotesEnabled Value="false" />
-        <GraceNotesChance Value="1" />
-        <GraceNotesVelocity Value="0.5" />
-        <GraceNotesPosition Value="-0.200000003" />
-        <GraceNotesAmount Value="3" />
-        <GraceNotesPitch Value="1" />
-      </OrnamentAlgorithm>
-      <RecombineAlgorithm Id="4">
-        <NamedKeyMidiRemoteables>
-          <NamedRemoteableKeyMidi Id="20" Name="Dimension" />
-          <NamedRemoteableKeyMidi Id="21" Name="Shuffle" />
-          <NamedRemoteableKeyMidi Id="22" Name="Mirror" />
-          <NamedRemoteableKeyMidi Id="23" Name="RotateAmount" />
-          <NamedRemoteableKeyMidi Id="24" Name="RotateOnGrid" />
-        </NamedKeyMidiRemoteables>
-        <PermutedDimension Value="0" />
-        <Shuffle Value="false" />
-        <Mirror Value="false" />
-        <RotateAmount Value="0" />
-        <RotateOnGrid Value="false" />
-      </RecombineAlgorithm>
-      <QuantizeAlgorithm Id="5">
-        <NamedKeyMidiRemoteables>
-          <NamedRemoteableKeyMidi Id="20" Name="TripletReference" />
-          <NamedRemoteableKeyMidi Id="21" Name="QuantizeReference" />
-          <NamedRemoteableKeyMidi Id="22" Name="Amount" />
-          <NamedRemoteableKeyMidi Id="23" Name="QuantizeNoteStarts" />
-          <NamedRemoteableKeyMidi Id="24" Name="QuantizeNoteEnds" />
-        </NamedKeyMidiRemoteables>
-        <Reference Value="0" />
-        <TripletReference Value="false" />
-        <QuantizeNoteStarts Value="true" />
-        <QuantizeNoteEnds Value="false" />
-        <Amount Value="100" />
-      </QuantizeAlgorithm>
-      <StrumAlgorithm Id="6">
-        <NamedKeyMidiRemoteables>
-          <NamedRemoteableKeyMidi Id="16" Name="Threshold" />
-          <NamedRemoteableKeyMidi Id="17" Name="Low" />
-          <NamedRemoteableKeyMidi Id="18" Name="High" />
-          <NamedRemoteableKeyMidi Id="19" Name="Tension" />
-        </NamedKeyMidiRemoteables>
-        <ChordThreshold Value="0" />
-        <StrumLow Value="0" />
-        <StrumHigh Value="0" />
-        <TensionAmount Value="0" />
-      </StrumAlgorithm>
-      <TimeWarpAlgorithm Id="7">
-        <NamedKeyMidiRemoteables>
-          <NamedRemoteableKeyMidi Id="84" Name="StretchNoteEnd" />
-          <NamedRemoteableKeyMidi Id="85" Name="PreserveTimeRange" />
-          <NamedRemoteableKeyMidi Id="86" Name="Quantize" />
-          <NamedRemoteableKeyMidi Id="87" Name="Value1" />
-          <NamedRemoteableKeyMidi Id="88" Name="Time1" />
-          <NamedRemoteableKeyMidi Id="89" Name="IsActive1" />
-          <NamedRemoteableKeyMidi Id="90" Name="Value2" />
-          <NamedRemoteableKeyMidi Id="91" Name="Time2" />
-          <NamedRemoteableKeyMidi Id="92" Name="IsActive2" />
-          <NamedRemoteableKeyMidi Id="93" Name="Value3" />
-          <NamedRemoteableKeyMidi Id="94" Name="Time3" />
-          <NamedRemoteableKeyMidi Id="95" Name="IsActive3" />
-        </NamedKeyMidiRemoteables>
-        <Breakpoints>
-          <Breakpoint Id="0">
-            <Value Value="0.5" />
-            <Time Value="0" />
-            <Control1X Value="0.5" />
-            <Control1Y Value="0.5" />
-            <Control2X Value="0.5" />
-            <Control2Y Value="0.5" />
-            <IsActive Value="true" />
-          </Breakpoint>
-          <Breakpoint Id="1">
-            <Value Value="0.5" />
-            <Time Value="0.5" />
-            <Control1X Value="0.5" />
-            <Control1Y Value="0.5" />
-            <Control2X Value="0.5" />
-            <Control2Y Value="0.5" />
-            <IsActive Value="false" />
-          </Breakpoint>
-          <Breakpoint Id="2">
-            <Value Value="0.5" />
-            <Time Value="1" />
-            <Control1X Value="0.5" />
-            <Control1Y Value="0.5" />
-            <Control2X Value="0.5" />
-            <Control2Y Value="0.5" />
-            <IsActive Value="true" />
-          </Breakpoint>
-        </Breakpoints>
-        <StretchNoteEnd Value="true" />
-        <PreserveTimeRange Value="true" />
-        <Quantize Value="false" />
-      </TimeWarpAlgorithm>
-      <RhythmAlgorithm Id="8">
-        <NamedKeyMidiRemoteables>
-          <NamedRemoteableKeyMidi Id="56" Name="Density" />
-          <NamedRemoteableKeyMidi Id="57" Name="Repetitions" />
-          <NamedRemoteableKeyMidi Id="58" Name="Pattern" />
-          <NamedRemoteableKeyMidi Id="59" Name="Steps" />
-          <NamedRemoteableKeyMidi Id="60" Name="Pitch" />
-          <NamedRemoteableKeyMidi Id="61" Name="Velocity" />
-          <NamedRemoteableKeyMidi Id="62" Name="Accent" />
-          <NamedRemoteableKeyMidi Id="63" Name="Period" />
-          <NamedRemoteableKeyMidi Id="64" Name="Offset" />
-          <NamedRemoteableKeyMidi Id="65" Name="Shift" />
-          <NamedRemoteableKeyMidi Id="66" Name="StepDuration" />
-          <NamedRemoteableKeyMidi Id="67" Name="Split" />
-          <NamedRemoteableKeyMidi Id="68" Name="VelocityOffsetIncrement" />
-          <NamedRemoteableKeyMidi Id="69" Name="VelocityOffsetDecrement" />
-        </NamedKeyMidiRemoteables>
-        <Density Value="1" />
-        <Repetitions Value="1" />
-        <Pattern Value="0" />
-        <PatternLength Value="1" />
-        <Pitch Value="36" />
-        <Velocity Value="100" />
-        <Accent Value="127" />
-        <Period Value="1" />
-        <Offset Value="0" />
-        <Shift Value="0" />
-        <StepDuration Value="7" />
-        <Split Value="0" />
-      </RhythmAlgorithm>
-      <StacksAlgorithm Id="9">
-        <NamedKeyMidiRemoteables>
-          <NamedRemoteableKeyMidi Id="48" Name="AppendChord" />
-          <NamedRemoteableKeyMidi Id="49" Name="DeleteSelectedChord" />
-          <NamedRemoteableKeyMidi Id="50" Name="RootPitch1" />
-          <NamedRemoteableKeyMidi Id="51" Name="Inversion1" />
-          <NamedRemoteableKeyMidi Id="52" Name="Rule1" />
-          <NamedRemoteableKeyMidi Id="53" Name="Duration1" />
-          <NamedRemoteableKeyMidi Id="54" Name="Offset1" />
-        </NamedKeyMidiRemoteables>
-        <Sequence>
-          <Chord Id="8">
-            <RootDegree Value="0" />
-            <Octave Value="3" />
-            <RootPitch Value="60" />
-            <Inversion Value="0" />
-            <RuleNumber Value="0" />
-            <Duration Value="1" />
-            <Offset Value="0" />
-          </Chord>
-        </Sequence>
-      </StacksAlgorithm>
-      <ShapeAlgorithm Id="10">
-        <NamedKeyMidiRemoteables>
-          <NamedRemoteableKeyMidi Id="28" Name="ShapePresets" />
-          <NamedRemoteableKeyMidi Id="29" Name="Rate" />
-          <NamedRemoteableKeyMidi Id="30" Name="Tie" />
-          <NamedRemoteableKeyMidi Id="31" Name="Density" />
-          <NamedRemoteableKeyMidi Id="32" Name="MinPitch" />
-          <NamedRemoteableKeyMidi Id="33" Name="MaxPitch" />
-          <NamedRemoteableKeyMidi Id="34" Name="PitchVariation" />
-        </NamedKeyMidiRemoteables>
-        <ShapeLevels>
-          <RemoteableFloat Id="0" Value="0" />
-          <RemoteableFloat Id="1" Value="0.05000000075" />
-          <RemoteableFloat Id="2" Value="0.1000000015" />
-          <RemoteableFloat Id="3" Value="0.150000006" />
-          <RemoteableFloat Id="4" Value="0.200000003" />
-          <RemoteableFloat Id="5" Value="0.25" />
-          <RemoteableFloat Id="6" Value="0.3000000119" />
-          <RemoteableFloat Id="7" Value="0.349999994" />
-          <RemoteableFloat Id="8" Value="0.400000006" />
-          <RemoteableFloat Id="9" Value="0.4499999881" />
-          <RemoteableFloat Id="10" Value="0.5" />
-          <RemoteableFloat Id="11" Value="0.5500000119" />
-          <RemoteableFloat Id="12" Value="0.6000000238" />
-          <RemoteableFloat Id="13" Value="0.6499999762" />
-          <RemoteableFloat Id="14" Value="0.6999999881" />
-          <RemoteableFloat Id="15" Value="0.75" />
-          <RemoteableFloat Id="16" Value="0.8000000119" />
-          <RemoteableFloat Id="17" Value="0.8500000238" />
-          <RemoteableFloat Id="18" Value="0.8999999762" />
-          <RemoteableFloat Id="19" Value="0.9499999881" />
-          <RemoteableFloat Id="20" Value="1" />
-        </ShapeLevels>
-        <ShapePresets Value="2" />
-        <Rate Value="0" />
-        <Tie Value="0" />
-        <Density Value="1" />
-        <MinPitch Value="60" />
-        <MaxPitch Value="84" />
-        <PitchVariation Value="0" />
-      </ShapeAlgorithm>
-      <SeedAlgorithm Id="11">
-        <NamedKeyMidiRemoteables>
-          <NamedRemoteableKeyMidi Id="32" Name="Density" />
-          <NamedRemoteableKeyMidi Id="33" Name="MinPitch" />
-          <NamedRemoteableKeyMidi Id="34" Name="MaxPitch" />
-          <NamedRemoteableKeyMidi Id="35" Name="MinDuration" />
-          <NamedRemoteableKeyMidi Id="36" Name="MaxDuration" />
-          <NamedRemoteableKeyMidi Id="37" Name="MinVelocity" />
-          <NamedRemoteableKeyMidi Id="38" Name="MaxVelocity" />
-          <NamedRemoteableKeyMidi Id="39" Name="VerticalLimit" />
-        </NamedKeyMidiRemoteables>
-        <NotesDensity Value="0.5" />
-        <MinPitch Value="60" />
-        <MaxPitch Value="84" />
-        <MinDuration Value="-6" />
-        <MaxDuration Value="-3" />
-        <MinVelocity Value="30" />
-        <MaxVelocity Value="100" />
-        <VerticalLimit Value="4" />
-      </SeedAlgorithm>
-    </NoteAlgorithms>
   </LiveSet>
 </Ableton>

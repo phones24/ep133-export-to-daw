@@ -82,7 +82,7 @@ export type ExportResult = {
   }[];
 };
 
-export type ExportFormatId = 'ableton12' | 'dawproject' | 'dawproject_with_clips' | 'midi';
+export type ExportFormatId = 'ableton' | 'dawproject' | 'midi';
 
 export type ExportStatus = {
   status: string;
@@ -93,7 +93,6 @@ export type ExportFormat = {
   name: string;
   value: ExportFormatId;
   exportFn: (
-    type: ExportFormatId,
     projectId: string,
     data: ProjectRawData,
     sounds: Sound[],

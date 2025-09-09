@@ -3,7 +3,6 @@ import JSZip from 'jszip';
 import { DeviceService } from '../../ep133/device-service';
 import {
   ExporterParams,
-  ExportFormatId,
   ExportResult,
   ExportStatus,
   ProjectRawData,
@@ -19,7 +18,6 @@ function unitsToTicks(units: number, ppq = 480) {
 }
 
 async function exportMidi(
-  _: ExportFormatId,
   projectId: string,
   data: ProjectRawData,
   sounds: Sound[],

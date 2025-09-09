@@ -74,8 +74,8 @@
       <MpePitchBendUsesTuning Value="true" />
     </MidiInputRouting>
     <AudioOutputRouting>
-      <Target Value="AudioOut/Main" />
-      <UpperDisplayString Value="Main" />
+      <Target Value="AudioOut/Master" />
+      <UpperDisplayString Value="Master" />
       <LowerDisplayString Value="" />
       <MpeSettings>
         <ZoneType Value="0" />
@@ -312,7 +312,6 @@
         </ClipSlot>
       </ClipSlotList>
       <MonitoringEnum Value="1" />
-      <KeepRecordMonitoringLatency Value="true" />
       <ClipTimeable>
         <ArrangerAutomation>
           <Events>
@@ -825,7 +824,6 @@
         </ClipSlot>
       </ClipSlotList>
       <MonitoringEnum Value="1" />
-      <KeepRecordMonitoringLatency Value="true" />
       <Sample>
         <ArrangerAutomation>
           <Events />
@@ -841,9 +839,6 @@
       <TranspositionModulationTarget Id="22330">
         <LockEnvelope Value="0" />
       </TranspositionModulationTarget>
-      <TransientEnvelopeModulationTarget Id="22331">
-        <LockEnvelope Value="0" />
-      </TransientEnvelopeModulationTarget>
       <GrainSizeModulationTarget Id="22332">
         <LockEnvelope Value="0" />
       </GrainSizeModulationTarget>
@@ -853,12 +848,6 @@
       <SampleOffsetModulationTarget Id="22334">
         <LockEnvelope Value="0" />
       </SampleOffsetModulationTarget>
-      <ComplexProFormantsModulationTarget Id="22335">
-        <LockEnvelope Value="0" />
-      </ComplexProFormantsModulationTarget>
-      <ComplexProEnvelopeModulationTarget Id="22336">
-        <LockEnvelope Value="0" />
-      </ComplexProEnvelopeModulationTarget>
       <PitchViewScrollPosition Value="-1073741824" />
       <SampleOffsetModulationScrollPosition Value="-1073741824" />
       <Recorder>
@@ -871,17 +860,6 @@
       <SignalModulations />
     </DeviceChain>
   </DeviceChain>
-  <ReWireDeviceMidiTargetId Value="0" />
+  <ReWireSlaveMidiTargetId Value="0" />
   <PitchbendRange Value="96" />
-  <IsTuned Value="true" />
-  <ControllerLayoutRemoteable Value="0" />
-  <ControllerLayoutCustomization>
-    <PitchClassSource Value="0" />
-    <OctaveSource Value="2" />
-    <KeyNoteTarget Value="60" />
-    <StepSize Value="1" />
-    <OctaveEvery Value="12" />
-    <AllowedKeys Value="0" />
-    <FillerKeysMapTo Value="0" />
-  </ControllerLayoutCustomization>
 </MidiTrack>

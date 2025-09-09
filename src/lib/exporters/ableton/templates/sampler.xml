@@ -197,10 +197,6 @@
       <LoadInRam Value="false" />
       <LayerCrossfade Value="0" />
       <SourceContext />
-      <RoundRobin Value="false" />
-      <RoundRobinMode Value="0" />
-      <RoundRobinResetPeriod Value="0" />
-      <RoundRobinRandomSeed Value="-1599504444" />
     </MultiSampleMap>
     <LoopModulators>
       <IsModulated Value="false" />
