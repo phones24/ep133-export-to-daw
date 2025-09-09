@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
 import Button from './ui/Button';
 
-export default function UpdateInformer() {
+function UpdateInformer() {
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
 
@@ -9,10 +9,6 @@ export default function UpdateInformer() {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then((reg) => {
         setRegistration(reg);
-
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-          window.location.reload();
-        });
 
         reg.addEventListener('updatefound', () => {
           const newWorker = reg.installing;
@@ -41,6 +37,14 @@ export default function UpdateInformer() {
   const handleUpdate = () => {
     if (registration?.waiting) {
       registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+
+      navigator.serviceWorker.addEventListener(
+        'controllerchange',
+        () => {
+          window.location.reload();
+        },
+        { once: true },
+      );
     }
   };
 
@@ -55,3 +59,5 @@ export default function UpdateInformer() {
     </div>
   );
 }
+
+export default UpdateInformer;

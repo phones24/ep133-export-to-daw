@@ -12,7 +12,7 @@ export default defineConfig({
     svgr(),
     ViteMinifyPlugin({}),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       // devOptions: {
       //   enabled: true,
       // },
