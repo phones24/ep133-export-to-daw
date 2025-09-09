@@ -32,7 +32,8 @@
       },
       "complexity": {
         "noForEach": "off",
-        "noImportantStyles": "off"
+        "noImportantStyles": "off",
+        "noBannedTypes": "off"
       },
       "suspicious": {
         "noArrayIndexKey": "off",

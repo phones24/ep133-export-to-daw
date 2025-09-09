@@ -10,9 +10,7 @@ function FacePlateHeader() {
         <p className="text-[30px] font-medium leading-6">
           EP-133 K.O. II: <i>Export To DAW</i>
         </p>
-        <p className="text-xs font-medium">
-          Export your projects to Ableton Live, DAWproject or MIDI
-        </p>
+        <p className="text-xs">Export your projects to Ableton Live, DAWproject or MIDI</p>
 
         <div className="absolute left-0 bottom-0">
           {!device && (

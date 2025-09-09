@@ -1,10 +1,68 @@
 import preact from '@preact/preset-vite';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
+import { ViteMinifyPlugin } from 'vite-plugin-minify';
+import { VitePWA } from 'vite-plugin-pwa';
 import svgr from 'vite-plugin-svgr';
 
 export default defineConfig({
-  plugins: [tailwindcss(), preact(), svgr()],
+  plugins: [
+    tailwindcss(),
+    preact(),
+    svgr(),
+    ViteMinifyPlugin({}),
+    VitePWA({
+      registerType: 'autoUpdate',
+      devOptions: {
+        enabled: true,
+      },
+      workbox: {
+        globPatterns: ['**/*'],
+      },
+      includeAssets: ['**/*'],
+      manifest: {
+        name: 'EP-133 K.O. II: Export To DAW',
+        short_name: 'ep133-to-daw',
+        description: 'Export your projects to Ableton Live, DAWproject or MIDI',
+        theme_color: '#dbdddb',
+        scope: '/',
+        start_url: '/',
+        display: 'standalone',
+        icons: [
+          {
+            src: '/android-icon-36x36.png',
+            sizes: '36x36',
+            type: 'image/png',
+          },
+          {
+            src: '/android-icon-48x48.png',
+            sizes: '48x48',
+            type: 'image/png',
+          },
+          {
+            src: '/android-icon-72x72.png',
+            sizes: '72x72',
+            type: 'image/png',
+          },
+          {
+            src: '/android-icon-96x96.png',
+            sizes: '96x96',
+            type: 'image/png',
+          },
+          {
+            src: '/android-icon-144x144.png',
+            sizes: '144x144',
+            type: 'image/png',
+          },
+          {
+            src: '/android-icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+        ],
+      },
+    }),
+  ],
   build: {
     outDir: 'dist',
     sourcemap: true,
