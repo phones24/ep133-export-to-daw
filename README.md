@@ -8,6 +8,7 @@ Try it out on https://ep133-to-daw.cc/
 
 ## Latest news
 
+- [09/09/2025] Ableton minumum supported version is now 12.0.20
 - [09/09/2025] App is now working offline (PWA mode)
 - [08/09/2025] Added Ableton 12 support + more note duration bugs are fixed
 - [03/09/2025] Fixed several bugs, including issues with velocities and note durations
