@@ -13,9 +13,9 @@ export default defineConfig({
     ViteMinifyPlugin({}),
     VitePWA({
       registerType: 'autoUpdate',
-      devOptions: {
-        enabled: true,
-      },
+      // devOptions: {
+      //   enabled: true,
+      // },
       workbox: {
         globPatterns: ['**/*'],
       },

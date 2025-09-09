@@ -16,6 +16,7 @@ import IconMail from './icons/mail.svg?react';
 import OfflineInformer from './OfflineInformer';
 import Project from './Project';
 import ProjectSelector from './ProjectSelector';
+import UpdateInformer from './UpdateInformer';
 
 function Main() {
   const [projectId] = useAtom(projectIdAtom);
@@ -24,8 +25,9 @@ function Main() {
 
   return (
     <div className="min-w-[1100px] p-4 min-h-screen grid grid-rows-[auto_1fr]">
-      <div>
-        <OfflineInformer className="mb-2" />
+      <div className="mb-2 empty:mb-0">
+        <UpdateInformer />
+        <OfflineInformer />
       </div>
 
       <div className="grid grid-rows-[auto_1fr_auto] gap-2">
