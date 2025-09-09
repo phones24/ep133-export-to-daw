@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Ableton MajorVersion="5" MinorVersion="12.0_12049" SchemaChangeCount="12" Creator="Ableton Live 12.0.20" Revision="26c4e6ea8d06bdae332bd2e969252ccce5982845">
-  <!-- <Ableton MajorVersion="5" MinorVersion="12.0_12203" SchemaChangeCount="3" Creator="Ableton Live 12.2.5" Revision="174fd107af43e88065794fb882063fd27e80439a"> -->
   <LiveSet>
     <NextPointeeId Value="22337" />
     <OverwriteProtectionNumber Value="3075" />
@@ -10,7 +9,6 @@
       <MidiTrack />
       <MidiTrack />
     </Tracks>
-    <!-- <MainTrack SelectedToolPanel="7" SelectedTransformationName="" SelectedGeneratorName=""> -->
     <MainTrack>
       <LomId Value="0" />
       <LomIdView Value="0" />
@@ -1372,32 +1370,6 @@
         <MaxVelocity Value="100" />
         <VerticalLimit Value="4" />
       </SeedAlgorithm>
-      <!-- <PitchFilterAlgorithm Id="12">
-        <NamedKeyMidiRemoteables />
-        <PitchClasses>
-          <RemoteableBool Id="264" Value="false" />
-          <RemoteableBool Id="265" Value="false" />
-          <RemoteableBool Id="266" Value="false" />
-          <RemoteableBool Id="267" Value="false" />
-          <RemoteableBool Id="268" Value="false" />
-          <RemoteableBool Id="269" Value="false" />
-          <RemoteableBool Id="270" Value="false" />
-          <RemoteableBool Id="271" Value="false" />
-          <RemoteableBool Id="272" Value="false" />
-          <RemoteableBool Id="273" Value="false" />
-          <RemoteableBool Id="274" Value="false" />
-          <RemoteableBool Id="275" Value="false" />
-        </PitchClasses>
-        <DrumPad Value="128" />
-        <Invert Value="false" />
-      </PitchFilterAlgorithm> -->
-      <!-- <TimeFilterAlgorithm Id="13">
-        <NamedKeyMidiRemoteables />
-        <Start Value="0" />
-        <Length Value="0.25" />
-        <Repeat Value="0" />
-        <Invert Value="false" />
-      </TimeFilterAlgorithm> -->
     </NoteAlgorithms>
   </LiveSet>
 </Ableton>
