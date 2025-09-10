@@ -1,4 +1,5 @@
 import preact from '@preact/preset-vite';
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 import { ViteMinifyPlugin } from 'vite-plugin-minify';
@@ -61,6 +62,10 @@ export default defineConfig({
           },
         ],
       },
+    }),
+    sentryVitePlugin({
+      org: 'private-developer-d9',
+      project: 'ep133-to-daw',
     }),
   ],
   build: {
