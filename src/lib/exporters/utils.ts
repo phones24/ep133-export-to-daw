@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { DeviceService } from '../../ep133/device-service';
 import { ExportStatus, ProjectRawData, Sound } from '../../types/types';
 import { pcmToWavBlob } from '../pcmToWav';
@@ -49,34 +50,40 @@ export async function collectSamples(
   let cnt = 0;
 
   for (const snd of projectSounds) {
-    const fileName = getSampleName(snd.soundMeta.name, snd.soundId);
+    try {
+      const fileName = getSampleName(snd.soundMeta.name, snd.soundId);
 
-    progressCallback({
-      progress: percentStart + percentPerSound * cnt,
-      status: `Downloading sound: ${fileName}`,
-    });
-
-    const result = await downloadPcm(snd.soundId, deviceService, (bytesRead, totalRemaining) => {
-      const currentSoundProgress = bytesRead / (totalRemaining / percentPerSound);
       progressCallback({
-        progress: percentStart + percentPerSound * cnt + currentSoundProgress,
+        progress: percentStart + percentPerSound * cnt,
         status: `Downloading sound: ${fileName}`,
       });
-    });
 
-    const wavBlob = pcmToWavBlob(
-      result,
-      snd.soundMeta.samplerate,
-      audioFormatAsBitDepth(snd.soundMeta.format),
-      snd.soundMeta.channels,
-    );
+      const result = await downloadPcm(snd.soundId, deviceService, (bytesRead, totalRemaining) => {
+        const currentSoundProgress = bytesRead / (totalRemaining / percentPerSound);
+        progressCallback({
+          progress: percentStart + percentPerSound * cnt + currentSoundProgress,
+          status: `Downloading sound: ${fileName}`,
+        });
+      });
 
-    cnt++;
+      const wavBlob = pcmToWavBlob(
+        result,
+        snd.soundMeta.samplerate,
+        audioFormatAsBitDepth(snd.soundMeta.format),
+        snd.soundMeta.channels,
+      );
 
-    samples.push({
-      name: fileName,
-      data: wavBlob,
-    });
+      cnt++;
+
+      samples.push({
+        name: fileName,
+        data: wavBlob,
+      });
+    } catch (err) {
+      console.error(err);
+
+      Sentry.captureException(err);
+    }
   }
 
   return samples;
