@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { useAtomValue } from 'jotai';
 import { useState } from 'preact/hooks';
 import { projectIdAtom } from '../atoms/project';
@@ -72,6 +73,8 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
       trackEvent('export_end');
     } catch (err) {
       console.error(err);
+
+      Sentry.captureException(err);
 
       setError(err);
 
