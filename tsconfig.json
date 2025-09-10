@@ -18,8 +18,7 @@
     "checkJs": false,
     "esModuleInterop": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "preact",
-    "types": ["vite-plugin-pwa/client"]
+    "jsxImportSource": "preact"
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

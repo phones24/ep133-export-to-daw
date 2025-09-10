@@ -44,6 +44,9 @@ importers:
       tailwindcss:
         specifier: ^4.1.12
         version: 4.1.12
+      workbox-window:
+        specifier: ^7.3.0
+        version: 7.3.0
       xml2js:
         specifier: ^0.6.2
         version: 0.6.2

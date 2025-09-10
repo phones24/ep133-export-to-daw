@@ -1,3 +1,5 @@
+/// <reference types="vite-plugin-pwa/client" />
+
 declare global {
   interface Window {
     gtag: GtagFunction;
