@@ -155,7 +155,10 @@ function ExportProject() {
               <div className="mt-4 bg-red-100 p-4">
                 <h3 className="text-lg font-semibold text-center">Error</h3>
                 <p className="text-sm text-red-500 text-center">
-                  Please, report this error to the developer.
+                  Opps, that's not good. Hope the error tracking system helps me to find the
+                  problem. <br />
+                  Please try again in a day or two or report this error to the developer with EMAIL
+                  button in the corner.
                 </p>
               </div>
             )}
