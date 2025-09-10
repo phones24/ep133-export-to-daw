@@ -19,6 +19,8 @@ export default defineConfig({
       // },
       workbox: {
         globPatterns: ['**/*'],
+        clientsClaim: true,
+        skipWaiting: true,
       },
       includeAssets: ['**/*'],
       manifest: {
