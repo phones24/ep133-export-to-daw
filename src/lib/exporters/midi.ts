@@ -6,6 +6,7 @@ import {
   ExportResult,
   ExportStatus,
   ProjectRawData,
+  SampleReport,
   Sound,
 } from '../../types/types';
 import midiTransformer from '../transformers/midi';
@@ -65,9 +66,16 @@ async function exportMidi(
     },
   ];
 
+  let sampleReport: SampleReport | undefined;
+
   if (exporterParams.includeArchivedSamples) {
     const zipSamples = new JSZip();
-    const samples = await collectSamples(data, sounds, deviceService, progressCallback);
+    const { samples, sampleReport: report } = await collectSamples(
+      data,
+      sounds,
+      deviceService,
+      progressCallback,
+    );
 
     samples.forEach((s) => {
       zipSamples.file(s.name, s.data);
@@ -83,12 +91,15 @@ async function exportMidi(
       type: 'archive',
       size: sampleFile.size,
     });
+
+    sampleReport = report;
   }
 
   progressCallback({ progress: 100, status: 'Done' });
 
   return {
     files,
+    sampleReport,
   } as ExportResult;
 }
 

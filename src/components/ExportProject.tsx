@@ -12,13 +12,7 @@ import Dialog from './ui/Dialog';
 import Select from './ui/Select';
 
 const NOTES: Record<ExportFormatId, string> = {
-  ableton: `Please note that the exported project won't sound exactly the same as it does on the device.
-Currently NOT included in export:
-- effects
-- fader automation
-- song mode
-- sidechains
-  `,
+  ableton: `Please note that the exported project won't sound exactly the same as it does on the device. Currently NOT included in export: effects, fader automation, song mode, sidechains`,
   dawproject: ``,
   midi: ``,
 };
@@ -34,7 +28,7 @@ function ExportProject() {
   const [clips, setClips] = usePersistedState('export_clips', false);
   const appState = useAppState();
   const { device } = useDevice();
-  const { startExport, isPending, pendingStatus, percentage, reset, result, error } =
+  const { startExport, isPending, pendingStatus, percentage, reset, result, error, sampleReport } =
     useExportProject(format, { includeArchivedSamples, useSampler, clips });
 
   useEffect(() => {
@@ -148,6 +142,31 @@ function ExportProject() {
                     </span>
                   </div>
                 ))}
+
+                {sampleReport && (
+                  <div className="mt-4">
+                    <h3 className="text-lg font-semibold">Sample Report</h3>
+                    <div className="text-sm">
+                      <p className="text-green-600">
+                        ✓ Downloaded: {sampleReport.downloaded.length} samples
+                      </p>
+                      {sampleReport.missing.length > 0 && (
+                        <div className="mt-2">
+                          <p className="text-red-600">
+                            ✗ Missing: {sampleReport.missing.length} samples
+                          </p>
+                          <ul className="mt-1 ml-4 max-h-[100px] overflow-y-auto">
+                            {sampleReport.missing.map((missing, index) => (
+                              <li key={index} className="text-red-500 text-xs truncate">
+                                {missing.name}: {missing.error}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

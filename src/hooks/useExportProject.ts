@@ -6,7 +6,13 @@ import exportAbleton from '../lib/exporters/ableton';
 import exportDawProject from '../lib/exporters/dawProject';
 import exportMidi from '../lib/exporters/midi';
 import { trackEvent } from '../lib/ga';
-import { ExporterParams, ExportFormat, ExportFormatId, ExportResult } from '../types/types';
+import {
+  ExporterParams,
+  ExportFormat,
+  ExportFormatId,
+  ExportResult,
+  SampleReport,
+} from '../types/types';
 import useAllSounds from './useAllSounds';
 import useDevice from './useDevice';
 import useProject from './useProject';
@@ -38,6 +44,7 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
   const [percentage, setPercentage] = useState(0);
   const [error, setError] = useState<any>(null);
   const [result, setResult] = useState<ExportResult | null>(null);
+  const [sampleReport, setSampleReport] = useState<SampleReport | null>(null);
   const { deviceService } = useDevice();
 
   const startExport = async () => {
@@ -68,6 +75,7 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
       );
 
       setResult(result);
+      setSampleReport(result.sampleReport || null);
       setIsPending(false);
 
       trackEvent('export_end');
@@ -87,6 +95,7 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
     setIsPending(false);
     setPercentage(0);
     setPendingStatus('');
+    setSampleReport(null);
 
     if (!result) {
       return;
@@ -99,7 +108,7 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
     setResult(null);
   };
 
-  return { startExport, reset, isPending, pendingStatus, percentage, result, error };
+  return { startExport, reset, isPending, pendingStatus, percentage, result, error, sampleReport };
 }
 
 export default useExportProject;

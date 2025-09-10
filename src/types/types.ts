@@ -80,6 +80,7 @@ export type ExportResult = {
     type: 'project' | 'archive';
     size: number;
   }[];
+  sampleReport?: SampleReport;
 };
 
 export type ExportFormatId = 'ableton' | 'dawproject' | 'midi';
@@ -87,6 +88,12 @@ export type ExportFormatId = 'ableton' | 'dawproject' | 'midi';
 export type ExportStatus = {
   status: string;
   progress: number;
+  sampleReport?: SampleReport;
+};
+
+export type SampleReport = {
+  downloaded: string[];
+  missing: { name: string; error: string }[];
 };
 
 export type ExportFormat = {

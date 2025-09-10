@@ -45,14 +45,16 @@ export async function collectSamples(
   const projectSounds = getSoundsInfoFromProject(data, sounds);
 
   const samples: { name: string; data: Blob }[] = [];
+  const downloaded: string[] = [];
+  const missing: { name: string; error: string }[] = [];
   const percentStart = 3;
   const percentPerSound = 80 / projectSounds.length;
   let cnt = 0;
 
   for (const snd of projectSounds) {
-    try {
-      const fileName = getSampleName(snd.soundMeta.name, snd.soundId);
+    const fileName = getSampleName(snd.soundMeta.name, snd.soundId);
 
+    try {
       progressCallback({
         progress: percentStart + percentPerSound * cnt,
         status: `Downloading sound: ${fileName}`,
@@ -73,18 +75,33 @@ export async function collectSamples(
         snd.soundMeta.channels,
       );
 
-      cnt++;
-
       samples.push({
         name: fileName,
         data: wavBlob,
       });
+
+      downloaded.push(fileName);
     } catch (err) {
       console.error(err);
 
       Sentry.captureException(err);
+
+      missing.push({
+        name: fileName,
+        error: err instanceof Error ? err.message : 'Unknown error',
+      });
+    } finally {
+      cnt++;
     }
   }
 
-  return samples;
+  const sampleReport = { downloaded, missing };
+
+  progressCallback({
+    progress: percentStart + percentPerSound * cnt,
+    status: 'Sample collection completed',
+    sampleReport,
+  });
+
+  return { samples, sampleReport };
 }

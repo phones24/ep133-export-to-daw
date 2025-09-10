@@ -7,6 +7,7 @@ import {
   ExportStatus,
   Note,
   ProjectRawData,
+  SampleReport,
   Sound,
 } from '../../types/types';
 import dawProjectTransformer, {
@@ -421,9 +422,16 @@ async function exportDawProject(
     },
   ];
 
+  let sampleReport: SampleReport | undefined;
+
   if (exporterParams.includeArchivedSamples) {
     const zipSamples = new JSZip();
-    const samples = await collectSamples(data, sounds, deviceService, progressCallback);
+    const { samples, sampleReport: report } = await collectSamples(
+      data,
+      sounds,
+      deviceService,
+      progressCallback,
+    );
 
     samples.forEach((s) => {
       zipSamples.file(s.name, s.data);
@@ -439,12 +447,15 @@ async function exportDawProject(
       type: 'archive',
       size: sampleFile.size,
     });
+
+    sampleReport = report;
   }
 
   progressCallback({ progress: 100, status: 'Done' });
 
   return {
     files,
+    sampleReport,
   } as ExportResult;
 }
 

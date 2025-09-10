@@ -7,6 +7,7 @@ import {
   ExportStatus,
   ProjectRawData,
   ProjectSettings,
+  SampleReport,
   Sound,
 } from '../../../types/types';
 import dawProjectTransformer, {
@@ -346,11 +347,19 @@ async function exportAbleton(
   zippedProject.file(`${projectName} Project/${projectName}.als`, alsFile);
   zippedProject.file(`${projectName} Project/Ableton Project Info/.dummy`, '');
 
+  let sampleReport: SampleReport | undefined;
+
   if (exporterParams.includeArchivedSamples) {
-    const samples = await collectSamples(data, sounds, deviceService, progressCallback);
+    const { samples, sampleReport: report } = await collectSamples(
+      data,
+      sounds,
+      deviceService,
+      progressCallback,
+    );
     samples.forEach((s) => {
       zippedProject.file(`Project${projectId} Project/Samples/Imported/${s.name}`, s.data);
     });
+    sampleReport = report;
   }
 
   progressCallback({ progress: 90, status: 'Bundle everything...' });
@@ -368,6 +377,7 @@ async function exportAbleton(
 
   return {
     files,
+    sampleReport,
   } as ExportResult;
 }
 
