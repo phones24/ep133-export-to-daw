@@ -13,7 +13,7 @@ export default defineConfig({
     svgr(),
     ViteMinifyPlugin({}),
     VitePWA({
-      registerType: 'prompt',
+      registerType: 'autoUpdate',
       // devOptions: {
       //   enabled: true,
       // },
@@ -66,6 +66,7 @@ export default defineConfig({
     sentryVitePlugin({
       org: 'private-developer-d9',
       project: 'ep133-to-daw',
+      telemetry: false,
     }),
   ],
   build: {
