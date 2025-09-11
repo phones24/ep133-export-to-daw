@@ -74,9 +74,14 @@ export function audioFormatAsBitDepth(s: string) {
 
 export function getSoundsInfoFromProject(data: ProjectRawData, sounds: Sound[]) {
   const snds: SoundInfo[] = [];
+  const existingSounds = new Set<number>();
 
   for (const group in data.pads) {
     for (const pad of data.pads[group]) {
+      if (existingSounds.has(pad.soundId)) {
+        continue;
+      }
+
       const soundMeta = sounds.find((s) => s.id === pad.soundId);
 
       if (!soundMeta) {
@@ -88,6 +93,8 @@ export function getSoundsInfoFromProject(data: ProjectRawData, sounds: Sound[]) 
           soundId: pad.soundId,
           soundMeta: soundMeta.meta,
         });
+
+        existingSounds.add(pad.soundId);
       }
     }
   }

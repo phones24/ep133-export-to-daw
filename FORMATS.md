@@ -5,31 +5,31 @@
 ```
 [
 0  0,
-1  0,    // INSTRUMENT NUM
-2  0,    // INSTRUMENT NUM
+1  0,     // INSTRUMENT NUM
+2  0,     // INSTRUMENT NUM
 3  0,
-4  0,    // TRIM LEFT
-5  0,    // TRIM LEFT
-6  0,    // TRIM LEFT
+4  0,     // TRIM LEFT
+5  0,     // TRIM LEFT
+6  0,     // TRIM LEFT
 7  0,
-8  0,    // TRIM RIGHT
-9  0,    // TRIM RIGHT
-10  0,   // TRIM RIGHT
+8  0,     // TRIM RIGHT
+9  0,     // TRIM RIGHT
+10  0,    // TRIM RIGHT
 11  0,
-12  0,
-13  0,
-14  248,
-15  66,
+12  0,    // TIME STRETCH BPM
+13  0,    // TIME STRETCH BPM
+14  248,  // TIME STRETCH BPM
+15  66,   // TIME STRETCH BPM
 16  100,  // VOLUME (0-200)
 17  0,    // PITCH (negative: 254-255, zero: 0, positive: 1-12, )
 18  0,    // PAN (left: 240-255, center: 0, right: 1-16)
 19  0,    // ATACK (0-255), when in KEY/LEG mode
 20  255,  // RELEASE (0-255), when in KEY/LEG mode
-21  0,
+21  0,    // TIME STRETCH: 0 - OFF, 1 - BPM, 2 - BARS
 22  0,
-23  0,    // ONE - 0, KEY - 1, LEG - 2,
+23  0,    // PLAY MODE: ONE - 0, KEY - 1, LEG - 2,
 24  60,   // PAD ID ?
-25  0,
+25  0,    // TIME STRETCH BARS: 0 - 1, 1 - 2, 3 - 4, 255 - 1/2, 254 - 1/4
 26  0     // PITCH DECIMAL PART
 ]
 ```

@@ -35,6 +35,23 @@ export function noteNumberToName(noteNumber: number): string {
   return `${noteNames[noteIndex]}${octave}`;
 }
 
+function timeStretchBars(data: number) {
+  switch (data) {
+    case 0:
+      return '1bar';
+    case 1:
+      return '2bars';
+    case 2:
+      return '4bars';
+    case 255:
+      return '1/2bar';
+    case 254:
+      return '1/4bar';
+    default:
+      return '';
+  }
+}
+
 function genPadFileName(group: string, pad: number) {
   return `pads/${group}/p${String(pad).padStart(2, '0')}`;
 }
@@ -74,6 +91,7 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
           file,
           rawData: file.data,
           soundId,
+          pan,
           volume: file.data[16],
           attack: file.data[19],
           release: file.data[20],
@@ -82,7 +100,9 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
           soundLength: sound ? calculateSoundLength(sound) : 0,
           pitch: Math.max(-12, Math.min(12, parseFloat(`${pitch}.${pitchDecimal}`))),
           rootNote: sound?.meta?.['sound.rootnote'] || 60,
-          pan,
+          timeStretch: file.data[21] === 1 ? 'bpm' : file.data[21] === 2 ? 'bars' : 'off',
+          timeStretchBpm: Number(bytesToFloat32(file.data.slice(12, 16)).toFixed(2)),
+          timeStretchBars: timeStretchBars(file.data[25]),
         });
       }
     }

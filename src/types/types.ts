@@ -65,6 +65,9 @@ export type Pad = {
   pan: number;
   pitch: number;
   rootNote: number;
+  timeStretch: 'off' | 'bpm' | 'bars';
+  timeStretchBpm: number;
+  timeStretchBars: string;
 };
 
 export type ProjectRawData = {
