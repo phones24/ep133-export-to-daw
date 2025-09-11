@@ -72,7 +72,7 @@ export type Pad = {
 
 export type ProjectRawData = {
   pads: Record<string, Pad[]>;
-  scenes: Record<string, Scene>;
+  scenes: Scene[];
   settings: ProjectSettings;
 };
 

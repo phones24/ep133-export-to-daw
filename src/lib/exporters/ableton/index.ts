@@ -46,7 +46,7 @@ async function buildMidiClip(
   midiClip.Loop.HiddenLoopStart._attrs.Value = 0;
   midiClip.Loop.HiddenLoopEnd._attrs.Value = koClip.bars * 4;
   midiClip.Color._attrs.Value = color;
-  midiClip.Name._attrs.Value = `Scene ${koClip.sceneIndex + 1}`;
+  midiClip.Name._attrs.Value = `Scene ${koClip.sceneName}`;
 
   if (clipForLauncher) {
     midiClip._attrs.Time = 0;

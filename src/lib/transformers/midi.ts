@@ -18,7 +18,7 @@ function midiTransformer(data: ProjectRawData, sounds: Sound[]) {
   const midiTracks: MidiTrack[] = [];
   let offset = 0;
 
-  Object.values(scenes).forEach((scene) => {
+  scenes.forEach((scene) => {
     const sceneMaxBars = Math.max(...scene.patterns.map((p) => p.bars));
 
     for (const pattern of scene.patterns) {

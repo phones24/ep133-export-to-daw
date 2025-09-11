@@ -18,6 +18,7 @@ export type DawTrack = Pad & {
 export type DawLane = {
   padCode: PadCode;
   clips: DawClip[];
+  sceneName: string;
 };
 
 export type DawClip = {
@@ -26,6 +27,7 @@ export type DawClip = {
   offset: number;
   sceneBars: number;
   sceneIndex: number;
+  sceneName: string;
 };
 
 export type DawClipSlot = {
@@ -46,7 +48,7 @@ function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
   const dawScenes: DawScene[] = [];
   let offset = 0;
 
-  Object.values(scenes).forEach((scene, sceneIdx) => {
+  scenes.forEach((scene, sceneIndex) => {
     const sceneBars = Math.max(...scene.patterns.map((p) => p.bars));
     const dawScene: DawScene = {
       name: scene.name,
@@ -88,6 +90,7 @@ function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
         lane = {
           padCode: pattern.pad,
           clips: [],
+          sceneName: scene.name,
         };
 
         lanes.push(lane);
@@ -98,7 +101,8 @@ function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
         notes: pattern.notes,
         bars: pattern.bars,
         sceneBars,
-        sceneIndex: sceneIdx,
+        sceneIndex,
+        sceneName: scene.name,
       });
 
       dawScene.clipSlot.push({

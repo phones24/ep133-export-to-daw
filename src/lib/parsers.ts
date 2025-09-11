@@ -154,7 +154,7 @@ export function collectScenesAndPatterns(files: TarFile[]) {
     const [, group, scene] = matches;
     if (!scenes[scene]) {
       scenes[scene] = {
-        name: scene,
+        name: String(scene).padStart(2, '0'),
         patterns: [],
       };
     }
@@ -162,7 +162,7 @@ export function collectScenesAndPatterns(files: TarFile[]) {
     scenes[scene].patterns = [...scenes[scene].patterns, ...parsePatterns(file.data, group)];
   }
 
-  return scenes;
+  return Object.values(scenes).sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function bytesToFloat32(bytes: Uint8Array): number {
