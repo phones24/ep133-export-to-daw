@@ -805,7 +805,7 @@
     </Grid>
     <ScaleInformation>
       <Root Value="0" />
-      <Name Value="0" />
+      <Name Value="Major" />
     </ScaleInformation>
     <InKey Value="true" />
     <SmpteFormat Value="0" />
@@ -955,7 +955,7 @@
                 <IsInKey Value="true" />
                 <ScaleInformation>
                   <Root Value="0" />
-                  <Name Value="0" />
+                  <Name Value="Major" />
                 </ScaleInformation>
                 <Notes>
                   <KeyTracks>

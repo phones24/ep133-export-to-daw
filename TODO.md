@@ -2,6 +2,9 @@
 - display BPM somewhere
 - check minimum firmware version (min 2.0.0)
 - support swing
+- fader tracks
+- root note
+- scales
 - ableton: figure out how to stretch samples the same way EP's doing it
 - optional: ableton: group midi channels
 - optional: ableton: add default compressor on the output
