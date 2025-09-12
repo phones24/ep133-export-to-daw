@@ -103,7 +103,7 @@ export type SampleReport = {
 export type ExportFormat = {
   name: string;
   value: ExportFormatId;
-  exportFn: (
+  exportFn?: (
     projectId: string,
     data: ProjectRawData,
     sounds: Sound[],

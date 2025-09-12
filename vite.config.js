@@ -21,6 +21,7 @@ export default defineConfig({
         globPatterns: ['**/*'],
         clientsClaim: true,
         skipWaiting: true,
+        maximumFileSizeToCacheInBytes: 1024 * 1024 * 10,
       },
       includeAssets: ['**/*'],
       manifest: {
@@ -74,6 +75,15 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('xmlbuilder2')) {
+            return 'xmlbuilder2';
+          }
+        },
+      },
+    },
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.jsx', '.js'],

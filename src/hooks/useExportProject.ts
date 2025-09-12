@@ -2,17 +2,16 @@ import * as Sentry from '@sentry/react';
 import { useAtomValue } from 'jotai';
 import { useState } from 'preact/hooks';
 import { projectIdAtom } from '../atoms/project';
-import exportAbleton from '../lib/exporters/ableton';
-import exportDawProject from '../lib/exporters/dawProject';
-import exportMidi from '../lib/exporters/midi';
 import { trackEvent } from '../lib/ga';
 import {
   ExporterParams,
   ExportFormat,
   ExportFormatId,
   ExportResult,
+  ExportStatus,
   SampleReport,
 } from '../types/types';
+
 import useAllSounds from './useAllSounds';
 import useDevice from './useDevice';
 import useProject from './useProject';
@@ -21,19 +20,29 @@ export const EXPORT_FORMATS: ExportFormat[] = [
   {
     name: 'Ableton 11+',
     value: 'ableton',
-    exportFn: exportAbleton,
   },
   {
     name: 'DAWproject',
     value: 'dawproject',
-    exportFn: exportDawProject,
   },
   {
     name: 'MIDI',
     value: 'midi',
-    exportFn: exportMidi,
   },
 ];
+
+async function getExporterFn(format: ExportFormatId) {
+  switch (format) {
+    case 'ableton':
+      return (await import('../lib/exporters/ableton')).default;
+    case 'dawproject':
+      return (await import('../lib/exporters/dawProject')).default;
+    case 'midi':
+      return (await import('../lib/exporters/midi')).default;
+    default:
+      throw new Error(`Unknown export format: ${format}`);
+  }
+}
 
 function useExportProject(format: ExportFormatId, exporterParams: ExporterParams) {
   const projectId = useAtomValue(projectIdAtom);
@@ -63,12 +72,14 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
       setIsPending(true);
       setPercentage(1);
 
-      const result = await formatData.exportFn(
+      const exportFn = await getExporterFn(format);
+
+      const result = await exportFn(
         projectId,
         projectRawData,
         allSounds,
         deviceService,
-        (stat) => {
+        (stat: ExportStatus) => {
           setPercentage(stat.progress);
           setPendingStatus(stat.status);
         },
