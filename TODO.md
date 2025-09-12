@@ -1,7 +1,5 @@
 - take care of tracks sorting for web view
 - display BPM somewhere
-- check minimum firmware version (min 2.0.0)
-- support swing
 - fader tracks
 - root note
 - scales

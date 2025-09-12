@@ -10,6 +10,7 @@ export type DawData = {
 
 export type DawTrack = Pad & {
   padCode: PadCode;
+  group: string;
   sampleName: string;
   sampleChannels: number;
   sampleRate: number;

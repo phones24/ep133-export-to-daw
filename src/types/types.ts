@@ -53,6 +53,7 @@ export type Note = {
 export type Pad = {
   pad: number;
   name: string;
+  group: 'a' | 'b' | 'c' | 'd';
   file: TarFile;
   rawData: Uint8Array;
   soundId: number;
@@ -117,6 +118,7 @@ export type ExporterParams = {
   clips?: boolean; // build clips not arrangements
   noSampler?: boolean; // don't use sampler/simpler at all
   useSampler?: boolean; // use sampler/simpler
+  groupTracks?: boolean; // group tracks in ableton export
 };
 
 export type SoundInfo = {

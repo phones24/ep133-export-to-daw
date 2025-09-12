@@ -16,6 +16,8 @@ export async function loadTemplate<T>(templateName: string): Promise<T> {
     charkey: '_text',
     explicitArray: false,
     explicitCharkey: true,
+    preserveChildrenOrder: true,
+    // explicitChildren: true,
   });
 
   let templateModule: any;
@@ -37,6 +39,9 @@ export async function loadTemplate<T>(templateName: string): Promise<T> {
       break;
     case 'scene':
       templateModule = await import('./templates/scene.xml?raw');
+      break;
+    case 'groupTrack':
+      templateModule = await import('./templates/groupTrack.xml?raw');
       break;
     default:
       throw new Error(`Unknown template: ${templateName}`);

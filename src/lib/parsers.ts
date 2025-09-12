@@ -1,27 +1,7 @@
 import { calculateSoundLength } from '../ep133/utils';
 import { Note, Pad, PadCode, Pattern, ProjectSettings, Scene, Sound } from '../types/types';
+import { GROUPS, PADS } from './constants';
 import { TarFile } from './untar';
-
-const GROUPS = [
-  {
-    name: 'A',
-    id: 'a',
-  },
-  {
-    name: 'B',
-    id: 'b',
-  },
-  {
-    name: 'C',
-    id: 'c',
-  },
-  {
-    name: 'D',
-    id: 'd',
-  },
-];
-
-const PADS = ['9', '8', '7', '6', '5', '4', '3', '2', '1', '.', '0', 'E'];
 
 const defaultSettings = {
   bpm: 120,
@@ -69,9 +49,7 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
   const result: Record<string, Pad[]> = {};
 
   for (const group of GROUPS) {
-    const grp = group.name.toLocaleLowerCase();
-
-    result[grp] = [];
+    result[group.id] = [];
 
     for (let i = 1; i <= 12; i++) {
       const file = files.find((f) => f.name === genPadFileName(group.id, i));
@@ -85,9 +63,10 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
         const trimLeft = (file.data[6] << 16) + (file.data[5] << 8) + file.data[4];
         const trimRight = trimLeft + (file.data[10] << 16) + (file.data[9] << 8) + file.data[8];
 
-        result[grp].push({
+        result[group.id].push({
           pad: i,
-          name: `${grp.toUpperCase()} ${PADS[i - 1]}`,
+          group: group.id,
+          name: `${group.name} ${PADS[i - 1]}`,
           file,
           rawData: file.data,
           soundId,

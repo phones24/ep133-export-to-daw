@@ -10,6 +10,7 @@ import {
   SampleReport,
   Sound,
 } from '../../../types/types';
+import { GROUPS } from '../../constants';
 import dawProjectTransformer, {
   DawClip,
   DawLane,
@@ -155,6 +156,7 @@ async function buildTrack(
   const midiTrack = structuredClone(midiTrackTemplate.MidiTrack);
 
   midiTrack._attrs.Id = trackIdx;
+  midiTrack._attrs._internalGroupId = koTrack.group;
   midiTrack.Name.EffectiveName._attrs.Value = koTrack.soundId
     ? `${String(koTrack.soundId).padStart(3, '0')} ${koTrack.name}`
     : koTrack.name;
@@ -242,6 +244,11 @@ async function buildTrack(
     }
   }
 
+  if (exporterParams.groupTracks) {
+    midiTrack.DeviceChain.AudioOutputRouting.Target._attrs.Value = 'AudioOut/GroupTrack';
+    midiTrack.DeviceChain.AudioOutputRouting.UpperDisplayString._attrs.Value = 'Group';
+  }
+
   return midiTrack;
 }
 
@@ -262,6 +269,35 @@ async function buildScenes(scenes: DawScene[], settings: ProjectSettings) {
   return result;
 }
 
+async function buildGroupTracks(tracks: DawTrack[]) {
+  const groupTrackTemplate = await loadTemplate<any>('groupTrack');
+  const result = [];
+
+  const usedGroups = tracks.reduce(
+    (acc, track) => {
+      acc[track.group] = true;
+      return acc;
+    },
+
+    {} as Record<string, boolean>,
+  );
+
+  Object.keys(usedGroups)
+    .slice(0, 1)
+    .forEach((group, idx) => {
+      const groupTrack = structuredClone(groupTrackTemplate.GroupTrack);
+
+      groupTrack._attrs.Id = tracks.length + idx + 1;
+      groupTrack._attrs._internalId = group;
+      groupTrack.Name.EffectiveName._attrs.Value = group.toLocaleUpperCase();
+      groupTrack.Color._attrs.Value = 20 + idx;
+
+      result.push(groupTrack);
+    });
+
+  return result;
+}
+
 async function buildProject(
   projectData: ProjectRawData,
   sounds: Sound[],
@@ -276,6 +312,7 @@ async function buildProject(
   }
 
   const projectTemplate = await loadTemplate<any>('project');
+  console.log(projectTemplate);
   const project = structuredClone(projectTemplate);
   const maxScenes = transformedData.scenes.length;
 
@@ -285,6 +322,7 @@ async function buildProject(
   project.Ableton.LiveSet.MasterTrack.AutomationEnvelopes.Envelopes.AutomationEnvelope[1].Automation.Events.FloatEvent._attrs.Value =
     projectData.settings.bpm;
 
+  project.Ableton.LiveSet.Tracks.GroupTrack = [];
   project.Ableton.LiveSet.Tracks.MidiTrack = [];
 
   for (const [trackIdx, koTrack] of transformedData.tracks.entries()) {
@@ -305,9 +343,35 @@ async function buildProject(
     );
   }
 
+  if (exporterParams.groupTracks) {
+    project.Ableton.LiveSet.Tracks.GroupTrack = await buildGroupTracks(transformedData.tracks);
+
+    project.Ableton.LiveSet.Tracks.MidiTrack.forEach((track) => {
+      const foundGroup = project.Ableton.LiveSet.Tracks.GroupTrack.find(
+        (group) => group._attrs._internalId === track._attrs._internalGroupId,
+      );
+
+      if (foundGroup) {
+        track.TrackGroupId._attrs.Value = foundGroup._attrs.Id;
+      }
+
+      track._attrs._internalGroupId = undefined;
+    });
+
+    project.Ableton.LiveSet.Tracks.GroupTrack.forEach((track) => {
+      track._attrs._internalId = undefined;
+    });
+
+    // sort tracks and groups
+  }
+
+  console.log(project.Ableton.LiveSet.Tracks);
   const builder = new xml2js.Builder({
     attrkey: '_attrs',
     charkey: '_text',
+    renderOpts: {
+      indent: '    ',
+    },
   });
 
   const fixedRoot = fixIds(project);

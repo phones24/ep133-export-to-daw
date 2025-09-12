@@ -26,10 +26,11 @@ function ExportProject() {
   );
   const [useSampler, setUseSampler] = usePersistedState('export_useSampler', false);
   const [clips, setClips] = usePersistedState('export_clips', false);
+  const [groupTracks, setGroupTracks] = usePersistedState('export_groupTracks', false);
   const appState = useAppState();
   const { device } = useDevice();
   const { startExport, isPending, pendingStatus, percentage, reset, result, error, sampleReport } =
-    useExportProject(format, { includeArchivedSamples, useSampler, clips });
+    useExportProject(format, { includeArchivedSamples, useSampler, clips, groupTracks });
 
   useEffect(() => {
     reset();
@@ -50,7 +51,7 @@ function ExportProject() {
       {open && !!device && (
         <Dialog isOpen onClose={() => setOpen(false)}>
           <div className="flex flex-col gap-2 min-w-[600px]">
-            <p>Select project format</p>
+            <h3 className="text-lg font-semibold">Export</h3>
             <Select
               onChange={(e: JSX.TargetedEvent<HTMLSelectElement, Event>) =>
                 setFormat(e.currentTarget.value as ExportFormatId)
@@ -95,6 +96,12 @@ function ExportProject() {
                     checked={clips}
                     onChange={(checked) => setClips(checked)}
                     title="Session clips instead of arrangements"
+                    disabled={isPending}
+                  />
+                  <CheckBox
+                    checked={groupTracks}
+                    onChange={(checked) => setGroupTracks(checked)}
+                    title="Group tracks"
                     disabled={isPending}
                   />
                 </>

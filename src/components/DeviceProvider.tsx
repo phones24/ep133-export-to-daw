@@ -20,18 +20,24 @@ function DeviceProvider({ children }: any) {
     api.init({
       debug: false,
       onDeviceFound: (_device: Device) => {
-        trackEvent('device_found', _device.metadata);
+        try {
+          trackEvent('device_found', _device.metadata);
 
-        if (skuFilter.length === 0 || skuFilter.includes(_device.sku)) {
-          const _fileHandler = new SysExFileHandler(api, true, 1000);
-          const _deviceService = new DeviceService(_device, _fileHandler, null, false);
+          if (skuFilter.length === 0 || skuFilter.includes(_device.sku)) {
+            const _fileHandler = new SysExFileHandler(api, true, 1000);
+            const _deviceService = new DeviceService(_device, _fileHandler, null, false);
 
-          setFileHandler(_fileHandler);
-          setDevice(_device);
-          setDeviceService(_deviceService);
+            setFileHandler(_fileHandler);
+            setDevice(_device);
+            setDeviceService(_deviceService);
 
-          Sentry.setTag('device.os_version', _device.metadata?.os_version);
-          Sentry.setTag('device.serial', _device.metadata?.serial);
+            Sentry.setTag('device.os_version', _device.metadata?.os_version);
+            Sentry.setTag('device.serial', _device.metadata?.serial);
+          }
+        } catch (err: any) {
+          setDeviceError(err);
+
+          throw err;
         }
       },
       onDeviceUpdated: (_device: any) => {

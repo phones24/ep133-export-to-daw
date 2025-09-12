@@ -71,7 +71,7 @@ function Main() {
 
           {appState.includes(APP_STATES.NO_PROJECT_SELECTED) && (
             <AppStateDisplay
-              title="No Project Selected"
+              title="Ready to Export!"
               message="Please select a project from the dropdown."
             />
           )}
@@ -84,7 +84,7 @@ function Main() {
           )}
 
           {appState.includes(APP_STATES.ERROR) && error && (
-            <AppStateDisplay title="Error" message={error.message} />
+            <AppStateDisplay title="Error" message={error?.message || 'Unknown error'} />
           )}
         </main>
         <div className="bg-[#dbdddb] px-3 py-2 border-1 border-black text-xs text-black/70">
