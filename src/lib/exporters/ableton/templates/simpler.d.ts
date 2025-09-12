@@ -1,8 +1,5 @@
-// Types for simpler.xml template
 interface ValueElement {
-  _attrs: {
-    Value: any;
-  };
+  '@Value': any;
 }
 
 interface LomIdElement {
@@ -16,11 +13,11 @@ interface ManualElement extends LomIdElement {
     Max: ValueElement;
   };
   AutomationTarget: {
-    _attrs: { Id: number };
+    '@Id': number;
     LockEnvelope: ValueElement;
   };
   ModulationTarget?: {
-    _attrs: { Id: number };
+    '@Id': number;
     LockEnvelope: ValueElement;
   };
   MidiCCOnOffThresholds?: {

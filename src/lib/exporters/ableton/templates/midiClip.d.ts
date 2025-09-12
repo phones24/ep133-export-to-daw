@@ -1,29 +1,22 @@
-// Types for midiClip.xml template
 interface ValueElement {
-  _attrs: {
-    Value: any;
-  };
+  '@Value': any;
 }
 
 interface MidiClipAttrs {
-  Id: number;
-  Time: number;
+  '@Id': number;
+  '@Time': number;
 }
 
 interface MidiNoteEvent {
-  _attrs: {
-    Time: number;
-    Duration: number;
-    Velocity: number;
-    OffVelocity: number;
-    NoteId: number;
-  };
+  '@Time': number;
+  '@Duration': number;
+  '@Velocity': number;
+  '@OffVelocity': number;
+  '@NoteId': number;
 }
 
 interface KeyTrack {
-  _attrs: {
-    Id: number;
-  };
+  '@Id': number;
   Notes: {
     MidiNoteEvent: MidiNoteEvent[];
   };
@@ -31,7 +24,8 @@ interface KeyTrack {
 }
 
 export interface ALSMidiClipContent {
-  _attrs: MidiClipAttrs;
+  '@Id': number;
+  '@Time': number;
   LomId: ValueElement;
   LomIdView: ValueElement;
   CurrentStart: ValueElement;
@@ -53,7 +47,7 @@ export interface ALSMidiClipContent {
   TimeSignature: {
     TimeSignatures: {
       RemoteableTimeSignature: {
-        _attrs: { Id: number };
+        '@Id': number;
         Numerator: ValueElement;
         Denominator: ValueElement;
         Time: ValueElement;

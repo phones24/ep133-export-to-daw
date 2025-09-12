@@ -1,4 +1,4 @@
-import xml2js from 'xml2js';
+import { create } from 'xmlbuilder2';
 
 const MIN_ID = 22000;
 const START_ID = 22000;
@@ -10,15 +10,6 @@ export async function loadTemplate<T>(templateName: string): Promise<T> {
   if (templateCache[templateName]) {
     return templateCache[templateName];
   }
-
-  const parser = new xml2js.Parser({
-    attrkey: '_attrs',
-    charkey: '_text',
-    explicitArray: false,
-    explicitCharkey: true,
-    preserveChildrenOrder: true,
-    // explicitChildren: true,
-  });
 
   let templateModule: any;
   switch (templateName) {
@@ -47,9 +38,9 @@ export async function loadTemplate<T>(templateName: string): Promise<T> {
       throw new Error(`Unknown template: ${templateName}`);
   }
 
-  const parsed = await parser.parseStringPromise(templateModule.default);
+  const parsed = create(templateModule.default).toObject();
   templateCache[templateName] = parsed;
-  return parsed;
+  return parsed as T;
 }
 
 export function koEnvRangeToSeconds(value: number, maxSeconds: number) {
@@ -64,11 +55,11 @@ export function fixIds(node: any): any {
     return node.map((n) => fixIds(n));
   }
 
-  if (node?._attrs?.Id) {
-    const idNum = parseInt(String(node._attrs.Id), 10);
+  if (node?.['@Id']) {
+    const idNum = parseInt(String(node['@Id']), 10);
 
     if (idNum > MIN_ID) {
-      node._attrs.Id = _id;
+      node['@Id'] = _id;
 
       _id++;
     }
@@ -76,7 +67,7 @@ export function fixIds(node: any): any {
 
   if (typeof node === 'object') {
     Object.keys(node).forEach((key) => {
-      if (key !== '_attrs') {
+      if (!key.startsWith('@')) {
         node[key] = fixIds(node[key]);
       }
     });

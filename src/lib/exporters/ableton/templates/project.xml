@@ -6,8 +6,6 @@
     <LomId Value="0" />
     <LomIdView Value="0" />
     <Tracks>
-      <GroupTrack />
-      <MidiTrack />
     </Tracks>
     <MasterTrack>
       <LomId Value="0" />
@@ -1020,8 +1018,6 @@
           <SourceContext />
         </Groove>
       </Grooves>
-      <!-- <DefaultGrooveId Value="-1" /> -->
-      <!-- <GroovesListWrapper LomId="0" /> -->
     </GroovePool>
     <AutomationMode Value="false" />
     <SnapAutomationToGrid Value="true" />

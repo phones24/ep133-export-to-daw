@@ -1,8 +1,5 @@
-// Types for sampler.xml template
 interface ValueElement {
-  _attrs: {
-    Value: any;
-  };
+  '@Value': any;
 }
 
 interface LomIdElement {
@@ -16,11 +13,11 @@ interface ManualElement extends LomIdElement {
     Max: ValueElement;
   };
   AutomationTarget: {
-    _attrs: { Id: number };
+    '@Id': number;
     LockEnvelope: ValueElement;
   };
   ModulationTarget?: {
-    _attrs: { Id: number };
+    '@Id': number;
     LockEnvelope: ValueElement;
   };
   MidiCCOnOffThresholds?: {
@@ -41,7 +38,7 @@ interface FileRef {
 }
 
 interface AbletonDefaultPresetRef {
-  _attrs: { Id: number };
+  '@Id': number;
   FileRef: FileRef;
   DeviceId: {
     Name: string;
@@ -53,7 +50,7 @@ interface PresetRef {
 }
 
 interface BranchSourceContext {
-  _attrs: { Id: number };
+  '@Id': number;
   OriginalFileRef: {
     FileRef: FileRef;
   };
@@ -84,7 +81,7 @@ interface WarpMarkers {
 interface TimeSignature {
   TimeSignatures: {
     RemoteableTimeSignature: {
-      _attrs: { Id: number };
+      '@Id': number;
       Numerator: ValueElement;
       Denominator: ValueElement;
       Time: ValueElement;
@@ -148,12 +145,10 @@ interface ReleaseLoop {
 }
 
 interface MultiSamplePart {
-  _attrs: {
-    Id: number;
-    InitUpdateAreSlicesFromOnsetsEditableAfterRead: boolean;
-    HasImportedSlicePoints: boolean;
-    NeedsAnalysisData: boolean;
-  };
+  '@Id': number;
+  '@InitUpdateAreSlicesFromOnsetsEditableAfterRead': boolean;
+  '@HasImportedSlicePoints': boolean;
+  '@NeedsAnalysisData': boolean;
   LomId: ValueElement;
   Name: ValueElement;
   Selection: ValueElement;
@@ -261,7 +256,7 @@ interface Pitch {
 }
 
 interface SimplerFilter {
-  _attrs: { Id: number };
+  '@Id': number;
   LegacyType: ManualElement;
   Type: ManualElement;
   CircuitLpHp: ManualElement;
@@ -338,7 +333,7 @@ interface VolumeAndPan {
 }
 
 export interface ALSMultiSamplerContent {
-  _attrs: { Id: number };
+  '@Id': number;
   LomId: ValueElement;
   LomIdView: ValueElement;
   IsExpanded: ValueElement;
@@ -349,7 +344,7 @@ export interface ALSMultiSamplerContent {
     LomId: ValueElement;
   };
   Pointee: {
-    _attrs: { Id: number };
+    '@Id': number;
   };
   LastSelectedTimeableIndex: ValueElement;
   LastSelectedClipEnvelopeIndex: ValueElement;

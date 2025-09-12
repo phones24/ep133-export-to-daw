@@ -59,6 +59,7 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
         return;
       }
 
+      setError(null);
       setIsPending(true);
       setPercentage(1);
 
@@ -85,6 +86,7 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
       Sentry.captureException(err);
 
       setError(err);
+      setIsPending(false);
 
       trackEvent('export_error');
     }

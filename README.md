@@ -8,6 +8,7 @@ Try it out on https://ep133-to-daw.cc/
 
 ## Latest news
 
+- [12/09/2025] Added the ability to group tracks (4 groups, same as EP) for Ableton + bugfixes
 - [09/09/2025] Ableton minumum supported version is now 11.3.35
 - [09/09/2025] App is now working offline (PWA mode)
 - [08/09/2025] Added Ableton 12 support + more note duration bugs are fixed

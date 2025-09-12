@@ -21,8 +21,6 @@
   <TrackUnfolded Value="true" />
   <DevicesListWrapper LomId="0" />
   <ClipSlotsListWrapper LomId="0" />
-  <!-- <ArrangementClipsListWrapper LomId="0" />
-  <TakeLanesListWrapper LomId="0" /> -->
   <ViewData Value="{}" />
   <TakeLanes>
     <TakeLanes />
@@ -60,7 +58,6 @@
         <FirstNoteChannel Value="1" />
         <LastNoteChannel Value="15" />
       </MpeSettings>
-      <!-- <MpePitchBendUsesTuning Value="true" /> -->
     </AudioInputRouting>
     <MidiInputRouting>
       <Target Value="MidiIn/External.All/-1" />
@@ -71,7 +68,6 @@
         <FirstNoteChannel Value="1" />
         <LastNoteChannel Value="15" />
       </MpeSettings>
-      <!-- <MpePitchBendUsesTuning Value="true" /> -->
     </MidiInputRouting>
     <AudioOutputRouting>
       <Target Value="AudioOut/Master" />
@@ -82,7 +78,6 @@
         <FirstNoteChannel Value="1" />
         <LastNoteChannel Value="15" />
       </MpeSettings>
-      <!-- <MpePitchBendUsesTuning Value="true" /> -->
     </AudioOutputRouting>
     <MidiOutputRouting>
       <Target Value="MidiOut/None" />
@@ -93,13 +88,11 @@
         <FirstNoteChannel Value="1" />
         <LastNoteChannel Value="15" />
       </MpeSettings>
-      <!-- <MpePitchBendUsesTuning Value="true" /> -->
     </MidiOutputRouting>
     <Mixer>
       <LomId Value="0" />
       <LomIdView Value="0" />
       <IsExpanded Value="true" />
-      <!-- <BreakoutIsExpanded Value="false" /> -->
       <On>
         <LomId Value="0" />
         <Manual Value="true" />
@@ -127,7 +120,6 @@
       <SourceContext>
         <Value />
       </SourceContext>
-      <!-- <MpePitchBendUsesTuning Value="true" /> -->
       <Sends />
       <Speaker>
         <LomId Value="0" />
@@ -205,10 +197,6 @@
         <AutomationTarget Id="22193">
           <LockEnvelope Value="0" />
         </AutomationTarget>
-        <!-- <MidiControllerRange>
-          <Min Value="0" />
-          <Max Value="2" />
-        </MidiControllerRange> -->
       </CrossFadeState>
       <SendsListWrapper LomId="0" />
     </Mixer>
@@ -216,7 +204,6 @@
       <LomId Value="0" />
       <LomIdView Value="0" />
       <IsExpanded Value="true" />
-      <!-- <BreakoutIsExpanded Value="false" /> -->
       <On>
         <LomId Value="0" />
         <Manual Value="true" />
@@ -244,7 +231,6 @@
       <SourceContext>
         <Value />
       </SourceContext>
-      <!-- <MpePitchBendUsesTuning Value="true" /> -->
       <ClipSlotList>
         <ClipSlot Id="0">
           <LomId Value="0" />
@@ -756,7 +742,6 @@
       <SourceContext>
         <Value />
       </SourceContext>
-      <!-- <MpePitchBendUsesTuning Value="true" /> -->
       <ClipSlotList>
         <ClipSlot Id="0">
           <LomId Value="0" />

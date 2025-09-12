@@ -1,8 +1,6 @@
 // Types for midiTrack.xml template
 interface ValueElement {
-  _attrs: {
-    Value: any;
-  };
+  '@Value': any;
 }
 
 interface LomIdElement {
@@ -16,11 +14,11 @@ interface ManualElement extends LomIdElement {
     Max: ValueElement;
   };
   AutomationTarget: {
-    _attrs: { Id: number };
+    '@Id': number;
     LockEnvelope: ValueElement;
   };
   ModulationTarget?: {
-    _attrs: { Id: number };
+    '@Id': number;
     LockEnvelope: ValueElement;
   };
   MidiCCOnOffThresholds?: {
@@ -42,7 +40,7 @@ interface Routing {
 }
 
 interface AutomationLane {
-  _attrs: { Id: number };
+  '@Id': number;
   SelectedDevice: ValueElement;
   SelectedEnvelope: ValueElement;
   IsContentSelectedInDocument: ValueElement;
@@ -71,7 +69,7 @@ interface Mixer {
     LomId: ValueElement;
   };
   Pointee: {
-    _attrs: { Id: number };
+    '@Id': number;
   };
   LastSelectedTimeableIndex: ValueElement;
   LastSelectedClipEnvelopeIndex: ValueElement;
@@ -103,7 +101,7 @@ interface Mixer {
 }
 
 interface ClipSlot {
-  _attrs: { Id: number };
+  '@Id': number;
   LomId: ValueElement;
   ClipSlot: {
     Value?: MidiClip;
@@ -140,7 +138,7 @@ interface Recorder {
 }
 
 interface ControllerTarget {
-  _attrs: { Id: number };
+  '@Id': number;
   LockEnvelope: ValueElement;
 }
 
@@ -159,7 +157,7 @@ interface MainSequencer {
     LomId: ValueElement;
   };
   Pointee: {
-    _attrs: { Id: number };
+    '@Id': number;
   };
   LastSelectedTimeableIndex: ValueElement;
   LastSelectedClipEnvelopeIndex: ValueElement;
@@ -194,7 +192,7 @@ interface FreezeSequencer {
     LomId: ValueElement;
   };
   Pointee: {
-    _attrs: { Id: number };
+    '@Id': number;
   };
   LastSelectedTimeableIndex: ValueElement;
   LastSelectedClipEnvelopeIndex: ValueElement;
@@ -223,35 +221,35 @@ interface FreezeSequencer {
     };
   };
   VolumeModulationTarget: {
-    _attrs: { Id: number };
+    '@Id': number;
     LockEnvelope: ValueElement;
   };
   TranspositionModulationTarget: {
-    _attrs: { Id: number };
+    '@Id': number;
     LockEnvelope: ValueElement;
   };
   TransientEnvelopeModulationTarget: {
-    _attrs: { Id: number };
+    '@Id': number;
     LockEnvelope: ValueElement;
   };
   GrainSizeModulationTarget: {
-    _attrs: { Id: number };
+    '@Id': number;
     LockEnvelope: ValueElement;
   };
   FluxModulationTarget: {
-    _attrs: { Id: number };
+    '@Id': number;
     LockEnvelope: ValueElement;
   };
   SampleOffsetModulationTarget: {
-    _attrs: { Id: number };
+    '@Id': number;
     LockEnvelope: ValueElement;
   };
   ComplexProFormantsModulationTarget: {
-    _attrs: { Id: number };
+    '@Id': number;
     LockEnvelope: ValueElement;
   };
   ComplexProEnvelopeModulationTarget: {
-    _attrs: { Id: number };
+    '@Id': number;
     LockEnvelope: ValueElement;
   };
   PitchViewScrollPosition: ValueElement;
@@ -298,12 +296,11 @@ interface ControllerLayoutCustomization {
 }
 
 export interface ALSMidiTrackContent {
-  _attrs: {
-    Id: number;
-    SelectedToolPanel: number;
-    SelectedTransformationName: string;
-    SelectedGeneratorName: string;
-  };
+  '@Id': number;
+  '@SelectedToolPanel': number;
+  '@SelectedTransformationName': string;
+  '@SelectedGeneratorName': string;
+  '@_internalGroupId'?: string;
   LomId: ValueElement;
   LomIdView: ValueElement;
   IsContentSelectedInDocument: ValueElement;

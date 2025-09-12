@@ -1,12 +1,5 @@
-// Types for scene.xml template
 interface ValueElement {
-  _attrs: {
-    Value: any;
-  };
-}
-
-interface SceneAttrs {
-  Id: number;
+  '@Value': any;
 }
 
 interface FollowAction {
@@ -23,7 +16,7 @@ interface FollowAction {
 }
 
 export interface ALSSceneContent {
-  _attrs: SceneAttrs;
+  '@Id': number;
   FollowAction: FollowAction;
   Name: ValueElement;
   Annotation: ValueElement;
@@ -34,9 +27,7 @@ export interface ALSSceneContent {
   IsTimeSignatureEnabled: ValueElement;
   LomId: ValueElement;
   ClipSlotsListWrapper: {
-    _attrs: {
-      LomId: number;
-    };
+    '@LomId': number;
   };
 }
 

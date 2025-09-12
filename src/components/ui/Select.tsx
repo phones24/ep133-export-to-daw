@@ -11,7 +11,6 @@ function Select({ children, className = '', ...props }: SelectProps) {
     <div className={clsx('px-2 bg-[#dbdddb] border-1 border-black h-[42px]', className)}>
       <select
         className="outline-none disabled:opacity-80 disabled:cursor-not-allowed disabled:text-gray-400 p-2 w-full h-[42px]"
-        style={{ appearance: 'base-select' }}
         {...props}
       >
         {children}

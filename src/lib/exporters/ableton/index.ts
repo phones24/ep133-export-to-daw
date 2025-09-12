@@ -1,5 +1,5 @@
 import JSZip from 'jszip';
-import xml2js from 'xml2js';
+import { create } from 'xmlbuilder2';
 import { DeviceService } from '../../../ep133/device-service';
 import {
   ExporterParams,
@@ -10,7 +10,6 @@ import {
   SampleReport,
   Sound,
 } from '../../../types/types';
-import { GROUPS } from '../../constants';
 import dawProjectTransformer, {
   DawClip,
   DawLane,
@@ -18,9 +17,12 @@ import dawProjectTransformer, {
   DawTrack,
 } from '../../transformers/dawProject';
 import { collectSamples } from '../utils';
+import { ALSGroupTrack } from './templates/groupTrack';
 import { ALSMidiClip, ALSMidiClipContent } from './templates/midiClip';
-import { ALSMidiTrack, ALSMidiTrackContent } from './templates/midiTrack';
+import { ALSMidiTrack } from './templates/midiTrack';
+import { ALSProject } from './templates/project';
 import { ALSMultiSamplerContent, ALSSampler } from './templates/sampler';
+import { ALSScene } from './templates/scene';
 import { ALSOriginalSimplerContent, ALSSimpler } from './templates/simpler';
 import { fixIds, getId, gzipString, koEnvRangeToSeconds, loadTemplate } from './utils';
 
@@ -37,22 +39,22 @@ async function buildMidiClip(
   const start = time;
   const end = time + koClip.sceneBars * 4;
 
-  midiClip._attrs.Id = clipIdx;
-  midiClip._attrs.Time = time;
-  midiClip.CurrentStart._attrs.Value = start;
-  midiClip.CurrentEnd._attrs.Value = end;
-  midiClip.Loop.LoopOn._attrs.Value = 'true';
-  midiClip.Loop.LoopStart._attrs.Value = 0;
-  midiClip.Loop.LoopEnd._attrs.Value = koClip.bars * 4;
-  midiClip.Loop.HiddenLoopStart._attrs.Value = 0;
-  midiClip.Loop.HiddenLoopEnd._attrs.Value = koClip.bars * 4;
-  midiClip.Color._attrs.Value = color;
-  midiClip.Name._attrs.Value = `Scene ${koClip.sceneName}`;
+  midiClip['@Id'] = clipIdx;
+  midiClip['@Time'] = time;
+  midiClip.CurrentStart['@Value'] = start;
+  midiClip.CurrentEnd['@Value'] = end;
+  midiClip.Loop.LoopOn['@Value'] = 'true';
+  midiClip.Loop.LoopStart['@Value'] = 0;
+  midiClip.Loop.LoopEnd['@Value'] = koClip.bars * 4;
+  midiClip.Loop.HiddenLoopStart['@Value'] = 0;
+  midiClip.Loop.HiddenLoopEnd['@Value'] = koClip.bars * 4;
+  midiClip.Color['@Value'] = color;
+  midiClip.Name['@Value'] = `Scene ${koClip.sceneName}`;
 
   if (clipForLauncher) {
-    midiClip._attrs.Time = 0;
-    midiClip.CurrentStart._attrs.Value = 0;
-    midiClip.CurrentEnd._attrs.Value = koClip.bars * 4;
+    midiClip['@Time'] = 0;
+    midiClip.CurrentStart['@Value'] = 0;
+    midiClip.CurrentEnd['@Value'] = koClip.bars * 4;
   }
 
   // ableton group notes
@@ -72,9 +74,7 @@ async function buildMidiClip(
 
   Object.entries(grouppedNotes).forEach(([note, notes], groupIndex) => {
     midiClip.Notes.KeyTracks.KeyTrack.push({
-      _attrs: {
-        Id: groupIndex,
-      },
+      '@Id': groupIndex,
       Notes: {
         MidiNoteEvent: notes.map((note, noteIndex) => {
           let dur = note.duration / 96;
@@ -86,20 +86,16 @@ async function buildMidiClip(
           }
 
           return {
-            _attrs: {
-              Time: note.position / 96,
-              Duration: dur,
-              Velocity: note.velocity,
-              OffVelocity: 64,
-              NoteId: _noteId++,
-            },
+            '@Time': note.position / 96,
+            '@Duration': dur,
+            '@Velocity': note.velocity,
+            '@OffVelocity': 64,
+            '@NoteId': _noteId++,
           };
         }),
       },
       MidiKey: {
-        _attrs: {
-          Value: note,
-        },
+        '@Value': note,
       },
     });
   });
@@ -129,18 +125,18 @@ async function buildSamplerDevice(
   }
 
   device.LastPresetRef.Value = {};
-  device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleRef.FileRef.RelativePath._attrs.Value = `Samples/Imported/${koTrack.sampleName}`;
-  device.Player.MultiSampleMap.SampleParts.MultiSamplePart.Name._attrs.Value = koTrack.name;
-  device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleStart._attrs.Value =
-    koTrack.trimLeft;
-  device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleEnd._attrs.Value =
-    koTrack.trimRight;
-  device.VolumeAndPan.Envelope.ReleaseTime.Manual._attrs.Value =
+  device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleRef.FileRef.RelativePath[
+    '@Value'
+  ] = `Samples/Imported/${koTrack.sampleName}`;
+  device.Player.MultiSampleMap.SampleParts.MultiSamplePart.Name['@Value'] = koTrack.name;
+  device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleStart['@Value'] = koTrack.trimLeft;
+  device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleEnd['@Value'] = koTrack.trimRight;
+  device.VolumeAndPan.Envelope.ReleaseTime.Manual['@Value'] =
     koEnvRangeToSeconds(koTrack.release, koTrack.soundLength) * 1000;
-  device.VolumeAndPan.Envelope.AttackTime.Manual._attrs.Value =
+  device.VolumeAndPan.Envelope.AttackTime.Manual['@Value'] =
     koEnvRangeToSeconds(koTrack.attack, koTrack.soundLength) * 1000;
-  device.VolumeAndPan.Panorama.Manual._attrs.Value = koTrack.pan;
-  device.Pitch.TransposeKey.Manual._attrs.Value = (koTrack.pitch || 0) + (60 - koTrack.rootNote); // root note of the sample should be taken into account
+  device.VolumeAndPan.Panorama.Manual['@Value'] = koTrack.pan;
+  device.Pitch.TransposeKey.Manual['@Value'] = (koTrack.pitch || 0) + (60 - koTrack.rootNote); // root note of the sample should be taken into account
 
   return device;
 }
@@ -151,19 +147,20 @@ async function buildTrack(
   exporterParams: ExporterParams,
   lanes: DawLane[],
   maxScenes: number,
-): Promise<ALSMidiTrackContent> {
+  trackGroupId: number,
+): Promise<ALSMidiTrack> {
   const midiTrackTemplate = await loadTemplate<ALSMidiTrack>('midiTrack');
   const midiTrack = structuredClone(midiTrackTemplate.MidiTrack);
 
-  midiTrack._attrs.Id = trackIdx;
-  midiTrack._attrs._internalGroupId = koTrack.group;
-  midiTrack.Name.EffectiveName._attrs.Value = koTrack.soundId
+  midiTrack['@Id'] = trackIdx;
+  midiTrack.Name.EffectiveName['@Value'] = koTrack.soundId
     ? `${String(koTrack.soundId).padStart(3, '0')} ${koTrack.name}`
     : koTrack.name;
-  midiTrack.Name.UserName._attrs.Value = midiTrack.Name.EffectiveName._attrs.Value;
-  midiTrack.Color._attrs.Value = 8 + trackIdx; // started with 8th color in the Ableton palette, why not
+  midiTrack.Name.UserName['@Value'] = midiTrack.Name.EffectiveName['@Value'];
+  midiTrack.Color['@Value'] = 8 + trackIdx; // started with 8th color in the Ableton palette, why not
   midiTrack.DeviceChain.MainSequencer.ClipTimeable.ArrangerAutomation.Events.MidiClip = [];
-  midiTrack.DeviceChain.Mixer.Volume.Manual._attrs.Value = koTrack.volume / 2;
+  midiTrack.DeviceChain.Mixer.Volume.Manual['@Value'] = koTrack.volume / 2;
+  midiTrack.TrackGroupId['@Value'] = trackGroupId;
 
   const samplerDevice = await buildSamplerDevice(koTrack, exporterParams);
 
@@ -179,39 +176,27 @@ async function buildTrack(
   if (exporterParams.clips) {
     for (let sc = 0; sc < maxScenes; sc++) {
       midiTrack.DeviceChain.MainSequencer.ClipSlotList.ClipSlot[sc] = {
-        _attrs: {
-          Id: sc,
-        },
+        '@Id': sc,
         LomId: {
-          _attrs: {
-            Value: 0,
-          },
+          '@Value': 0,
         },
         ClipSlot: {
           Value: {},
         },
       };
       midiTrack.DeviceChain.FreezeSequencer.ClipSlotList.ClipSlot[sc] = {
-        _attrs: {
-          Id: sc,
-        },
+        '@Id': sc,
         LomId: {
-          _attrs: {
-            Value: 0,
-          },
+          '@Value': 0,
         },
         ClipSlot: {
           Value: {},
         },
         HasStop: {
-          _attrs: {
-            Value: 'true',
-          },
+          '@Value': 'true',
         },
         NeedRefreeze: {
-          _attrs: {
-            Value: 'true',
-          },
+          '@Value': 'true',
         },
       };
     }
@@ -222,7 +207,7 @@ async function buildTrack(
   if (koLane) {
     if (!exporterParams.clips) {
       for (const [clipIdx, koClip] of koLane.clips.entries()) {
-        const midiClip = await buildMidiClip(koClip, clipIdx, midiTrack.Color._attrs.Value);
+        const midiClip = await buildMidiClip(koClip, clipIdx, midiTrack.Color['@Value']);
 
         midiTrack.DeviceChain.MainSequencer.ClipTimeable.ArrangerAutomation.Events.MidiClip.push(
           midiClip,
@@ -230,7 +215,7 @@ async function buildTrack(
       }
     } else {
       for (const koClip of koLane.clips.values()) {
-        const midiClip = await buildMidiClip(koClip, 0, midiTrack.Color._attrs.Value, true);
+        const midiClip = await buildMidiClip(koClip, 0, midiTrack.Color['@Value'], true);
 
         midiTrack.DeviceChain.MainSequencer.ClipSlotList.ClipSlot[koClip.sceneIndex] = {
           ...midiTrack.DeviceChain.MainSequencer.ClipSlotList.ClipSlot[koClip.sceneIndex],
@@ -245,23 +230,23 @@ async function buildTrack(
   }
 
   if (exporterParams.groupTracks) {
-    midiTrack.DeviceChain.AudioOutputRouting.Target._attrs.Value = 'AudioOut/GroupTrack';
-    midiTrack.DeviceChain.AudioOutputRouting.UpperDisplayString._attrs.Value = 'Group';
+    midiTrack.DeviceChain.AudioOutputRouting.Target['@Value'] = 'AudioOut/GroupTrack';
+    midiTrack.DeviceChain.AudioOutputRouting.UpperDisplayString['@Value'] = 'Group';
   }
 
-  return midiTrack;
+  return { MidiTrack: midiTrack };
 }
 
 async function buildScenes(scenes: DawScene[], settings: ProjectSettings) {
-  const sceneTemplate = await loadTemplate<any>('scene');
+  const sceneTemplate = await loadTemplate<ALSScene>('scene');
   const result: any[] = [];
 
   scenes.forEach((scene, idx) => {
     const sceneContent = structuredClone(sceneTemplate.Scene);
 
-    sceneContent._attrs.Id = idx;
-    sceneContent.Name._attrs.Value = scene.name;
-    sceneContent.Tempo._attrs.Value = settings.bpm;
+    sceneContent['@Id'] = idx;
+    sceneContent.Name['@Value'] = scene.name;
+    sceneContent.Tempo['@Value'] = settings.bpm;
 
     result.push(sceneContent);
   });
@@ -269,31 +254,51 @@ async function buildScenes(scenes: DawScene[], settings: ProjectSettings) {
   return result;
 }
 
-async function buildGroupTracks(tracks: DawTrack[]) {
-  const groupTrackTemplate = await loadTemplate<any>('groupTrack');
+async function buildGroupTrack(track: DawTrack, id: number) {
+  const groupTrackTemplate = await loadTemplate<ALSGroupTrack>('groupTrack');
+  const groupTrack = structuredClone(groupTrackTemplate.GroupTrack);
+
+  groupTrack['@Id'] = id;
+  groupTrack.Name.EffectiveName['@Value'] = track.group.toLocaleUpperCase();
+  groupTrack.Name.UserName['@Value'] = track.group.toLocaleUpperCase();
+  groupTrack.Color['@Value'] = 20 + id;
+
+  return { GroupTrack: groupTrack };
+}
+
+async function buildTracks(
+  tracks: DawTrack[],
+  lanes: DawLane[],
+  scenes: DawScene[],
+  exporterParams: ExporterParams,
+) {
   const result = [];
+  let id = 1;
+  let trackGroupId = -1;
+  let currentGroup = '';
 
-  const usedGroups = tracks.reduce(
-    (acc, track) => {
-      acc[track.group] = true;
-      return acc;
-    },
+  // is the tracks are grouped, we need to create a group track for each group BEFORE the midi tracks
+  for (const koTrack of tracks.sort((a, b) => a.group.localeCompare(b.group))) {
+    if (exporterParams.groupTracks && koTrack.group !== currentGroup[0]) {
+      trackGroupId = id++;
+      currentGroup = koTrack.group;
 
-    {} as Record<string, boolean>,
-  );
-
-  Object.keys(usedGroups)
-    .slice(0, 1)
-    .forEach((group, idx) => {
-      const groupTrack = structuredClone(groupTrackTemplate.GroupTrack);
-
-      groupTrack._attrs.Id = tracks.length + idx + 1;
-      groupTrack._attrs._internalId = group;
-      groupTrack.Name.EffectiveName._attrs.Value = group.toLocaleUpperCase();
-      groupTrack.Color._attrs.Value = 20 + idx;
+      const groupTrack = await buildGroupTrack(koTrack, trackGroupId);
 
       result.push(groupTrack);
-    });
+    }
+
+    const midiTrack = await buildTrack(
+      koTrack,
+      id++,
+      exporterParams,
+      lanes,
+      scenes.length,
+      trackGroupId,
+    );
+
+    result.push(midiTrack);
+  }
 
   return result;
 }
@@ -311,30 +316,22 @@ async function buildProject(
     console.log('transformedData', transformedData);
   }
 
-  const projectTemplate = await loadTemplate<any>('project');
-  console.log(projectTemplate);
+  const projectTemplate = await loadTemplate<ALSProject>('project');
   const project = structuredClone(projectTemplate);
-  const maxScenes = transformedData.scenes.length;
 
   // setting up tempo
-  project.Ableton.LiveSet.MasterTrack.DeviceChain.Mixer.Tempo.Manual._attrs.Value =
+  project.Ableton.LiveSet.MasterTrack.DeviceChain.Mixer.Tempo.Manual['@Value'] =
     projectData.settings.bpm;
-  project.Ableton.LiveSet.MasterTrack.AutomationEnvelopes.Envelopes.AutomationEnvelope[1].Automation.Events.FloatEvent._attrs.Value =
-    projectData.settings.bpm;
+  project.Ableton.LiveSet.MasterTrack.AutomationEnvelopes.Envelopes.AutomationEnvelope[1].Automation.Events.FloatEvent[
+    '@Value'
+  ] = projectData.settings.bpm;
 
-  project.Ableton.LiveSet.Tracks.GroupTrack = [];
-  project.Ableton.LiveSet.Tracks.MidiTrack = [];
-
-  for (const [trackIdx, koTrack] of transformedData.tracks.entries()) {
-    const midiTrack = await buildTrack(
-      koTrack,
-      trackIdx,
-      exporterParams,
-      transformedData.lanes,
-      maxScenes,
-    );
-    project.Ableton.LiveSet.Tracks.MidiTrack.push(midiTrack);
-  }
+  project.Ableton.LiveSet.Tracks['#'] = await buildTracks(
+    transformedData.tracks,
+    transformedData.lanes,
+    transformedData.scenes,
+    exporterParams,
+  );
 
   if (exporterParams.clips) {
     project.Ableton.LiveSet.Scenes.Scene = await buildScenes(
@@ -343,45 +340,14 @@ async function buildProject(
     );
   }
 
-  if (exporterParams.groupTracks) {
-    project.Ableton.LiveSet.Tracks.GroupTrack = await buildGroupTracks(transformedData.tracks);
-
-    project.Ableton.LiveSet.Tracks.MidiTrack.forEach((track) => {
-      const foundGroup = project.Ableton.LiveSet.Tracks.GroupTrack.find(
-        (group) => group._attrs._internalId === track._attrs._internalGroupId,
-      );
-
-      if (foundGroup) {
-        track.TrackGroupId._attrs.Value = foundGroup._attrs.Id;
-      }
-
-      track._attrs._internalGroupId = undefined;
-    });
-
-    project.Ableton.LiveSet.Tracks.GroupTrack.forEach((track) => {
-      track._attrs._internalId = undefined;
-    });
-
-    // sort tracks and groups
-  }
-
-  console.log(project.Ableton.LiveSet.Tracks);
-  const builder = new xml2js.Builder({
-    attrkey: '_attrs',
-    charkey: '_text',
-    renderOpts: {
-      indent: '    ',
-    },
-  });
-
   const fixedRoot = fixIds(project);
-  fixedRoot.Ableton.LiveSet.NextPointeeId._attrs.Value = getId() + 1;
+  fixedRoot.Ableton.LiveSet.NextPointeeId['@Value'] = getId() + 1;
 
   if (import.meta.env.DEV) {
     console.log('ROOT', fixedRoot);
   }
 
-  const newXml = builder.buildObject(fixedRoot);
+  const newXml = create(fixedRoot).end({ prettyPrint: true });
   const gzipped = gzipString(newXml);
 
   return gzipped;

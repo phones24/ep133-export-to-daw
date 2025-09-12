@@ -4,7 +4,6 @@
 - root note
 - scales
 - ableton: figure out how to stretch samples the same way EP's doing it
-- optional: ableton: group midi channels
 - optional: ableton: add default compressor on the output
 - optional: ableton: add base effect on the bus and sent the tracks to it
 - optional: ableton: support mute groups
