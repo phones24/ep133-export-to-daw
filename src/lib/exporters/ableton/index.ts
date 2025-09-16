@@ -138,6 +138,53 @@ async function buildSamplerDevice(
   device.VolumeAndPan.Panorama.Manual['@Value'] = koTrack.pan;
   device.Pitch.TransposeKey.Manual['@Value'] = (koTrack.pitch || 0) + (60 - koTrack.rootNote); // root note of the sample should be taken into account
 
+  if (koTrack.timeStretch === 'bars') {
+    device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleWarpProperties.IsWarped[
+      '@Value'
+    ] = 'true';
+    device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleWarpProperties.WarpMode[
+      '@Value'
+    ] = 0; // warp in 'Beats' mode
+    device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleWarpProperties.WarpMarkers.WarpMarker =
+      [
+        {
+          '@Id': 0,
+          '@SecTime': 0,
+          '@BeatTime': 0,
+        },
+        {
+          '@Id': 1,
+          '@SecTime': koTrack.soundLength,
+          '@BeatTime': koTrack.timeStretchBars * 4, // convert bars to beats
+        },
+      ];
+  }
+
+  if (koTrack.timeStretch === 'bpm') {
+    // calculating beat length using koTrack.timeStretchBpm
+    const beatTime = koTrack.soundLength / (60 / koTrack.timeStretchBpm);
+
+    device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleWarpProperties.IsWarped[
+      '@Value'
+    ] = 'true';
+    device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleWarpProperties.WarpMode[
+      '@Value'
+    ] = 0; // warp in 'Beats' mode
+    device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleWarpProperties.WarpMarkers.WarpMarker =
+      [
+        {
+          '@Id': 0,
+          '@SecTime': 0,
+          '@BeatTime': 0,
+        },
+        {
+          '@Id': 1,
+          '@SecTime': koTrack.soundLength,
+          '@BeatTime': beatTime,
+        },
+      ];
+  }
+
   return device;
 }
 
@@ -277,7 +324,8 @@ async function buildTracks(
   let trackGroupId = -1;
   let currentGroup = '';
 
-  // is the tracks are grouped, we need to create a group track for each group BEFORE the midi tracks
+  // if the tracks are grouped, we need to create a group track for each group BEFORE the children midi tracks
+  // this took me around 3 hours to figure out
   for (const koTrack of tracks.sort((a, b) => a.group.localeCompare(b.group))) {
     if (exporterParams.groupTracks && koTrack.group !== currentGroup[0]) {
       trackGroupId = id++;

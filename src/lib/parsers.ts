@@ -18,17 +18,17 @@ export function noteNumberToName(noteNumber: number): string {
 function timeStretchBars(data: number) {
   switch (data) {
     case 0:
-      return '1bar';
+      return 1;
     case 1:
-      return '2bars';
+      return 2;
     case 2:
-      return '4bars';
+      return 4;
     case 255:
-      return '1/2bar';
+      return 0.5;
     case 254:
-      return '1/4bar';
+      return 0.25;
     default:
-      return '';
+      return 0;
   }
 }
 
@@ -161,10 +161,14 @@ export function collectSettings(files: TarFile[]): ProjectSettings {
   if (!settings || !settings.data) {
     console.error('Could not find settings file');
 
-    return defaultSettings;
+    return {
+      ...defaultSettings,
+      rawData: new Uint8Array(),
+    };
   }
 
   return {
     bpm: Number(bytesToFloat32(settings.data.slice(4, 8)).toFixed(2)),
+    rawData: settings.data,
   };
 }

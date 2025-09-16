@@ -69,9 +69,9 @@ interface LastPresetRef {
 }
 
 interface WarpMarker {
-  _attrs: { Id: number };
-  SecTime: number;
-  BeatTime: number;
+  '@Id': number;
+  '@SecTime': number;
+  '@BeatTime': number;
 }
 
 interface WarpMarkers {

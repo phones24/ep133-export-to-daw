@@ -14,6 +14,7 @@ export type DawTrack = Pad & {
   sampleName: string;
   sampleChannels: number;
   sampleRate: number;
+  bpm: number;
 };
 
 export type DawLane = {
@@ -77,6 +78,7 @@ function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
           sampleName: getSampleName(sound?.meta?.name, soundId),
           sampleChannels: sound?.meta?.channels || 0,
           sampleRate: sound?.meta?.samplerate || 0,
+          bpm: data.settings.bpm,
         };
 
         (track as any).rawData = undefined;

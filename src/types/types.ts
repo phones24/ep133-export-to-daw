@@ -30,6 +30,7 @@ export type Sound = {
 
 export type ProjectSettings = {
   bpm: number;
+  rawData: Uint8Array;
 };
 
 export type Pattern = {
@@ -68,7 +69,7 @@ export type Pad = {
   rootNote: number;
   timeStretch: 'off' | 'bpm' | 'bars';
   timeStretchBpm: number;
-  timeStretchBars: string;
+  timeStretchBars: number;
 };
 
 export type ProjectRawData = {
