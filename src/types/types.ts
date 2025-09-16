@@ -121,6 +121,7 @@ export type ExporterParams = {
   noSampler?: boolean; // don't use sampler/simpler at all
   useSampler?: boolean; // use sampler/simpler
   groupTracks?: boolean; // group tracks in ableton export
+  drumRackFirstGroup?: boolean; // drum rack first group in ableton export
 };
 
 export type SoundInfo = {

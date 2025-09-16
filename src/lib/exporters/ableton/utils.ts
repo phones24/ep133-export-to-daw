@@ -34,6 +34,12 @@ export async function loadTemplate<T>(templateName: string): Promise<T> {
     case 'groupTrack':
       templateModule = await import('./templates/groupTrack.xml?raw');
       break;
+    case 'drumRack':
+      templateModule = await import('./templates/drumRack.xml?raw');
+      break;
+    case 'drumBranch':
+      templateModule = await import('./templates/drumBranch.xml?raw');
+      break;
     default:
       throw new Error(`Unknown template: ${templateName}`);
   }

@@ -27,10 +27,20 @@ function ExportProject() {
   const [useSampler, setUseSampler] = usePersistedState('export_useSampler', false);
   const [clips, setClips] = usePersistedState('export_clips', false);
   const [groupTracks, setGroupTracks] = usePersistedState('export_groupTracks', false);
+  const [drumRackFirstGroup, setDrumRackFirstGroup] = usePersistedState(
+    'export_drumRackFirstGroup',
+    false,
+  );
   const appState = useAppState();
   const { device } = useDevice();
   const { startExport, isPending, pendingStatus, percentage, reset, result, error, sampleReport } =
-    useExportProject(format, { includeArchivedSamples, useSampler, clips, groupTracks });
+    useExportProject(format, {
+      includeArchivedSamples,
+      useSampler,
+      clips,
+      groupTracks,
+      drumRackFirstGroup,
+    });
 
   useEffect(() => {
     reset();
@@ -85,12 +95,19 @@ function ExportProject() {
                     title="Include samples"
                     disabled={isPending}
                   />
-
                   <CheckBox
                     checked={useSampler}
                     onChange={(checked) => setUseSampler(checked)}
                     title="Use «Sampler» instead of «Simpler»"
                     disabled={isPending || !includeArchivedSamples}
+                    className="ml-4"
+                  />
+                  <CheckBox
+                    checked={drumRackFirstGroup}
+                    onChange={(checked) => setDrumRackFirstGroup(checked)}
+                    title="Use «Drum Rack» for group A"
+                    disabled={isPending || !includeArchivedSamples}
+                    className="ml-4"
                   />
                   <CheckBox
                     checked={clips}

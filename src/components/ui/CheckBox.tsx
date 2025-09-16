@@ -6,17 +6,19 @@ function CheckBox({
   onChange,
   title,
   disabled,
+  className,
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
   title: string;
   disabled: boolean;
+  className?: string;
 }) {
   const _id = `checkbox-${Math.random()}`;
 
   return (
     <label
-      className={clsx('flex items-center gap-2 text-sm', disabled && 'opacity-40')}
+      className={clsx('flex items-center gap-2 text-sm', disabled && 'opacity-40', className)}
       htmlFor={_id}
     >
       <input

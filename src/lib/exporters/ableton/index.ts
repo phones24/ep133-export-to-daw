@@ -10,12 +10,7 @@ import {
   SampleReport,
   Sound,
 } from '../../../types/types';
-import dawProjectTransformer, {
-  DawClip,
-  DawLane,
-  DawScene,
-  DawTrack,
-} from '../../transformers/dawProject';
+import abletonTransformer, { AblClip, AblScene, AblTrack } from '../../transformers/ableton';
 import { collectSamples } from '../utils';
 import { ALSGroupTrack } from './templates/groupTrack';
 import { ALSMidiClip, ALSMidiClipContent } from './templates/midiClip';
@@ -27,7 +22,7 @@ import { ALSOriginalSimplerContent, ALSSimpler } from './templates/simpler';
 import { fixIds, getId, gzipString, koEnvRangeToSeconds, loadTemplate } from './utils';
 
 async function buildMidiClip(
-  koClip: DawClip,
+  koClip: AblClip,
   clipIdx: number,
   color: number,
   clipForLauncher: boolean = false,
@@ -104,7 +99,7 @@ async function buildMidiClip(
 }
 
 async function buildSamplerDevice(
-  koTrack: DawTrack,
+  koTrack: AblTrack,
   exporterParams: ExporterParams,
 ): Promise<ALSMultiSamplerContent | ALSOriginalSimplerContent | null> {
   if (!koTrack.sampleName || !exporterParams.includeArchivedSamples) {
@@ -189,11 +184,19 @@ async function buildSamplerDevice(
   return device;
 }
 
+async function buildDrumRack(koTrack: AblTrack, exporterParams: ExporterParams) {
+  if (!koTrack.sampleName || !exporterParams.includeArchivedSamples) {
+    return null;
+  }
+
+  const drumRackTemplate = await loadTemplate<any>('drumRack');
+  const drumRack = structuredClone(drumRackTemplate.MidiTrack);
+}
+
 async function buildTrack(
-  koTrack: DawTrack,
+  koTrack: AblTrack,
   trackIdx: number,
   exporterParams: ExporterParams,
-  lanes: DawLane[],
   maxScenes: number,
   trackGroupId: number,
 ): Promise<ALSMidiTrack> {
@@ -250,11 +253,9 @@ async function buildTrack(
     }
   }
 
-  const koLane = lanes.find((l: DawLane) => l.padCode === koTrack.padCode);
-
-  if (koLane) {
+  if (koTrack.lane) {
     if (!exporterParams.clips) {
-      for (const [clipIdx, koClip] of koLane.clips.entries()) {
+      for (const [clipIdx, koClip] of koTrack.lane.clips.entries()) {
         const midiClip = await buildMidiClip(koClip, clipIdx, midiTrack.Color['@Value']);
 
         midiTrack.DeviceChain.MainSequencer.ClipTimeable.ArrangerAutomation.Events.MidiClip.push(
@@ -262,7 +263,7 @@ async function buildTrack(
         );
       }
     } else {
-      for (const koClip of koLane.clips.values()) {
+      for (const koClip of koTrack.lane.clips.values()) {
         const midiClip = await buildMidiClip(koClip, 0, midiTrack.Color['@Value'], true);
 
         midiTrack.DeviceChain.MainSequencer.ClipSlotList.ClipSlot[koClip.sceneIndex] = {
@@ -285,7 +286,7 @@ async function buildTrack(
   return { MidiTrack: midiTrack };
 }
 
-async function buildScenes(scenes: DawScene[], settings: ProjectSettings) {
+async function buildScenes(scenes: AblScene[], settings: ProjectSettings) {
   const sceneTemplate = await loadTemplate<ALSScene>('scene');
   const result: any[] = [];
 
@@ -302,7 +303,7 @@ async function buildScenes(scenes: DawScene[], settings: ProjectSettings) {
   return result;
 }
 
-async function buildGroupTrack(track: DawTrack, id: number) {
+async function buildGroupTrack(track: AblTrack, id: number) {
   const groupTrackTemplate = await loadTemplate<ALSGroupTrack>('groupTrack');
   const groupTrack = structuredClone(groupTrackTemplate.GroupTrack);
 
@@ -314,16 +315,20 @@ async function buildGroupTrack(track: DawTrack, id: number) {
   return { GroupTrack: groupTrack };
 }
 
-async function buildTracks(
-  tracks: DawTrack[],
-  lanes: DawLane[],
-  scenes: DawScene[],
-  exporterParams: ExporterParams,
-) {
+// function mergeTracksInGroup(tracks: DawTrack[], groupName: string) {
+
+// }
+
+async function buildTracks(tracks: AblTrack[], maxScenes: number, exporterParams: ExporterParams) {
   const result = [];
   let id = 1;
   let trackGroupId = -1;
   let currentGroup = '';
+  // let processedTracks = tracks;
+
+  // if (exporterParams.drumRackFirstGroup) {
+  //   processedTracks = mergeTracksInGroup(tracks, 'a');
+  // }
 
   // if the tracks are grouped, we need to create a group track for each group BEFORE the children midi tracks
   // this took me around 3 hours to figure out
@@ -337,14 +342,7 @@ async function buildTracks(
       result.push(groupTrack);
     }
 
-    const midiTrack = await buildTrack(
-      koTrack,
-      id++,
-      exporterParams,
-      lanes,
-      scenes.length,
-      trackGroupId,
-    );
+    const midiTrack = await buildTrack(koTrack, id++, exporterParams, maxScenes, trackGroupId);
 
     result.push(midiTrack);
   }
@@ -357,7 +355,7 @@ async function buildProject(
   sounds: Sound[],
   exporterParams: ExporterParams,
 ) {
-  const transformedData = dawProjectTransformer(projectData, sounds);
+  const transformedData = abletonTransformer(projectData, sounds, exporterParams);
 
   if (import.meta.env.DEV) {
     console.log('sound', sounds);
@@ -377,8 +375,7 @@ async function buildProject(
 
   project.Ableton.LiveSet.Tracks['#'] = await buildTracks(
     transformedData.tracks,
-    transformedData.lanes,
-    transformedData.scenes,
+    transformedData.scenes.length,
     exporterParams,
   );
 
@@ -429,16 +426,16 @@ async function exportAbleton(
   let sampleReport: SampleReport | undefined;
 
   if (exporterParams.includeArchivedSamples) {
-    const { samples, sampleReport: report } = await collectSamples(
-      data,
-      sounds,
-      deviceService,
-      progressCallback,
-    );
-    samples.forEach((s) => {
-      zippedProject.file(`Project${projectId} Project/Samples/Imported/${s.name}`, s.data);
-    });
-    sampleReport = report;
+    // const { samples, sampleReport: report } = await collectSamples(
+    //   data,
+    //   sounds,
+    //   deviceService,
+    //   progressCallback,
+    // );
+    // samples.forEach((s) => {
+    //   zippedProject.file(`Project${projectId} Project/Samples/Imported/${s.name}`, s.data);
+    // });
+    // sampleReport = report;
   }
 
   progressCallback({ progress: 90, status: 'Bundle everything...' });

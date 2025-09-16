@@ -1,28 +1,30 @@
-import { Note, Pad, PadCode, ProjectRawData, Sound } from '../../types/types';
+import { ExporterParams, Note, Pad, PadCode, ProjectRawData, Sound } from '../../types/types';
 import { getSampleName } from '../exporters/utils';
 import { findPad, findSoundByPad, findSoundIdByPad } from '../utils';
 
-export type DawData = {
-  tracks: DawTrack[];
-  lanes: DawLane[];
-  scenes: DawScene[];
+export type AblData = {
+  tracks: AblTrack[];
+  lanes: AblLane[];
+  scenes: AblScene[];
 };
 
-export type DawTrack = Pad & {
+export type AblTrack = Pad & {
   padCode: PadCode;
   group: string;
   sampleName: string;
   sampleChannels: number;
   sampleRate: number;
   bpm: number;
+  drumRack: boolean;
+  lane?: AblLane;
 };
 
-export type DawLane = {
+export type AblLane = {
   padCode: PadCode;
-  clips: DawClip[];
+  clips: AblClip[];
 };
 
-export type DawClip = {
+export type AblClip = {
   notes: Note[];
   bars: number;
   offset: number;
@@ -31,29 +33,21 @@ export type DawClip = {
   sceneName: string;
 };
 
-export type DawClipSlot = {
-  clip: DawClip[];
-  track: DawTrack;
-  bars: number;
-};
-
-export type DawScene = {
+export type AblScene = {
   name: string;
-  clipSlot: DawClipSlot[];
 };
 
-function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
+function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParams: ExporterParams) {
   const { pads, scenes } = data;
-  const tracks: DawTrack[] = [];
-  const lanes: DawLane[] = [];
-  const dawScenes: DawScene[] = [];
+  const tracks: AblTrack[] = [];
+  const lanes: AblLane[] = [];
+  const ablScenes: AblScene[] = [];
   let offset = 0;
 
   scenes.forEach((scene, sceneIndex) => {
     const sceneBars = Math.max(...scene.patterns.map((p) => p.bars));
-    const dawScene: DawScene = {
+    const ablScene: AblScene = {
       name: scene.name,
-      clipSlot: [],
     };
 
     for (const pattern of scene.patterns) {
@@ -78,6 +72,7 @@ function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
           sampleChannels: sound?.meta?.channels || 0,
           sampleRate: sound?.meta?.samplerate || 0,
           bpm: data.settings.bpm,
+          drumRack: false,
         };
 
         (track as any).rawData = undefined;
@@ -106,23 +101,19 @@ function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
         sceneName: scene.name,
       });
 
-      dawScene.clipSlot.push({
-        clip: lane.clips,
-        track: track,
-        bars: pattern.bars,
-      });
+      track.lane = lane;
     }
 
     offset += sceneBars;
 
-    dawScenes.push(dawScene);
+    ablScenes.push(ablScene);
   });
 
   return {
     tracks,
     lanes,
-    scenes: dawScenes,
-  } as DawData;
+    scenes: ablScenes,
+  } as AblData;
 }
 
-export default dawProjectTransformer;
+export default abletonTransformer;
