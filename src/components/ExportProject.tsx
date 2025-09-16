@@ -129,7 +129,7 @@ function ExportProject() {
             {percentage > 0 && (
               <>
                 <div className="h-[30px] border-1 border-black bg-[#ccc]">
-                  <div className="h-full bg-[#ef4e27]" style={{ width: `${percentage}%` }} />
+                  <div className="h-full bg-brand" style={{ width: `${percentage}%` }} />
                 </div>
                 <div className="text-sm text-black min-h-5 text-center mt-1">{pendingStatus}</div>
               </>

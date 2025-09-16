@@ -2,6 +2,7 @@
 
 @theme {
   --font-sans: "Sono", sans-serif;
+  --color-brand: #ef4e27;
 }
 
 @layer base {

@@ -18,7 +18,7 @@ function Project({ projectId }: { projectId: string }) {
     <div className="flex gap-4">
       {webViewTransformer(data, allSounds).scenes.map((sceneData) => (
         <div className="flex flex-col gap-2">
-          <div className="bg-[#ef4e27] p-2 font-semibold text-white">
+          <div className="bg-brand p-2 font-semibold text-white">
             <div className="inline sticky left-0">SCENE {sceneData.name}</div>
           </div>
           {sceneData.patterns.map((pattern) => (

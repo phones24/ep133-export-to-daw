@@ -8,6 +8,7 @@ Try it out on https://ep133-to-daw.cc/
 
 ## Latest news
 
+- [16/09/2025] Added play modes support: KEY and ONE
 - [16/09/2025] Added sample stretching for Ableton (both BPM and BAR modes are supported)
 - [12/09/2025] Added the ability to group tracks (4 groups, same as EP) for Ableton + bugfixes
 - [09/09/2025] Ableton minumum supported version is now 11.3.35

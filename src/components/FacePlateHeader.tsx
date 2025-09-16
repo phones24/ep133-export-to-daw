@@ -22,7 +22,7 @@ function FacePlateHeader() {
 
           {!!device && (
             <div className="flex gap-2 items-center">
-              <div className="border-1 border-black bg-[#ef4e27] size-4 rounded-full" />
+              <div className="border-1 border-black bg-brand size-4 rounded-full" />
               Connected
             </div>
           )}

@@ -125,6 +125,7 @@ async function buildSamplerDevice(
   }
 
   device.LastPresetRef.Value = {};
+  device.Globals.PlaybackMode['@Value'] = koTrack.playMode === 'oneshot' ? 1 : 0;
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleRef.FileRef.RelativePath[
     '@Value'
   ] = `Samples/Imported/${koTrack.sampleName}`;

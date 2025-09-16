@@ -76,6 +76,7 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
           release: file.data[20],
           trimLeft,
           trimRight,
+          playMode: file.data[23] === 0 ? 'oneshot' : file.data[23] === 1 ? 'key' : 'legato',
           soundLength: sound ? calculateSoundLength(sound) : 0,
           pitch: Math.max(-12, Math.min(12, parseFloat(`${pitch}.${pitchDecimal}`))),
           rootNote: sound?.meta?.['sound.rootnote'] || 60,

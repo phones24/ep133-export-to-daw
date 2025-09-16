@@ -64,6 +64,7 @@ export type Pad = {
   trimLeft: number;
   trimRight: number;
   soundLength: number;
+  playMode: 'oneshot' | 'key' | 'legato';
   pan: number;
   pitch: number;
   rootNote: number;
