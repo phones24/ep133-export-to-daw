@@ -24,7 +24,7 @@ function useProject(id: number | string) {
       const projectFile = new File([...archive.data], `project${archive.name}.tar`);
       const blobReader = new BlobReader(projectFile);
       const files = await untar(blobReader.blob);
-
+      console.log('files', files);
       const settings = collectSettings(files);
       const pads = collectPads(files, allSounds);
       const scenes = collectScenesAndPatterns(files);
