@@ -1,14 +1,14 @@
+import omit from 'lodash/omit';
 import { ExporterParams, Note, Pad, PadCode, ProjectRawData, Sound } from '../../types/types';
 import { getSampleName } from '../exporters/utils';
 import { findPad, findSoundByPad, findSoundIdByPad } from '../utils';
 
 export type AblData = {
   tracks: AblTrack[];
-  lanes: AblLane[];
   scenes: AblScene[];
 };
 
-export type AblTrack = Pad & {
+export type AblTrack = Omit<Pad, 'file' | 'rawData'> & {
   padCode: PadCode;
   group: string;
   sampleName: string;
@@ -17,6 +17,7 @@ export type AblTrack = Pad & {
   bpm: number;
   drumRack: boolean;
   lane?: AblLane;
+  tracks: AblTrack[];
 };
 
 export type AblLane = {
@@ -24,8 +25,10 @@ export type AblLane = {
   clips: AblClip[];
 };
 
+export type AblNote = Note;
+
 export type AblClip = {
-  notes: Note[];
+  notes: AblNote[];
   bars: number;
   offset: number;
   sceneBars: number;
@@ -39,7 +42,7 @@ export type AblScene = {
 
 function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParams: ExporterParams) {
   const { pads, scenes } = data;
-  const tracks: AblTrack[] = [];
+  let tracks: AblTrack[] = [];
   const lanes: AblLane[] = [];
   const ablScenes: AblScene[] = [];
   let offset = 0;
@@ -63,7 +66,7 @@ function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParam
         }
 
         track = {
-          ...pad,
+          ...omit(pad, ['file', 'rawData']),
           soundId,
           padCode: pattern.pad,
           name: sound?.meta?.name || pattern.pad,
@@ -73,10 +76,8 @@ function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParam
           sampleRate: sound?.meta?.samplerate || 0,
           bpm: data.settings.bpm,
           drumRack: false,
+          tracks: [],
         };
-
-        (track as any).rawData = undefined;
-        (track as any).file = undefined;
 
         tracks.push(track);
       }
@@ -109,9 +110,74 @@ function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParam
     ablScenes.push(ablScene);
   });
 
+  if (exporterParams.drumRackFirstGroup) {
+    // fake track for drum rack
+    const drumTrack: AblTrack = {
+      padCode: 'a0',
+      group: 'a',
+      sampleName: '',
+      sampleChannels: 0,
+      sampleRate: 0,
+      bpm: data.settings.bpm,
+      drumRack: true,
+      soundId: 0,
+      name: 'Drums',
+      volume: 127,
+      attack: 0,
+      release: 0,
+      trimLeft: 0,
+      trimRight: 0,
+      pad: 0,
+      lane: undefined,
+      playMode: 'oneshot',
+      pan: 0,
+      pitch: 0,
+      rootNote: 60,
+      timeStretch: 'off',
+      timeStretchBpm: 0,
+      timeStretchBars: 0,
+      soundLength: 0,
+      tracks: [],
+    };
+
+    for (const track of tracks) {
+      if (track.group === 'a') {
+        drumTrack.tracks.push(track);
+      }
+    }
+
+    // we need to merge notes from all tracks in group A into one track
+    // and remap them
+    const newClips: Record<string, AblClip> = {};
+    drumTrack.tracks.forEach((track, idx) => {
+      track.lane?.clips.forEach((clip) => {
+        if (!newClips[clip.sceneName]) {
+          newClips[clip.sceneName] = structuredClone(clip);
+          newClips[clip.sceneName].notes = []; // resetting notes, they will be added below with new mapping
+        }
+
+        newClips[clip.sceneName].notes = [
+          ...newClips[clip.sceneName].notes,
+          ...clip.notes.map((n) => ({
+            ...n,
+            note: 36 + idx,
+          })), // remaping notes starting from C1 (36)
+        ];
+      });
+    });
+
+    drumTrack.lane = {
+      padCode: 'a0',
+      clips: Object.values(newClips),
+    };
+
+    tracks = tracks.filter((t) => t.group !== 'a');
+
+    tracks.unshift(drumTrack);
+  }
+
   return {
     tracks,
-    lanes,
     scenes: ablScenes,
   } as AblData;
 }

@@ -12,12 +12,14 @@ import {
 } from '../../../types/types';
 import abletonTransformer, { AblClip, AblScene, AblTrack } from '../../transformers/ableton';
 import { collectSamples } from '../utils';
+import { ALSDrumBranch } from './templates/drumBranch';
+import { ALSDrumRack } from './templates/drumRack';
 import { ALSGroupTrack } from './templates/groupTrack';
 import { ALSMidiClip, ALSMidiClipContent } from './templates/midiClip';
 import { ALSMidiTrack } from './templates/midiTrack';
 import { ALSProject } from './templates/project';
 import { ALSMultiSamplerContent, ALSSampler } from './templates/sampler';
-import { ALSScene } from './templates/scene';
+import { ALSScene, ALSSceneContent } from './templates/scene';
 import { ALSOriginalSimplerContent, ALSSimpler } from './templates/simpler';
 import { fixIds, getId, gzipString, koEnvRangeToSeconds, loadTemplate } from './utils';
 
@@ -98,14 +100,7 @@ async function buildMidiClip(
   return midiClip;
 }
 
-async function buildSamplerDevice(
-  koTrack: AblTrack,
-  exporterParams: ExporterParams,
-): Promise<ALSMultiSamplerContent | ALSOriginalSimplerContent | null> {
-  if (!koTrack.sampleName || !exporterParams.includeArchivedSamples) {
-    return null;
-  }
-
+async function buildSamplerDevice(koTrack: AblTrack, useSampler = false) {
   const [samplerTemplate, simplerTemplate] = await Promise.all([
     loadTemplate<ALSSampler>('sampler'),
     loadTemplate<ALSSimpler>('simpler'),
@@ -113,7 +108,7 @@ async function buildSamplerDevice(
 
   let device: ALSMultiSamplerContent | ALSOriginalSimplerContent;
 
-  if (exporterParams.useSampler) {
+  if (useSampler) {
     device = structuredClone(samplerTemplate.MultiSampler);
   } else {
     device = structuredClone(simplerTemplate.OriginalSimpler);
@@ -181,16 +176,42 @@ async function buildSamplerDevice(
       ];
   }
 
-  return device;
+  return {
+    [useSampler ? 'MultiSampler' : 'OriginalSimpler']: device,
+  };
 }
 
-async function buildDrumRack(koTrack: AblTrack, exporterParams: ExporterParams) {
-  if (!koTrack.sampleName || !exporterParams.includeArchivedSamples) {
-    return null;
+async function buildDrumRackDevice(koTrack: AblTrack) {
+  const [drumRackTemplate, drumBranchTemplate] = await Promise.all([
+    loadTemplate<ALSDrumRack>('drumRack'),
+    loadTemplate<ALSDrumBranch>('drumBranch'),
+  ]);
+
+  const device = structuredClone(drumRackTemplate.DrumGroupDevice);
+
+  device.Branches.DrumBranch = [];
+
+  for (const [idx, track] of koTrack.tracks.entries()) {
+    if (!track.sampleName) {
+      continue;
+    }
+
+    const drumBranch = structuredClone(drumBranchTemplate.DrumBranch);
+    const note = 92 - idx; // 92 is the number of slot for C1 in the drum rack and it goes down
+
+    drumBranch['@Id'] = idx;
+    drumBranch.Name.EffectiveName['@Value'] = track.name;
+    drumBranch.Name.UserName['@Value'] = track.name;
+    drumBranch.BranchInfo.ReceivingNote['@Value'] = note;
+    drumBranch.BranchInfo.SendingNote['@Value'] = 60; // not sure if this matters
+    drumBranch.DeviceChain.MidiToAudioDeviceChain.Devices = await buildSamplerDevice(track);
+
+    device.Branches.DrumBranch.push(drumBranch);
   }
 
-  const drumRackTemplate = await loadTemplate<any>('drumRack');
-  const drumRack = structuredClone(drumRackTemplate.MidiTrack);
+  return {
+    DrumGroupDevice: device,
+  };
 }
 
 async function buildTrack(
@@ -213,14 +234,15 @@ async function buildTrack(
   midiTrack.DeviceChain.Mixer.Volume.Manual['@Value'] = koTrack.volume / 2;
   midiTrack.TrackGroupId['@Value'] = trackGroupId;
 
-  const samplerDevice = await buildSamplerDevice(koTrack, exporterParams);
+  if (koTrack.drumRack && exporterParams.includeArchivedSamples) {
+    midiTrack.DeviceChain.DeviceChain.Devices = await buildDrumRackDevice(koTrack);
+  }
 
-  if (samplerDevice) {
-    if (exporterParams.useSampler) {
-      midiTrack.DeviceChain.DeviceChain.Devices = { MultiSampler: samplerDevice };
-    } else {
-      midiTrack.DeviceChain.DeviceChain.Devices = { OriginalSimpler: samplerDevice };
-    }
+  if (!koTrack.drumRack && koTrack.sampleName && exporterParams.includeArchivedSamples) {
+    midiTrack.DeviceChain.DeviceChain.Devices = await buildSamplerDevice(
+      koTrack,
+      exporterParams.useSampler,
+    );
   }
 
   // make sure each tracks has the same empty slots for clips
@@ -288,7 +310,7 @@ async function buildTrack(
 
 async function buildScenes(scenes: AblScene[], settings: ProjectSettings) {
   const sceneTemplate = await loadTemplate<ALSScene>('scene');
-  const result: any[] = [];
+  const result: ALSSceneContent[] = [];
 
   scenes.forEach((scene, idx) => {
     const sceneContent = structuredClone(sceneTemplate.Scene);
@@ -315,20 +337,11 @@ async function buildGroupTrack(track: AblTrack, id: number) {
   return { GroupTrack: groupTrack };
 }
 
-// function mergeTracksInGroup(tracks: DawTrack[], groupName: string) {
-
-// }
-
 async function buildTracks(tracks: AblTrack[], maxScenes: number, exporterParams: ExporterParams) {
   const result = [];
   let id = 1;
   let trackGroupId = -1;
   let currentGroup = '';
-  // let processedTracks = tracks;
-
-  // if (exporterParams.drumRackFirstGroup) {
-  //   processedTracks = mergeTracksInGroup(tracks, 'a');
-  // }
 
   // if the tracks are grouped, we need to create a group track for each group BEFORE the children midi tracks
   // this took me around 3 hours to figure out
@@ -336,9 +349,7 @@ async function buildTracks(tracks: AblTrack[], maxScenes: number, exporterParams
     if (exporterParams.groupTracks && koTrack.group !== currentGroup[0]) {
       trackGroupId = id++;
       currentGroup = koTrack.group;
-
       const groupTrack = await buildGroupTrack(koTrack, trackGroupId);
-
       result.push(groupTrack);
     }
 
@@ -426,16 +437,16 @@ async function exportAbleton(
   let sampleReport: SampleReport | undefined;
 
   if (exporterParams.includeArchivedSamples) {
-    // const { samples, sampleReport: report } = await collectSamples(
-    //   data,
-    //   sounds,
-    //   deviceService,
-    //   progressCallback,
-    // );
-    // samples.forEach((s) => {
-    //   zippedProject.file(`Project${projectId} Project/Samples/Imported/${s.name}`, s.data);
-    // });
-    // sampleReport = report;
+    const { samples, sampleReport: report } = await collectSamples(
+      data,
+      sounds,
+      deviceService,
+      progressCallback,
+    );
+    samples.forEach((s) => {
+      zippedProject.file(`Project${projectId} Project/Samples/Imported/${s.name}`, s.data);
+    });
+    sampleReport = report;
   }
 
   progressCallback({ progress: 90, status: 'Bundle everything...' });

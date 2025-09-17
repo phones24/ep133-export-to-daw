@@ -1,3 +1,5 @@
+import { ALSSceneContent } from './scene';
+
 interface ValueElement {
   '@Value': any;
 }
@@ -355,7 +357,7 @@ interface LiveSet {
   TrackHeaderWidth: ValueElement;
   ViewStates: {};
   Scenes: {
-    Scene: ALSScene[];
+    Scene: ALSSceneContent[];
   };
 }
 
