@@ -71,6 +71,7 @@ export type Pad = {
   timeStretch: 'off' | 'bpm' | 'bars';
   timeStretchBpm: number;
   timeStretchBars: number;
+  inChokeGroup: boolean;
 };
 
 export type ProjectRawData = {

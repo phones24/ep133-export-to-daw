@@ -138,6 +138,7 @@ function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParam
       timeStretchBars: 0,
       soundLength: 0,
       tracks: [],
+      inChokeGroup: false,
     };
 
     for (const track of tracks) {

@@ -5,12 +5,14 @@ function CheckBox({
   checked,
   onChange,
   title,
+  helperText,
   disabled,
   className,
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
   title: string;
+  helperText?: string;
   disabled: boolean;
   className?: string;
 }) {
@@ -30,6 +32,15 @@ function CheckBox({
         className="w-4 h-4"
       />
       {title}
+
+      {helperText && (
+        <div className="relative">
+          <div className="text-gray-400 cursor-help peer">🛈</div>
+          <div className="absolute shadow-lg bottom-full left-1/2 -translate-x-1/2 mb-2 p-3 bg-[#b0babe] text-black border-1 border-black text-sm opacity-0 peer-hover:opacity-100 transition-opacity duration-300 pointer-events-none min-w-[500px] max-w-[600px]">
+            {helperText}
+          </div>
+        </div>
+      )}
     </label>
   );
 }

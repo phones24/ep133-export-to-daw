@@ -8,10 +8,11 @@ Try it out on https://ep133-to-daw.cc/
 
 ## Latest news
 
-- [16/09/2025] Added play modes support: KEY and ONE
-- [16/09/2025] Added sample stretching for Ableton (both BPM and BAR modes are supported)
-- [12/09/2025] Added the ability to group tracks (4 groups, same as EP) for Ableton + bugfixes
-- [09/09/2025] Ableton minumum supported version is now 11.3.35
+- [17/09/2025] ABLETON: Export tracks from group A into Drum Rack (with choke group!)
+- [16/09/2025] ABLETON: Added play modes support: KEY and ONE
+- [16/09/2025] ABLETON: Added sample stretching (both BPM and BAR modes are supported)
+- [12/09/2025] ABLETON: Added the ability to group tracks (4 groups, same as EP) + bugfixes
+- [09/09/2025] ABLETON: Minumum supported version is now 11.3.35
 - [09/09/2025] App is now working offline (PWA mode)
 - [08/09/2025] Added Ableton 12 support + more note duration bugs are fixed
 - [03/09/2025] Fixed several bugs, including issues with velocities and note durations
@@ -38,6 +39,4 @@ Supported formats are:
 - Ableton Live 11+ (minimum version 11.3.35)
 - DAWproject
 - MIDI
-
-**Unfortunately, the DAWproject format does not currently support the "Sampler" device, so you will need to manually assign the samples in your DAW.**
 

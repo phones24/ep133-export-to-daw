@@ -3,8 +3,6 @@
 - fader tracks
 - root note
 - scales
-- ableton: figure out how to stretch samples the same way EP's doing it
+- legato in sampler
 - optional: ableton: add default compressor on the output
 - optional: ableton: add base effect on the bus and sent the tracks to it
-- optional: ableton: support mute groups
-- optional: ableton: put first group in the drumrack

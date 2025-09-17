@@ -191,8 +191,8 @@ async function buildDrumRackDevice(koTrack: AblTrack) {
 
   device.Branches.DrumBranch = [];
 
-  for (const [idx, track] of koTrack.tracks.entries()) {
-    if (!track.sampleName) {
+  for (const [idx, subtrack] of koTrack.tracks.entries()) {
+    if (!subtrack.sampleName) {
       continue;
     }
 
@@ -200,11 +200,12 @@ async function buildDrumRackDevice(koTrack: AblTrack) {
     const note = 92 - idx; // 92 is the number of slot for C1 in the drum rack and it goes down
 
     drumBranch['@Id'] = idx;
-    drumBranch.Name.EffectiveName['@Value'] = track.name;
-    drumBranch.Name.UserName['@Value'] = track.name;
+    drumBranch.Name.EffectiveName['@Value'] = subtrack.name;
+    drumBranch.Name.UserName['@Value'] = subtrack.name;
     drumBranch.BranchInfo.ReceivingNote['@Value'] = note;
     drumBranch.BranchInfo.SendingNote['@Value'] = 60; // not sure if this matters
-    drumBranch.DeviceChain.MidiToAudioDeviceChain.Devices = await buildSamplerDevice(track);
+    drumBranch.BranchInfo.ChokeGroup['@Value'] = subtrack.inChokeGroup ? 1 : 0;
+    drumBranch.DeviceChain.MidiToAudioDeviceChain.Devices = await buildSamplerDevice(subtrack);
 
     device.Branches.DrumBranch.push(drumBranch);
   }

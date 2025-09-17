@@ -13,7 +13,7 @@ import Select from './ui/Select';
 
 const NOTES: Record<ExportFormatId, string> = {
   ableton: `Please note that the exported project won't sound exactly the same as it does on the device. Currently NOT included in export: effects, fader automation, song mode, sidechains`,
-  dawproject: ``,
+  dawproject: `Unfortunately, the DAWproject format does not currently support the "Sampler" instrument, so you will need to manually assign the samples in your DAW.`,
   midi: ``,
 };
 
@@ -94,6 +94,7 @@ function ExportProject() {
                     onChange={(checked) => setIncludeArchivedSamples(checked)}
                     title="Include samples"
                     disabled={isPending}
+                    helperText="Samples will be exported as separate WAV files and bundled with the project. Sampler instrument will be assigned to each track that has a sample."
                   />
                   <CheckBox
                     checked={useSampler}
@@ -101,6 +102,7 @@ function ExportProject() {
                     title="Use «Sampler» instead of «Simpler»"
                     disabled={isPending || !includeArchivedSamples}
                     className="ml-4"
+                    helperText="«Sampler» will be used for samples (could not be available in some Live editions)"
                   />
                   <CheckBox
                     checked={drumRackFirstGroup}
@@ -108,18 +110,21 @@ function ExportProject() {
                     title="Use «Drum Rack» for group A"
                     disabled={isPending || !includeArchivedSamples}
                     className="ml-4"
+                    helperText="Tracks in group A will be exported as Drum Rack. Choke groups are supported! Make sure your drum pads are not playing chromatically."
                   />
                   <CheckBox
                     checked={clips}
                     onChange={(checked) => setClips(checked)}
                     title="Session clips instead of arrangements"
                     disabled={isPending}
+                    helperText="Export as session clips for live performance."
                   />
                   <CheckBox
                     checked={groupTracks}
                     onChange={(checked) => setGroupTracks(checked)}
                     title="Group tracks"
                     disabled={isPending}
+                    helperText="Tracks will be grouped by their groups (A, B, C, D) same as on the device."
                   />
                 </>
               )}

@@ -28,7 +28,7 @@ function Dialog({ isOpen, onClose, children, className = '' }: DialogProps) {
   return (
     <dialog
       ref={dialogRef}
-      className="backdrop:bg-black/40 shadow fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-1 border-black outline-none"
+      className="shadow-lg backdrop:bg-black/40 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-1 border-black outline-none overflow-visible"
       onClose={onClose}
     >
       <div className={clsx('bg-white p-4 rounded-md min-w-[300px] min-h-[100px]', className)}>
