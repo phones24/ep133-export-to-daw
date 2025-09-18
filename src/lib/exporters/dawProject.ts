@@ -17,7 +17,7 @@ import dawProjectTransformer, {
   DawScene,
   DawTrack,
 } from '../transformers/dawProject';
-import { getNextColor } from '../utils';
+import { AbortError, getNextColor } from '../utils';
 import { collectSamples } from './utils';
 
 const PROJECT_NAME = 'EP-133 K.O. II: Export To DAW';
@@ -393,8 +393,13 @@ async function exportDawProject(
   deviceService: DeviceService,
   progressCallback: ({ progress, status }: ExportStatus) => void,
   exporterParams: ExporterParams,
+  abortSignal: AbortSignal,
 ) {
   progressCallback({ progress: 1, status: 'Exporting project data...' });
+
+  if (abortSignal.aborted) {
+    throw new AbortError();
+  }
 
   const metadataXml = await buildMetadataXml();
   const projectXml = await buildProjectXml(data, sounds, exporterParams.clips || false);
@@ -431,6 +436,7 @@ async function exportDawProject(
       sounds,
       deviceService,
       progressCallback,
+      abortSignal,
     );
 
     samples.forEach((s) => {

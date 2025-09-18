@@ -33,14 +33,23 @@ function ExportProject() {
   );
   const appState = useAppState();
   const { device } = useDevice();
-  const { startExport, isPending, pendingStatus, percentage, reset, result, error, sampleReport } =
-    useExportProject(format, {
-      includeArchivedSamples,
-      useSampler,
-      clips,
-      groupTracks,
-      drumRackFirstGroup,
-    });
+  const {
+    startExport,
+    cancelExport,
+    isPending,
+    pendingStatus,
+    percentage,
+    reset,
+    result,
+    error,
+    sampleReport,
+  } = useExportProject(format, {
+    includeArchivedSamples,
+    useSampler,
+    clips,
+    groupTracks,
+    drumRackFirstGroup,
+  });
 
   useEffect(() => {
     reset();
@@ -213,9 +222,15 @@ function ExportProject() {
           </div>
 
           <div className="flex gap-4 justify-end mt-2">
-            <Button onClick={() => setOpen(false)} variant="secondary" disabled={isPending}>
-              Cancel
-            </Button>
+            {isPending ? (
+              <Button onClick={cancelExport} variant="secondary">
+                Cancel
+              </Button>
+            ) : (
+              <Button onClick={() => setOpen(false)} variant="secondary">
+                Close
+              </Button>
+            )}
             <Button onClick={startExport} disabled={isPending}>
               Export
             </Button>

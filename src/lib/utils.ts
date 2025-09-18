@@ -101,3 +101,10 @@ export function getSoundsInfoFromProject(data: ProjectRawData, sounds: Sound[]) 
 
   return snds;
 }
+
+export class AbortError extends Error {
+  constructor() {
+    super('The operation was aborted.');
+    this.name = 'AbortError';
+  }
+}

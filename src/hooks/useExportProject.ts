@@ -3,6 +3,7 @@ import { useAtomValue } from 'jotai';
 import { useState } from 'preact/hooks';
 import { projectIdAtom } from '../atoms/project';
 import { trackEvent } from '../lib/ga';
+import { AbortError } from '../lib/utils';
 import {
   ExporterParams,
   ExportFormat,
@@ -11,7 +12,6 @@ import {
   ExportStatus,
   SampleReport,
 } from '../types/types';
-
 import useAllSounds from './useAllSounds';
 import useDevice from './useDevice';
 import useProject from './useProject';
@@ -31,7 +31,19 @@ export const EXPORT_FORMATS: ExportFormat[] = [
   },
 ];
 
-async function getExporterFn(format: ExportFormatId) {
+async function getExporterFn(
+  format: ExportFormatId,
+): Promise<
+  (
+    projectId: string,
+    data: any,
+    sounds: any,
+    deviceService: any,
+    progressCallback: any,
+    exporterParams: any,
+    abortSignal: AbortSignal,
+  ) => Promise<any>
+> {
   switch (format) {
     case 'ableton':
       return (await import('../lib/exporters/ableton')).default;
@@ -54,6 +66,7 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
   const [error, setError] = useState<any>(null);
   const [result, setResult] = useState<ExportResult | null>(null);
   const [sampleReport, setSampleReport] = useState<SampleReport | null>(null);
+  const [abortController, setAbortController] = useState<AbortController | null>(null);
   const { deviceService } = useDevice();
 
   const startExport = async () => {
@@ -72,6 +85,9 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
       setIsPending(true);
       setPercentage(1);
 
+      const controller = new AbortController();
+      setAbortController(controller);
+
       const exportFn = await getExporterFn(format);
 
       const result = await exportFn(
@@ -84,22 +100,39 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
           setPendingStatus(stat.status);
         },
         exporterParams,
+        controller.signal,
       );
 
       setResult(result);
       setSampleReport(result.sampleReport || null);
       setIsPending(false);
+      setAbortController(null);
 
       trackEvent('export_end');
     } catch (err) {
+      if (err instanceof AbortError) {
+        setPendingStatus('Export cancelled');
+        setIsPending(false);
+        setAbortController(null);
+        return;
+      }
+
       console.error(err);
 
       Sentry.captureException(err);
 
       setError(err);
       setIsPending(false);
+      setAbortController(null);
 
       trackEvent('export_error');
+    }
+  };
+
+  const cancelExport = () => {
+    if (abortController) {
+      abortController.abort();
+      setAbortController(null);
     }
   };
 
@@ -109,6 +142,11 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
     setPercentage(0);
     setPendingStatus('');
     setSampleReport(null);
+
+    if (abortController) {
+      abortController.abort();
+      setAbortController(null);
+    }
 
     if (!result) {
       return;
@@ -121,7 +159,17 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
     setResult(null);
   };
 
-  return { startExport, reset, isPending, pendingStatus, percentage, result, error, sampleReport };
+  return {
+    startExport,
+    cancelExport,
+    reset,
+    isPending,
+    pendingStatus,
+    percentage,
+    result,
+    error,
+    sampleReport,
+  };
 }
 
 export default useExportProject;
