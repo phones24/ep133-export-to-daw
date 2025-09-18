@@ -11,6 +11,7 @@ import {
   Sound,
 } from '../../../types/types';
 import abletonTransformer, { AblClip, AblScene, AblTrack } from '../../transformers/ableton';
+import { AbortError } from '../../utils';
 import { collectSamples } from '../utils';
 import { ALSDrumBranch } from './templates/drumBranch';
 import { ALSDrumRack } from './templates/drumRack';
@@ -418,6 +419,7 @@ async function exportAbleton(
   deviceService: DeviceService,
   progressCallback: ({ progress, status }: ExportStatus) => void,
   exporterParams: ExporterParams,
+  abortSignal: AbortSignal,
 ) {
   const files: Array<{
     name: string;
@@ -429,6 +431,10 @@ async function exportAbleton(
   const zippedProject = new JSZip();
 
   progressCallback({ progress: 1, status: 'Building project...' });
+
+  if (abortSignal.aborted) {
+    throw new AbortError();
+  }
 
   const alsFile = await buildProject(data, sounds, exporterParams);
 
@@ -443,6 +449,7 @@ async function exportAbleton(
       sounds,
       deviceService,
       progressCallback,
+      abortSignal,
     );
     samples.forEach((s) => {
       zippedProject.file(`Project${projectId} Project/Samples/Imported/${s.name}`, s.data);

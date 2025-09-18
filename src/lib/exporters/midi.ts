@@ -10,6 +10,7 @@ import {
   Sound,
 } from '../../types/types';
 import midiTransformer from '../transformers/midi';
+import { AbortError } from '../utils';
 import { collectSamples } from './utils';
 
 const UNITS_PER_BEAT = 96; // (384 / 4 beats)
@@ -25,8 +26,13 @@ async function exportMidi(
   deviceService: DeviceService,
   progressCallback: ({ progress, status }: ExportStatus) => void,
   exporterParams: ExporterParams,
+  abortSignal: AbortSignal,
 ) {
   progressCallback({ progress: 1, status: 'Exporting project data...' });
+
+  if (abortSignal.aborted) {
+    throw new AbortError();
+  }
 
   const transformedData = midiTransformer(data, sounds);
   const midi = new Midi();
@@ -75,6 +81,7 @@ async function exportMidi(
       sounds,
       deviceService,
       progressCallback,
+      abortSignal,
     );
 
     samples.forEach((s) => {

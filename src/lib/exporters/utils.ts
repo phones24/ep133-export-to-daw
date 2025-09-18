@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 import { DeviceService } from '../../ep133/device-service';
 import { ExportStatus, ProjectRawData, Sound } from '../../types/types';
 import { pcmToWavBlob } from '../pcmToWav';
-import { audioFormatAsBitDepth, getSoundsInfoFromProject } from '../utils';
+import { AbortError, audioFormatAsBitDepth, getSoundsInfoFromProject } from '../utils';
 
 export async function downloadPcm(
   soundId: number,
@@ -41,6 +41,7 @@ export async function collectSamples(
   sounds: Sound[],
   deviceService: DeviceService,
   progressCallback: ({ progress, status }: ExportStatus) => void,
+  abortSignal: AbortSignal,
 ) {
   const projectSounds = getSoundsInfoFromProject(data, sounds);
 
@@ -52,6 +53,10 @@ export async function collectSamples(
   let cnt = 0;
 
   for (const snd of projectSounds) {
+    if (abortSignal.aborted) {
+      throw new AbortError();
+    }
+
     const fileName = getSampleName(snd.soundMeta.name, snd.soundId);
 
     try {
@@ -61,6 +66,10 @@ export async function collectSamples(
       });
 
       const result = await downloadPcm(snd.soundId, deviceService, (bytesRead, totalRemaining) => {
+        if (abortSignal.aborted) {
+          throw new AbortError();
+        }
+
         const currentSoundProgress = bytesRead / (totalRemaining / percentPerSound);
         progressCallback({
           progress: percentStart + percentPerSound * cnt + currentSoundProgress,
@@ -82,9 +91,11 @@ export async function collectSamples(
 
       downloaded.push(fileName);
     } catch (err) {
-      console.error(err);
-
-      Sentry.captureException(err);
+      // only report when not aborted
+      if (!abortSignal.aborted) {
+        console.error(err);
+        Sentry.captureException(err);
+      }
 
       missing.push({
         name: fileName,
