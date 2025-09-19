@@ -4,7 +4,7 @@ function FacePlateHeader() {
   const { device } = useDevice();
 
   return (
-    <div className="flex gap-2 bg-[#dbdddb] px-3 py-2 border-1 border-black">
+    <div className="flex gap-2 bg-brand-gray px-3 py-2 border-1 border-black">
       <img src="/ep133.png" className="h-[100px] w-auto" alt="ep133" />
       <div className="flex flex-col gap-2 relative">
         <p className="text-[30px] font-medium leading-6">

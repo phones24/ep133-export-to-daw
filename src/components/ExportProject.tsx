@@ -1,5 +1,7 @@
+import { useAtom } from 'jotai';
 import { JSX } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
+import { feedbackDialogAtom } from '../atoms/feedbackDialog';
 import { APP_STATES, useAppState } from '../hooks/useAppState';
 import useDevice from '../hooks/useDevice';
 import useExportProject, { EXPORT_FORMATS } from '../hooks/useExportProject';
@@ -50,6 +52,7 @@ function ExportProject() {
     groupTracks,
     drumRackFirstGroup,
   });
+  const [_, openErrorReportDialog] = useAtom(feedbackDialogAtom);
 
   useEffect(() => {
     reset();
@@ -64,9 +67,10 @@ function ExportProject() {
     <>
       <div className="flex gap-2 ">
         <Button onClick={handleOpen} disabled={!appState.includes(APP_STATES.CAN_EXPORT_PROJECT)}>
-          Export...
+          Export
         </Button>
       </div>
+
       {open && !!device && (
         <Dialog isOpen onClose={() => setOpen(false)}>
           <div className="flex flex-col gap-2 min-w-[600px]">
@@ -209,19 +213,22 @@ function ExportProject() {
             )}
 
             {error && (
-              <div className="mt-4 bg-red-100 p-4">
+              <div className="my-4 bg-red-100/50 p-4">
                 <h3 className="text-lg font-semibold text-center">Error</h3>
                 <p className="text-sm text-red-500 text-center">
                   Opps, that's not good. Hope the error tracking system helps me to find the
-                  problem. <br />
-                  Please try again in a day or two or report this error to the developer with EMAIL
-                  button in the corner.
+                  problem. If you can, please submit an error report to the developer - it really
+                  helps me fix things faster. Thanks!
                 </p>
+                <div className="text-center mt-5"></div>
               </div>
             )}
           </div>
 
-          <div className="flex gap-4 justify-end mt-2">
+          <div className="flex gap-4 mt-2">
+            <Button className="mr-auto" onClick={() => openErrorReportDialog(true)}>
+              Submit error report
+            </Button>
             {isPending ? (
               <Button onClick={cancelExport} variant="secondary">
                 Cancel

@@ -33,6 +33,7 @@ function useProject(id: number | string) {
         pads,
         scenes,
         settings,
+        projectFile,
       };
     },
     retry: false,

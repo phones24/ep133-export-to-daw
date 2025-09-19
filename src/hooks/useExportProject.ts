@@ -81,6 +81,7 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
         return;
       }
 
+      setPendingStatus('Starting export...');
       setError(null);
       setIsPending(true);
       setPercentage(1);
