@@ -78,6 +78,7 @@ export type ProjectRawData = {
   pads: Record<string, Pad[]>;
   scenes: Scene[];
   settings: ProjectSettings;
+  projectFile: File;
 };
 
 export type ExportResult = {

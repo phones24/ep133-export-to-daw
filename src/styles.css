@@ -3,6 +3,7 @@
 @theme {
   --font-sans: "Sono", sans-serif;
   --color-brand: #ef4e27;
+  --color-brand-gray: #dbdddb;
 }
 
 @layer base {
@@ -31,4 +32,14 @@
       transform: scale(1.1);
     }
   }
+}
+
+:popover-open {
+  position: fixed;
+  inset: unset;
+  left: 32px;
+  bottom: 32px;
+  margin: 0;
+  background: transparent;
+  z-index: 100;
 }
