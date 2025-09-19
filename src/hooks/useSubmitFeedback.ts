@@ -44,6 +44,8 @@ function useSubmitFeedback() {
         })
         .json();
     },
+    retry: 10,
+    retryDelay: 2000,
   });
 }
 
