@@ -17,8 +17,8 @@ import dawProjectTransformer, {
   DawScene,
   DawTrack,
 } from '../transformers/dawProject';
-import { AbortError, getNextColor } from '../utils';
-import { collectSamples } from './utils';
+import { AbortError } from '../utils';
+import { collectSamples, getNextColor } from './utils';
 
 const PROJECT_NAME = 'EP-133 K.O. II: Export To DAW';
 
