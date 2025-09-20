@@ -16,7 +16,7 @@ import Select from './ui/Select';
 const NOTES: Record<ExportFormatId, string> = {
   ableton: `Please note that the exported project won't sound exactly the same as it does on the device. Currently NOT included in export: effects, fader automation, song mode, sidechains`,
   dawproject: `Unfortunately, the DAWproject format does not currently support the "Sampler" instrument, so you will need to manually assign the samples in your DAW.`,
-  midi: ``,
+  midi: `The simplest format supported by any DAW. But you have to assign the samples manually.`,
 };
 
 function ExportProject() {
@@ -52,7 +52,7 @@ function ExportProject() {
     groupTracks,
     drumRackFirstGroup,
   });
-  const [_, openErrorReportDialog] = useAtom(feedbackDialogAtom);
+  const [_, openFeedbackDialog] = useAtom(feedbackDialogAtom);
 
   useEffect(() => {
     reset();
@@ -217,16 +217,16 @@ function ExportProject() {
                 <h3 className="text-lg font-semibold text-center">Error</h3>
                 <p className="text-sm text-red-500 text-center">
                   Opps, that's not good. Hope the error tracking system helps me to find the
-                  problem. If you can, please submit an error report to the developer - it really
-                  helps me fix things faster. Thanks!
+                  problem. If you can, please submit an error report - it really helps me fix things
+                  faster. Thanks!
                 </p>
                 <div className="text-center mt-5"></div>
               </div>
             )}
           </div>
 
-          <div className="flex gap-4 mt-2">
-            <Button className="mr-auto" onClick={() => openErrorReportDialog(true)}>
+          <div className="flex gap-4 mt-5">
+            <Button className="mr-auto" onClick={() => openFeedbackDialog(true)}>
               Submit error report
             </Button>
             {isPending ? (

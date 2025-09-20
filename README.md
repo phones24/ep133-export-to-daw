@@ -6,8 +6,34 @@ This tool allows you to export your EP-133 K.O.II (EP-1320) project into a DAW (
 
 Try it out on https://ep133-to-daw.cc/
 
+![EP-133 To Daw](./public/ep133-to-daw.png)
+
+
+## Features
+
+- Requires only browser with WebMIDI support
+- Works offline (Progressive Web App)
+- Export projects directly from EP-133/EP-1320 to:
+  - Ableton Live 11+ (project with samples)
+  - DAWproject (project + archived samples)
+  - MIDI (MIDI file + archived samples)
+- Ableton Live:
+  - Minimum version: 11.3.35
+  - Supports all sampler features: envelope, trimming points, stretching, playback modes
+  - Export as arrangements or session clips
+  - Option to choose Simpler or Sampler instrument
+  - Track grouping: 4 groups, same as on the device
+  - First group can be exported as a Drum Rack track
+- DAWproject (universal DAW format created by Bitwig):
+  - Export as arrangement with clips
+  - Includes archived samples
+- MIDI:
+  - Includes archived samples
+
+
 ## Latest news
 
+- [19/09/2025] Added feedback functionality with ability to attach your project for research
 - [17/09/2025] ABLETON: Export tracks from group A into Drum Rack (with choke group!)
 - [16/09/2025] ABLETON: Added play modes support: KEY and ONE
 - [16/09/2025] ABLETON: Added sample stretching (both BPM and BAR modes are supported)
@@ -31,12 +57,4 @@ At some point, I started digging through the backup files created by Sample Tool
 So I started digging through the file format and trying to reuse the logic from the Sample Tool, since Teenage Engineering doesn’t publish its source code.
 I spent a lot of time de-obfuscating it (AI helps a lot there), reverse-engineering the files, and eventually building a working library (check src/ep133 folder).
 Then building the web application was easy.
-
-## Description
-
-Supported formats are:
-
-- Ableton Live 11+ (minimum version 11.3.35)
-- DAWproject
-- MIDI
 

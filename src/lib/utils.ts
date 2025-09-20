@@ -1,36 +1,5 @@
 import { Pad, ProjectRawData, Sound, SoundInfo } from '../types/types';
 
-let _colorIndex = 0;
-
-const colors = [
-  '#E27D60',
-  '#85C1A9',
-  '#E8A87C',
-  '#C38D9E',
-  '#41B3A3',
-  '#F2B880',
-  '#7DAF9C',
-  '#F47261',
-  '#9D6A89',
-  '#5AA9A4',
-  '#7A2A80',
-  '#8FB996',
-  '#47B267',
-  '#B089A3',
-  '#6CA6A3',
-  '#B2B0E8',
-  '#A0C4B0',
-  '#F5A97F',
-  '#BBA0C0',
-  '#79B2B2',
-];
-
-export function getNextColor() {
-  const color = colors[_colorIndex];
-  _colorIndex = (_colorIndex + 1) % colors.length;
-  return color;
-}
-
 export function findPad(pad: string, pads: Record<string, Pad[]>) {
   const group = pad[0];
   const padNumber = parseInt(pad.slice(1), 10);
