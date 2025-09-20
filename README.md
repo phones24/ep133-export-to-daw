@@ -58,3 +58,9 @@ So I started digging through the file format and trying to reuse the logic from 
 I spent a lot of time de-obfuscating it (AI helps a lot there), reverse-engineering the files, and eventually building a working library (check src/ep133 folder).
 Then building the web application was easy.
 
+
+## Donation
+
+If you find this project useful, please consider supporting its development with a donation!
+
+You can find the donation button on the project website, in the top-right corner.
