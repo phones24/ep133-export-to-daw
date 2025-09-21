@@ -128,8 +128,8 @@ function App() {
                 <Main />
               </DeviceProvider>
             </Route>
+            <Route component={Page404} />
           </Switch>
-          <Route component={Page404} />
         </QueryClientProvider>
       </Provider>
     </ErrorBoundary>
