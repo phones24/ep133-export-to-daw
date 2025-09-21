@@ -1,5 +1,6 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Provider, useAtom } from 'jotai';
+import { Route, Switch } from 'wouter';
 import { feedbackDialogAtom } from '../atoms/feedbackDialog';
 import { projectIdAtom } from '../atoms/project';
 import { APP_STATES, useAppState } from '../hooks/useAppState';
@@ -17,6 +18,7 @@ import FeedbackDialog from './FeedbackDialog';
 import IconGitHub from './icons/github.svg?react';
 import IconMail from './icons/mail.svg?react';
 import OfflineInformer from './OfflineInformer';
+import Page404 from './Page404';
 import Project from './Project';
 import ProjectSelector from './ProjectSelector';
 import Button from './ui/Button';
@@ -120,9 +122,14 @@ function App() {
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <Provider store={store}>
         <QueryClientProvider client={queryClient}>
-          <DeviceProvider>
-            <Main />
-          </DeviceProvider>
+          <Switch>
+            <Route path="/">
+              <DeviceProvider>
+                <Main />
+              </DeviceProvider>
+            </Route>
+          </Switch>
+          <Route component={Page404} />
         </QueryClientProvider>
       </Provider>
     </ErrorBoundary>
