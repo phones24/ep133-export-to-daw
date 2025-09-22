@@ -1024,10 +1024,10 @@
     <ArrangementOverdub Value="false" />
     <ColorSequenceIndex Value="1617606863" />
     <AutoColorPickerForPlayerAndGroupTracks>
-      <NextColorIndex Value="13" />
+      <NextColorIndex Value="20" />
     </AutoColorPickerForPlayerAndGroupTracks>
     <AutoColorPickerForReturnAndMasterTracks>
-      <NextColorIndex Value="4" />
+      <NextColorIndex Value="10" />
     </AutoColorPickerForReturnAndMasterTracks>
     <ViewData Value="{}" />
     <ResetNonautomatedMidiControllersOnClipStarts Value="true" />

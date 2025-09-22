@@ -1,4 +1,5 @@
-// Types for midiTrack.xml template
+import { TrackSendHolder } from './trackSendHolder';
+
 interface ValueElement {
   '@Value': any;
 }
@@ -58,7 +59,7 @@ interface ClipEnvelopeChooserViewState {
   PreferModulationVisible: ValueElement;
 }
 
-interface Mixer {
+export interface Mixer {
   LomId: ValueElement;
   LomIdView: ValueElement;
   IsExpanded: ValueElement;
@@ -85,7 +86,7 @@ interface Mixer {
     Value: {};
   };
   MpePitchBendUsesTuning: ValueElement;
-  Sends: {};
+  Sends: TrackSendHolder;
   Speaker: ManualElement;
   SoloSink: ValueElement;
   PanMode: ValueElement;

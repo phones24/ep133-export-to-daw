@@ -28,11 +28,12 @@ function ExportProject() {
   );
   const [useSampler, setUseSampler] = usePersistedState('export_useSampler', false);
   const [clips, setClips] = usePersistedState('export_clips', false);
-  const [groupTracks, setGroupTracks] = usePersistedState('export_groupTracks', false);
+  const [groupTracks, setGroupTracks] = usePersistedState('export_groupTracks', true);
   const [drumRackFirstGroup, setDrumRackFirstGroup] = usePersistedState(
     'export_drumRackFirstGroup',
     false,
   );
+  const [sendEffects, setSendEffects] = usePersistedState('export_sendEffects', true);
   const appState = useAppState();
   const { device } = useDevice();
   const {
@@ -51,6 +52,7 @@ function ExportProject() {
     clips,
     groupTracks,
     drumRackFirstGroup,
+    sendEffects,
   });
   const [_, openFeedbackDialog] = useAtom(feedbackDialogAtom);
 
@@ -138,6 +140,13 @@ function ExportProject() {
                     title="Group tracks"
                     disabled={isPending}
                     helperText="Tracks will be grouped by their groups (A, B, C, D) same as on the device."
+                  />
+                  <CheckBox
+                    checked={sendEffects}
+                    onChange={(checked) => setSendEffects(checked)}
+                    title="Send effects"
+                    disabled={isPending}
+                    helperText="Return track with effect will be added. Each individual track will be sending to the return track. If you select «Group tracks», each group will send its audio to the return track."
                   />
                 </>
               )}

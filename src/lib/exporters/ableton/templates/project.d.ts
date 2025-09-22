@@ -359,6 +359,12 @@ interface LiveSet {
   Scenes: {
     Scene: ALSSceneContent[];
   };
+  SendsPre: {
+    SendPreBool: {
+      '@Id': number;
+      '@Value': string;
+    };
+  };
 }
 
 interface Ableton {

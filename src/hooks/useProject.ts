@@ -1,6 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { BlobReader } from '../ep133/stream';
-import { collectPads, collectScenesAndPatterns, collectSettings } from '../lib/parsers';
+import {
+  collectEffects,
+  collectPads,
+  collectScenesAndPatterns,
+  collectSettings,
+} from '../lib/parsers';
 import { untar } from '../lib/untar';
 import { ProjectRawData } from '../types/types';
 import useAllSounds from './useAllSounds';
@@ -24,15 +29,17 @@ function useProject(id: number | string) {
       const projectFile = new File([...archive.data], `project${archive.name}.tar`);
       const blobReader = new BlobReader(projectFile);
       const files = await untar(blobReader.blob);
-      console.log('files', files);
+
       const settings = collectSettings(files);
       const pads = collectPads(files, allSounds);
       const scenes = collectScenesAndPatterns(files);
-
+      const effects = collectEffects(files);
+      console.log(effects);
       return {
         pads,
         scenes,
         settings,
+        effects,
         projectFile,
       };
     },

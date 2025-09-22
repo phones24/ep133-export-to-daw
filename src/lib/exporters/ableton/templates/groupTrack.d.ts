@@ -1,3 +1,5 @@
+import { Mixer } from './midiTrack';
+
 interface ValueElement {
   '@Value': any;
 }
@@ -32,6 +34,10 @@ interface Slots {
   GroupTrackSlot: GroupTrackSlot[];
 }
 
+interface DeviceChain {
+  Mixer: Mixer;
+}
+
 export interface ALSGroupTrackContent {
   '@Id': number;
   '@_internalId'?: string;
@@ -53,6 +59,7 @@ export interface ALSGroupTrackContent {
   TakeLanes: TakeLanes;
   LinkedTrackGroupId: ValueElement;
   Slots: Slots;
+  DeviceChain: DeviceChain;
 }
 
 export interface ALSGroupTrack {

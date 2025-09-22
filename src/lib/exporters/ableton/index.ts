@@ -2,26 +2,37 @@ import JSZip from 'jszip';
 import { create } from 'xmlbuilder2';
 import { DeviceService } from '../../../ep133/device-service';
 import {
+  EffectType,
   ExporterParams,
   ExportResult,
   ExportStatus,
+  FaderParam,
   ProjectRawData,
   ProjectSettings,
   SampleReport,
   Sound,
 } from '../../../types/types';
+import { EFFECTS } from '../../constants';
 import abletonTransformer, { AblClip, AblScene, AblTrack } from '../../transformers/ableton';
 import { AbortError } from '../../utils';
 import { collectSamples } from '../utils';
 import { ALSDrumBranch } from './templates/drumBranch';
 import { ALSDrumRack } from './templates/drumRack';
+import { ALSChorus } from './templates/effectChorus';
+import { ALSCompressor } from './templates/effectCompressor';
+import { ALSDelay } from './templates/effectDelay';
+import { ALSDistortion } from './templates/effectDistortion';
+import { ALSFilter } from './templates/effectFilter';
+import { ALSReverb } from './templates/effectReverb';
 import { ALSGroupTrack } from './templates/groupTrack';
 import { ALSMidiClip, ALSMidiClipContent } from './templates/midiClip';
 import { ALSMidiTrack } from './templates/midiTrack';
 import { ALSProject } from './templates/project';
+import { ALSReturnTrack } from './templates/returnTrack';
 import { ALSMultiSamplerContent, ALSSampler } from './templates/sampler';
 import { ALSScene, ALSSceneContent } from './templates/scene';
 import { ALSOriginalSimplerContent, ALSSimpler } from './templates/simpler';
+import { ALSTrackSendHolder } from './templates/trackSendHolder';
 import { fixIds, getId, gzipString, koEnvRangeToSeconds, loadTemplate } from './utils';
 
 async function buildMidiClip(
@@ -307,6 +318,15 @@ async function buildTrack(
     midiTrack.DeviceChain.AudioOutputRouting.UpperDisplayString['@Value'] = 'Group';
   }
 
+  if (exporterParams.sendEffects) {
+    const trackSendHolderTemplate = await loadTemplate<ALSTrackSendHolder>('trackSendHolder');
+    const trackSendHolder = structuredClone(trackSendHolderTemplate.TrackSendHolder);
+
+    trackSendHolder.Send.Manual['@Value'] = koTrack.faderParams[FaderParam.FX];
+
+    midiTrack.DeviceChain.Mixer.Sends.TrackSendHolder = trackSendHolder;
+  }
+
   return { MidiTrack: midiTrack };
 }
 
@@ -327,7 +347,7 @@ async function buildScenes(scenes: AblScene[], settings: ProjectSettings) {
   return result;
 }
 
-async function buildGroupTrack(track: AblTrack, id: number) {
+async function buildGroupTrack(track: AblTrack, id: number, exporterParams: ExporterParams) {
   const groupTrackTemplate = await loadTemplate<ALSGroupTrack>('groupTrack');
   const groupTrack = structuredClone(groupTrackTemplate.GroupTrack);
 
@@ -335,6 +355,13 @@ async function buildGroupTrack(track: AblTrack, id: number) {
   groupTrack.Name.EffectiveName['@Value'] = track.group.toLocaleUpperCase();
   groupTrack.Name.UserName['@Value'] = track.group.toLocaleUpperCase();
   groupTrack.Color['@Value'] = 20 + id;
+
+  if (exporterParams.sendEffects) {
+    const trackSendHolderTemplate = await loadTemplate<any>('trackSendHolder');
+    const trackSendHolder = structuredClone(trackSendHolderTemplate.TrackSendHolder);
+
+    groupTrack.DeviceChain.Mixer.Sends.TrackSendHolder = [trackSendHolder];
+  }
 
   return { GroupTrack: groupTrack };
 }
@@ -351,7 +378,7 @@ async function buildTracks(tracks: AblTrack[], maxScenes: number, exporterParams
     if (exporterParams.groupTracks && koTrack.group !== currentGroup[0]) {
       trackGroupId = id++;
       currentGroup = koTrack.group;
-      const groupTrack = await buildGroupTrack(koTrack, trackGroupId);
+      const groupTrack = await buildGroupTrack(koTrack, trackGroupId, exporterParams);
       result.push(groupTrack);
     }
 
@@ -361,6 +388,63 @@ async function buildTracks(tracks: AblTrack[], maxScenes: number, exporterParams
   }
 
   return result;
+}
+
+async function buildReturnTrack(projectData: ProjectRawData, trackId: number = 0) {
+  const returnTrackTemplate = await loadTemplate<ALSReturnTrack>('returnTrack');
+  const returnTrack = structuredClone(returnTrackTemplate.ReturnTrack);
+
+  returnTrack['@Id'] = trackId;
+  returnTrack.Name.EffectiveName['@Value'] = EFFECTS[projectData.effects.effectType] || '';
+  returnTrack.Name.UserName['@Value'] = EFFECTS[projectData.effects.effectType] || '';
+  returnTrack.Color['@Value'] = 6;
+
+  if (projectData.effects.effectType === EffectType.Reverb) {
+    const effectReverbTemplate = await loadTemplate<ALSReverb>('effectReverb');
+    const effectReverb = structuredClone(effectReverbTemplate.Reverb);
+
+    effectReverb.PreDelay.Manual['@Value'] = 0.5;
+    effectReverb.RoomSize.Manual['@Value'] = 300;
+    effectReverb.ShelfHiFreq.Manual['@Value'] = 1000;
+    effectReverb.DecayTime.Manual['@Value'] = projectData.effects.param1 * 8000; // max 8 seconds which is kinda close to how it sounds in KO
+    effectReverb.ShelfHiGain.Manual['@Value'] = projectData.effects.param2; // param2 is "color" which roughly matches the high shelf gain cut amount
+
+    returnTrack.DeviceChain.DeviceChain.Devices = { Reverb: effectReverb };
+  }
+
+  if (projectData.effects.effectType === EffectType.Delay) {
+    const effectDelayTemplate = await loadTemplate<ALSDelay>('effectDelay');
+    const effectDelay = structuredClone(effectDelayTemplate.Delay);
+
+    returnTrack.DeviceChain.DeviceChain.Devices = { Delay: effectDelay };
+  }
+
+  if (projectData.effects.effectType === EffectType.Chorus) {
+    const effectChorusTemplate = await loadTemplate<ALSChorus>('effectChorus');
+    const effectChorus = structuredClone(effectChorusTemplate.Chorus2);
+
+    returnTrack.DeviceChain.DeviceChain.Devices = { Chorus2: effectChorus };
+  }
+  if (projectData.effects.effectType === EffectType.Distortion) {
+    const effectDistortionTemplate = await loadTemplate<ALSDistortion>('effectDistortion');
+    const effectDistortion = structuredClone(effectDistortionTemplate.Overdrive);
+
+    returnTrack.DeviceChain.DeviceChain.Devices = { Overdrive: effectDistortion };
+  }
+  if (projectData.effects.effectType === EffectType.Filter) {
+    const effectFilterTemplate = await loadTemplate<ALSFilter>('effectFilter');
+    const effectFilter = structuredClone(effectFilterTemplate.AutoFilter);
+
+    returnTrack.DeviceChain.DeviceChain.Devices = { AutoFilter: effectFilter };
+  }
+  if (projectData.effects.effectType === EffectType.Compressor) {
+    const effectCompressorTemplate = await loadTemplate<ALSCompressor>('effectCompressor');
+    const effectCompressor = structuredClone(effectCompressorTemplate.Compressor2);
+
+    returnTrack.DeviceChain.DeviceChain.Devices = { Compressor2: effectCompressor };
+  }
+
+  return { ReturnTrack: returnTrack };
 }
 
 async function buildProject(
@@ -392,11 +476,29 @@ async function buildProject(
     exporterParams,
   );
 
+  if (exporterParams.sendEffects) {
+    const returnTrack = await buildReturnTrack(
+      projectData,
+      project.Ableton.LiveSet.Tracks['#'].length + 1,
+    );
+
+    project.Ableton.LiveSet.Tracks['#'].push(returnTrack);
+  }
+
   if (exporterParams.clips) {
     project.Ableton.LiveSet.Scenes.Scene = await buildScenes(
       transformedData.scenes,
       projectData.settings,
     );
+  }
+
+  if (exporterParams.sendEffects) {
+    project.Ableton.LiveSet.SendsPre = {
+      SendPreBool: {
+        '@Id': 1,
+        '@Value': 'false',
+      },
+    };
   }
 
   const fixedRoot = fixIds(project);
@@ -444,17 +546,17 @@ async function exportAbleton(
   let sampleReport: SampleReport | undefined;
 
   if (exporterParams.includeArchivedSamples) {
-    const { samples, sampleReport: report } = await collectSamples(
-      data,
-      sounds,
-      deviceService,
-      progressCallback,
-      abortSignal,
-    );
-    samples.forEach((s) => {
-      zippedProject.file(`Project${projectId} Project/Samples/Imported/${s.name}`, s.data);
-    });
-    sampleReport = report;
+    // const { samples, sampleReport: report } = await collectSamples(
+    //   data,
+    //   sounds,
+    //   deviceService,
+    //   progressCallback,
+    //   abortSignal,
+    // );
+    // samples.forEach((s) => {
+    //   zippedProject.file(`Project${projectId} Project/Samples/Imported/${s.name}`, s.data);
+    // });
+    // sampleReport = report;
   }
 
   progressCallback({ progress: 90, status: 'Bundle everything...' });
