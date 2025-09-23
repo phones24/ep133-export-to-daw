@@ -31,7 +31,7 @@ function Main() {
   const [_, openFeedbackDialog] = useAtom(feedbackDialogAtom);
 
   return (
-    <div className="min-w-[1100px] p-4 min-h-screen grid grid-rows-[auto_1fr]">
+    <div className="min-w-[1100px] max-w-[1800px] p-4 min-h-screen grid grid-rows-[auto_1fr] mx-auto">
       <div className="mb-2 empty:mb-0">
         <OfflineInformer />
       </div>
