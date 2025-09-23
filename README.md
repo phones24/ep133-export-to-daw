@@ -22,6 +22,7 @@ Try it out on https://ep133-to-daw.cc/
   - Supports all sampler features: envelope, trimming points, stretching, playback modes
   - Export as arrangements or session clips
   - Option to choose Simpler or Sampler instrument
+  - FX send/return
   - Track grouping: 4 groups, same as on the device
   - First group can be exported as a Drum Rack track
 - DAWproject (universal DAW format created by Bitwig):
@@ -33,6 +34,7 @@ Try it out on https://ep133-to-daw.cc/
 
 ## Latest news
 
+- [23/09/2025] ABLETON: FX support! The return track will be added with attached effect and each track(or group) will be sending to this return track
 - [19/09/2025] Added feedback functionality with ability to attach your project for research
 - [17/09/2025] ABLETON: Export tracks from group A into Drum Rack (with choke group!)
 - [16/09/2025] ABLETON: Added play modes support: KEY and ONE

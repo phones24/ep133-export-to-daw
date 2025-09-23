@@ -14,7 +14,7 @@ import Dialog from './ui/Dialog';
 import Select from './ui/Select';
 
 const NOTES: Record<ExportFormatId, string> = {
-  ableton: `Please note that the exported project won't sound exactly the same as it does on the device. Currently NOT included in export: effects, fader automation, song mode, sidechains`,
+  ableton: `Please note that the exported project won't sound exactly the same as it does on the device.`,
   dawproject: `Unfortunately, the DAWproject format does not currently support the "Sampler" instrument, so you will need to manually assign the samples in your DAW.`,
   midi: `The simplest format supported by any DAW. But you have to assign the samples manually.`,
 };
