@@ -1,52 +1,21 @@
-interface ValueElement {
-  '@Value': any;
-}
-
-interface LomIdElement {
-  LomId: ValueElement;
-}
+import {
+  AbletonDefaultPresetRef,
+  AutomationTarget,
+  FileRef,
+  LomIdElement,
+  MidiCCOnOffThresholds,
+  MidiControllerRange,
+  ModulationTarget,
+  PresetRef,
+  ValueElement,
+} from './common';
 
 interface ManualElement extends LomIdElement {
   Manual: ValueElement;
-  MidiControllerRange?: {
-    Min: ValueElement;
-    Max: ValueElement;
-  };
-  AutomationTarget: {
-    '@Id': number;
-    LockEnvelope: ValueElement;
-  };
-  ModulationTarget?: {
-    '@Id': number;
-    LockEnvelope: ValueElement;
-  };
-  MidiCCOnOffThresholds?: {
-    Min: ValueElement;
-    Max: ValueElement;
-  };
-}
-
-interface FileRef {
-  RelativePathType: ValueElement;
-  RelativePath: ValueElement;
-  Path: ValueElement;
-  Type: ValueElement;
-  LivePackName: ValueElement;
-  LivePackId: ValueElement;
-  OriginalFileSize: ValueElement;
-  OriginalCrc: ValueElement;
-}
-
-interface AbletonDefaultPresetRef {
-  _attrs: { Id: number };
-  FileRef: FileRef;
-  DeviceId: {
-    Name: string;
-  };
-}
-
-interface PresetRef {
-  AbletonDefaultPresetRef: AbletonDefaultPresetRef;
+  MidiControllerRange?: MidiControllerRange;
+  AutomationTarget: AutomationTarget;
+  ModulationTarget?: ModulationTarget;
+  MidiCCOnOffThresholds?: MidiCCOnOffThresholds;
 }
 
 interface BranchSourceContext {

@@ -48,8 +48,8 @@ function FileInput({
             className="flex gap-2 items-center p-2 bg-gray-50 rounded"
           >
             <IconFile className="w-6 h-6 flex-shrink-0" />
-            <span className="text-sm truncate flex-1">{file.name}</span>
-            <span className="text-xs opacity-60 flex-shrink-0">
+            <span className="text-sm truncate flex-1 max-w-[500px]">{file.name}</span>
+            <span className="text-xs opacity-60 flex-shrink-0 ml-auto">
               {(file.size / 1024).toFixed(2)}KB
             </span>
             <Button variant="icon" onClick={() => removeFile(index)} disabled={disabled}>

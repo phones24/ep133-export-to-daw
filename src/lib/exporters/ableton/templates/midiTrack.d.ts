@@ -1,30 +1,19 @@
-// Types for midiTrack.xml template
-interface ValueElement {
-  '@Value': any;
-}
-
-interface LomIdElement {
-  LomId: ValueElement;
-}
+import {
+  AutomationTarget,
+  LomIdElement,
+  MidiCCOnOffThresholds,
+  MidiControllerRange,
+  ModulationTarget,
+  ValueElement,
+} from './common';
+import { TrackSendHolder } from './trackSendHolder';
 
 interface ManualElement extends LomIdElement {
   Manual: ValueElement;
-  MidiControllerRange?: {
-    Min: ValueElement;
-    Max: ValueElement;
-  };
-  AutomationTarget: {
-    '@Id': number;
-    LockEnvelope: ValueElement;
-  };
-  ModulationTarget?: {
-    '@Id': number;
-    LockEnvelope: ValueElement;
-  };
-  MidiCCOnOffThresholds?: {
-    Min: ValueElement;
-    Max: ValueElement;
-  };
+  MidiControllerRange?: MidiControllerRange;
+  AutomationTarget: AutomationTarget;
+  ModulationTarget?: ModulationTarget;
+  MidiCCOnOffThresholds?: MidiCCOnOffThresholds;
 }
 
 interface Routing {
@@ -58,7 +47,7 @@ interface ClipEnvelopeChooserViewState {
   PreferModulationVisible: ValueElement;
 }
 
-interface Mixer {
+export interface Mixer {
   LomId: ValueElement;
   LomIdView: ValueElement;
   IsExpanded: ValueElement;
@@ -85,7 +74,7 @@ interface Mixer {
     Value: {};
   };
   MpePitchBendUsesTuning: ValueElement;
-  Sends: {};
+  Sends: TrackSendHolder;
   Speaker: ManualElement;
   SoloSink: ValueElement;
   PanMode: ValueElement;

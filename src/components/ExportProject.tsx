@@ -14,7 +14,7 @@ import Dialog from './ui/Dialog';
 import Select from './ui/Select';
 
 const NOTES: Record<ExportFormatId, string> = {
-  ableton: `Please note that the exported project won't sound exactly the same as it does on the device. Currently NOT included in export: effects, fader automation, song mode, sidechains`,
+  ableton: `Please note that the exported project won't sound exactly the same as it does on the device.`,
   dawproject: `Unfortunately, the DAWproject format does not currently support the "Sampler" instrument, so you will need to manually assign the samples in your DAW.`,
   midi: `The simplest format supported by any DAW. But you have to assign the samples manually.`,
 };
@@ -28,11 +28,12 @@ function ExportProject() {
   );
   const [useSampler, setUseSampler] = usePersistedState('export_useSampler', false);
   const [clips, setClips] = usePersistedState('export_clips', false);
-  const [groupTracks, setGroupTracks] = usePersistedState('export_groupTracks', false);
+  const [groupTracks, setGroupTracks] = usePersistedState('export_groupTracks', true);
   const [drumRackFirstGroup, setDrumRackFirstGroup] = usePersistedState(
     'export_drumRackFirstGroup',
     false,
   );
+  const [sendEffects, setSendEffects] = usePersistedState('export_sendEffects', true);
   const appState = useAppState();
   const { device } = useDevice();
   const {
@@ -51,6 +52,7 @@ function ExportProject() {
     clips,
     groupTracks,
     drumRackFirstGroup,
+    sendEffects,
   });
   const [_, openFeedbackDialog] = useAtom(feedbackDialogAtom);
 
@@ -66,7 +68,11 @@ function ExportProject() {
   return (
     <>
       <div className="flex gap-2 ">
-        <Button onClick={handleOpen} disabled={!appState.includes(APP_STATES.CAN_EXPORT_PROJECT)}>
+        <Button
+          variant="secondary"
+          onClick={handleOpen}
+          disabled={!appState.includes(APP_STATES.CAN_EXPORT_PROJECT)}
+        >
           Export
         </Button>
       </div>
@@ -138,6 +144,13 @@ function ExportProject() {
                     title="Group tracks"
                     disabled={isPending}
                     helperText="Tracks will be grouped by their groups (A, B, C, D) same as on the device."
+                  />
+                  <CheckBox
+                    checked={sendEffects}
+                    onChange={(checked) => setSendEffects(checked)}
+                    title="Send effects"
+                    disabled={isPending}
+                    helperText="Return track with effect will be added. Each individual track will be sending to the return track. If you select «Group tracks», each group will send its audio to the return track."
                   />
                 </>
               )}
@@ -230,15 +243,11 @@ function ExportProject() {
               Submit error report
             </Button>
             {isPending ? (
-              <Button onClick={cancelExport} variant="secondary">
-                Cancel
-              </Button>
+              <Button onClick={cancelExport}>Cancel</Button>
             ) : (
-              <Button onClick={() => setOpen(false)} variant="secondary">
-                Close
-              </Button>
+              <Button onClick={() => setOpen(false)}>Close</Button>
             )}
-            <Button onClick={startExport} disabled={isPending}>
+            <Button onClick={startExport} disabled={isPending} variant="secondary">
               Export
             </Button>
           </div>

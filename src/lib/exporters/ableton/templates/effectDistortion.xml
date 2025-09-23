@@ -1,0 +1,163 @@
+<Overdrive Id="0">
+  <LomId Value="0" />
+  <LomIdView Value="0" />
+  <IsExpanded Value="true" />
+  <On>
+    <LomId Value="0" />
+    <Manual Value="true" />
+    <AutomationTarget Id="23856">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <MidiCCOnOffThresholds>
+      <Min Value="64" />
+      <Max Value="127" />
+    </MidiCCOnOffThresholds>
+  </On>
+  <ModulationSourceCount Value="0" />
+  <ParametersListWrapper LomId="0" />
+  <Pointee Id="23857" />
+  <LastSelectedTimeableIndex Value="0" />
+  <LastSelectedClipEnvelopeIndex Value="0" />
+  <LastPresetRef>
+    <Value>
+      <AbletonDefaultPresetRef Id="0">
+        <FileRef>
+          <RelativePathType Value="5" />
+          <RelativePath Value="Devices/Audio Effects/Overdrive" />
+          <Path Value="" />
+          <Type Value="1" />
+          <LivePackName Value="Core Library" />
+          <LivePackId Value="www.ableton.com/0" />
+          <OriginalFileSize Value="0" />
+          <OriginalCrc Value="0" />
+        </FileRef>
+        <DeviceId Name="Overdrive" />
+      </AbletonDefaultPresetRef>
+    </Value>
+  </LastPresetRef>
+  <LockedScripts />
+  <IsFolded Value="false" />
+  <ShouldShowPresetName Value="true" />
+  <UserName Value="" />
+  <Annotation Value="" />
+  <SourceContext>
+    <Value>
+      <BranchSourceContext Id="0">
+        <OriginalFileRef>
+          <FileRef Id="0">
+            <RelativePathType Value="5" />
+            <RelativePath Value="Devices/Audio Effects/Overdrive" />
+            <Path Value="" />
+            <Type Value="1" />
+            <LivePackName Value="Core Library" />
+            <LivePackId Value="www.ableton.com/0" />
+            <OriginalFileSize Value="0" />
+            <OriginalCrc Value="0" />
+          </FileRef>
+        </OriginalFileRef>
+        <BrowserContentPath Value="query:AudioFx#Drive%20&amp;%20Color:Overdrive" />
+        <PresetRef>
+          <AbletonDefaultPresetRef Id="0">
+            <FileRef>
+              <RelativePathType Value="5" />
+              <RelativePath Value="Devices/Audio Effects/Overdrive" />
+              <Path Value="" />
+              <Type Value="1" />
+              <LivePackName Value="Core Library" />
+              <LivePackId Value="www.ableton.com/0" />
+              <OriginalFileSize Value="0" />
+              <OriginalCrc Value="0" />
+            </FileRef>
+            <DeviceId Name="Overdrive" />
+          </AbletonDefaultPresetRef>
+        </PresetRef>
+        <BranchDeviceId Value="device:ableton:audiofx:Overdrive" />
+      </BranchSourceContext>
+    </Value>
+  </SourceContext>
+  <OverwriteProtectionNumber Value="2819" />
+  <MidFreq>
+    <LomId Value="0" />
+    <Manual Value="1250" />
+    <MidiControllerRange>
+      <Min Value="50" />
+      <Max Value="20000" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23858">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23859">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </MidFreq>
+  <BandWidth>
+    <LomId Value="0" />
+    <Manual Value="6.5" />
+    <MidiControllerRange>
+      <Min Value="0.5" />
+      <Max Value="9" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23860">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23861">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </BandWidth>
+  <Drive>
+    <LomId Value="0" />
+    <Manual Value="50" />
+    <MidiControllerRange>
+      <Min Value="0" />
+      <Max Value="100" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23862">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23863">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </Drive>
+  <DryWet>
+    <LomId Value="0" />
+    <Manual Value="100" />
+    <MidiControllerRange>
+      <Min Value="0" />
+      <Max Value="100" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23864">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23865">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </DryWet>
+  <Tone>
+    <LomId Value="0" />
+    <Manual Value="50" />
+    <MidiControllerRange>
+      <Min Value="0" />
+      <Max Value="100" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23866">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23867">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </Tone>
+  <PreserveDynamics>
+    <LomId Value="0" />
+    <Manual Value="0.5" />
+    <MidiControllerRange>
+      <Min Value="0" />
+      <Max Value="1" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23868">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23869">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </PreserveDynamics>
+</Overdrive>

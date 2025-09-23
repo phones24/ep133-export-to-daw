@@ -28,9 +28,49 @@ export type Sound = {
   meta: SoundMetadata;
 };
 
+export enum EffectType {
+  Off = 0,
+  Delay = 1,
+  Reverb = 2,
+  Distortion = 3,
+  Chorus = 4,
+  Filter = 5,
+  Compressor = 6,
+}
+
+export enum FaderParam {
+  LVL = 0,
+  PTC = 1,
+  TIM = 2,
+  LPF = 3,
+  HPF = 4,
+  FX = 5,
+  ATK = 6,
+  REL = 7,
+  PAN = 8,
+  TUNE = 9,
+  VEL = 10,
+  MOD = 11,
+}
+
+export type GroupFaderParam = {
+  [group: string]: {
+    [K in FaderParam]: number;
+  };
+};
+
 export type ProjectSettings = {
   bpm: number;
+  groupFaderParams: GroupFaderParam;
+  faderAssignment: Record<string, FaderParam>;
   rawData: Uint8Array;
+};
+
+export type Effects = {
+  rawData: Uint8Array;
+  effectType: EffectType;
+  param1: number;
+  param2: number;
 };
 
 export type Pattern = {
@@ -78,6 +118,7 @@ export type ProjectRawData = {
   pads: Record<string, Pad[]>;
   scenes: Scene[];
   settings: ProjectSettings;
+  effects: Effects;
   projectFile: File;
 };
 
@@ -124,6 +165,7 @@ export type ExporterParams = {
   useSampler?: boolean; // use sampler/simpler
   groupTracks?: boolean; // group tracks in ableton export
   drumRackFirstGroup?: boolean; // drum rack first group in ableton export
+  sendEffects?: boolean; //
 };
 
 export type SoundInfo = {

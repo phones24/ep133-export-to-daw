@@ -1,10 +1,26 @@
 import { calculateSoundLength } from '../ep133/utils';
-import { Note, Pad, PadCode, Pattern, ProjectSettings, Scene, Sound } from '../types/types';
+import {
+  GroupFaderParam,
+  Note,
+  Pad,
+  PadCode,
+  Pattern,
+  ProjectSettings,
+  Scene,
+  Sound,
+} from '../types/types';
 import { GROUPS, PADS } from './constants';
 import { TarFile } from './untar';
 
 const defaultSettings = {
   bpm: 120,
+  groupFaderParams: {
+    a: { 0: -1, 1: -1, 2: -1, 3: -1, 4: -1, 5: -1, 6: -1, 7: -1, 8: -1, 9: -1, 10: -1, 11: -1 },
+    b: { 0: -1, 1: -1, 2: -1, 3: -1, 4: -1, 5: -1, 6: -1, 7: -1, 8: -1, 9: -1, 10: -1, 11: -1 },
+    c: { 0: -1, 1: -1, 2: -1, 3: -1, 4: -1, 5: -1, 6: -1, 7: -1, 8: -1, 9: -1, 10: -1, 11: -1 },
+    d: { 0: -1, 1: -1, 2: -1, 3: -1, 4: -1, 5: -1, 6: -1, 7: -1, 8: -1, 9: -1, 10: -1, 11: -1 },
+  },
+  faderAssignment: { a: 0, b: 0, c: 0, d: 0 },
 };
 
 export function noteNumberToName(noteNumber: number): string {
@@ -30,6 +46,17 @@ function timeStretchBars(data: number) {
     default:
       return 0;
   }
+}
+
+function bytesToFloat32(bytes: Uint8Array): number {
+  const buffer = new ArrayBuffer(4);
+  const view = new DataView(buffer);
+
+  bytes.forEach((b, i) => {
+    view.setUint8(i, b);
+  });
+
+  return view.getFloat32(0, true);
 }
 
 function genPadFileName(group: string, pad: number) {
@@ -146,17 +173,6 @@ export function collectScenesAndPatterns(files: TarFile[]) {
   return Object.values(scenes).sort((a, b) => a.name.localeCompare(b.name));
 }
 
-function bytesToFloat32(bytes: Uint8Array): number {
-  const buffer = new ArrayBuffer(4);
-  const view = new DataView(buffer);
-
-  bytes.forEach((b, i) => {
-    view.setUint8(i, b);
-  });
-
-  return view.getFloat32(0, true);
-}
-
 export function collectSettings(files: TarFile[]): ProjectSettings {
   const settings = files.find((f) => f.name === 'settings' && f.type === 'file');
 
@@ -169,8 +185,64 @@ export function collectSettings(files: TarFile[]): ProjectSettings {
     };
   }
 
+  const faderParamsData: GroupFaderParam = {};
+
+  for (const groupNum of [0, 1, 2, 3]) {
+    const groupId = GROUPS[groupNum].id;
+    for (let paramNum = 0; paramNum <= 11; paramNum++) {
+      faderParamsData[groupId] = {
+        ...faderParamsData[groupId],
+        [paramNum]: Number(
+          bytesToFloat32(
+            settings.data.slice(
+              24 + groupNum * 48 + paramNum * 4,
+              28 + groupNum * 48 + paramNum * 4,
+            ),
+          ).toFixed(2),
+        ),
+      };
+    }
+  }
+
   return {
     bpm: Number(bytesToFloat32(settings.data.slice(4, 8)).toFixed(2)),
+    groupFaderParams: faderParamsData,
+    faderAssignment: {
+      a: settings.data[216],
+      b: settings.data[217],
+      c: settings.data[218],
+      d: settings.data[219],
+    },
     rawData: settings.data,
+  };
+}
+
+export function collectEffects(files: TarFile[]) {
+  const fxFile = files.find((f) => f.name === 'fx_settings' && f.type === 'file');
+
+  if (!fxFile || !fxFile.data) {
+    console.error('Could not find fx file');
+
+    return {
+      rawData: new Uint8Array(),
+      effectType: 0,
+      param1: 0,
+      param2: 0,
+    };
+  }
+
+  const effectType = fxFile.data[4];
+  const param1 = bytesToFloat32(
+    fxFile.data.slice(12 + (effectType - 1) * 4, 16 + (effectType - 1) * 4),
+  );
+  const param2 = bytesToFloat32(
+    fxFile.data.slice(76 + (effectType - 1) * 4, 80 + (effectType - 1) * 4),
+  );
+
+  return {
+    rawData: fxFile.data,
+    effectType,
+    param1,
+    param2,
   };
 }

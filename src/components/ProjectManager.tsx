@@ -3,12 +3,13 @@ import { JSX } from 'preact';
 import { projectIdAtom } from '../atoms/project';
 import { APP_STATES, useAppState } from '../hooks/useAppState';
 import useProject from '../hooks/useProject';
+import ExportProject from './ExportProject';
 import Button from './ui/Button';
 import Select from './ui/Select';
 
 const PROJECTS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-function ProjectSelector() {
+function ProjectManager() {
   const [projectId, setProjectId] = useAtom(projectIdAtom);
   const { refetch } = useProject(projectId);
   const appState = useAppState();
@@ -36,8 +37,9 @@ function ProjectSelector() {
       >
         ⟳
       </Button>
+      <ExportProject />
     </div>
   );
 }
 
-export default ProjectSelector;
+export default ProjectManager;

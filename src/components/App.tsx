@@ -8,19 +8,19 @@ import useDevice from '../hooks/useDevice';
 import queryClient from '../lib/queryClient';
 import { store } from '../lib/store';
 import AppStateDisplay from './AppStateDisplay';
+import Arrangements from './Arrangements';
 import DeviceProvider from './DeviceProvider';
 import Donate from './Donate';
 import ErrorBoundary from './ErrorBoundary';
 import ErrorFallback from './ErrorFallback';
-import ExportProject from './ExportProject';
 import FacePlateHeader from './FacePlateHeader';
 import FeedbackDialog from './FeedbackDialog';
 import IconGitHub from './icons/github.svg?react';
 import IconMail from './icons/mail.svg?react';
 import OfflineInformer from './OfflineInformer';
 import Page404 from './Page404';
-import Project from './Project';
-import ProjectSelector from './ProjectSelector';
+import ProjectManager from './ProjectManager';
+import ProjectMeta from './ProjectMeta';
 import Button from './ui/Button';
 import Toast from './ui/Toast';
 
@@ -73,13 +73,15 @@ function Main() {
             </div>
           </div>
           <div className="flex justify-between">
-            <ProjectSelector />
-            <ExportProject />
+            <ProjectManager />
+            <ProjectMeta projectId={projectId} />
           </div>
         </header>
 
         <main className="bg-white h-full overflow-scroll border-1 border-black p-4">
-          {appState.includes(APP_STATES.CAN_DISPLAY_PROJECT) && <Project projectId={projectId} />}
+          {appState.includes(APP_STATES.CAN_DISPLAY_PROJECT) && (
+            <Arrangements projectId={projectId} />
+          )}
 
           {appState.includes(APP_STATES.LOADING) && (
             <AppStateDisplay

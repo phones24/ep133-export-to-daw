@@ -6,7 +6,7 @@ import { SingleNote } from './SingleNote';
 import Track from './Track';
 import TrackMeta from './TrackMeta';
 
-function Project({ projectId }: { projectId: string }) {
+function Arrangements({ projectId }: { projectId: string }) {
   const { data } = useProject(projectId);
   const { data: allSounds } = useAllSounds();
 
@@ -41,4 +41,4 @@ function Project({ projectId }: { projectId: string }) {
   );
 }
 
-export default Project;
+export default Arrangements;

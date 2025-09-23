@@ -1,39 +1,14 @@
+import {
+  AutomationTarget,
+  LastPresetRef,
+  LomIdElement,
+  MidiControllerRange,
+  ModulationTarget,
+  On,
+  SourceContext,
+  ValueElement,
+} from './common';
 import { ALSDrumBranchContent } from './drumBranch';
-
-interface ValueElement {
-  '@Value': any;
-}
-
-interface LomIdElement {
-  LomId: ValueElement;
-}
-
-interface AutomationTarget {
-  '@Id': number;
-  LockEnvelope: ValueElement;
-}
-
-interface MidiControllerRange {
-  Min: ValueElement;
-  Max: ValueElement;
-}
-
-interface ModulationTarget {
-  '@Id': number;
-  LockEnvelope: ValueElement;
-}
-
-interface MidiCCOnOffThresholds {
-  Min: ValueElement;
-  Max: ValueElement;
-}
-
-interface On {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  AutomationTarget: AutomationTarget;
-  MidiCCOnOffThresholds: MidiCCOnOffThresholds;
-}
 
 interface MacroControl {
   LomId: ValueElement;
@@ -41,46 +16,6 @@ interface MacroControl {
   MidiControllerRange: MidiControllerRange;
   AutomationTarget: AutomationTarget;
   ModulationTarget: ModulationTarget;
-}
-
-interface FileRef {
-  '@Id'?: number;
-  RelativePathType: ValueElement;
-  RelativePath: ValueElement;
-  Path: ValueElement;
-  Type: ValueElement;
-  LivePackName: ValueElement;
-  LivePackId: ValueElement;
-  OriginalFileSize: ValueElement;
-  OriginalCrc: ValueElement;
-}
-
-interface AbletonDefaultPresetRef {
-  '@Id': number;
-  FileRef: FileRef;
-  DeviceId: {
-    '@Name': string;
-  };
-}
-
-interface LastPresetRef {
-  Value: AbletonDefaultPresetRef;
-}
-
-interface BranchSourceContext {
-  '@Id': number;
-  OriginalFileRef: {
-    FileRef: FileRef;
-  };
-  BrowserContentPath: ValueElement;
-  PresetRef: {
-    AbletonDefaultPresetRef: AbletonDefaultPresetRef;
-  };
-  BranchDeviceId: ValueElement;
-}
-
-interface SourceContext {
-  Value: BranchSourceContext;
 }
 
 interface ChainSelector {

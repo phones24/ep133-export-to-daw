@@ -1,6 +1,4 @@
-interface ValueElement {
-  '@Value': any;
-}
+import { ValueElement } from './common';
 
 interface FollowAction {
   FollowTime: ValueElement;

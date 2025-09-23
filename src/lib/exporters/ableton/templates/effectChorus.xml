@@ -1,0 +1,248 @@
+<Chorus2 Id="0">
+  <LomId Value="0" />
+  <LomIdView Value="0" />
+  <IsExpanded Value="true" />
+  <On>
+    <LomId Value="0" />
+    <Manual Value="true" />
+    <AutomationTarget Id="23870">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <MidiCCOnOffThresholds>
+      <Min Value="64" />
+      <Max Value="127" />
+    </MidiCCOnOffThresholds>
+  </On>
+  <ModulationSourceCount Value="0" />
+  <ParametersListWrapper LomId="0" />
+  <Pointee Id="23871" />
+  <LastSelectedTimeableIndex Value="0" />
+  <LastSelectedClipEnvelopeIndex Value="0" />
+  <LastPresetRef>
+    <Value>
+      <AbletonDefaultPresetRef Id="0">
+        <FileRef>
+          <RelativePathType Value="5" />
+          <RelativePath Value="Devices/Audio Effects/Chorus-Ensemble" />
+          <Path Value="" />
+          <Type Value="1" />
+          <LivePackName Value="Core Library" />
+          <LivePackId Value="www.ableton.com/0" />
+          <OriginalFileSize Value="0" />
+          <OriginalCrc Value="0" />
+        </FileRef>
+        <DeviceId Name="Chorus2" />
+      </AbletonDefaultPresetRef>
+    </Value>
+  </LastPresetRef>
+  <LockedScripts />
+  <IsFolded Value="false" />
+  <ShouldShowPresetName Value="true" />
+  <UserName Value="" />
+  <Annotation Value="" />
+  <SourceContext>
+    <Value>
+      <BranchSourceContext Id="0">
+        <OriginalFileRef>
+          <FileRef Id="0">
+            <RelativePathType Value="5" />
+            <RelativePath Value="Devices/Audio Effects/Chorus-Ensemble" />
+            <Path Value="" />
+            <Type Value="1" />
+            <LivePackName Value="Core Library" />
+            <LivePackId Value="www.ableton.com/0" />
+            <OriginalFileSize Value="0" />
+            <OriginalCrc Value="0" />
+          </FileRef>
+        </OriginalFileRef>
+        <BrowserContentPath Value="query:AudioFx#Pitch%20&amp;%20Modulation:Chorus-Ensemble" />
+        <PresetRef>
+          <AbletonDefaultPresetRef Id="0">
+            <FileRef>
+              <RelativePathType Value="5" />
+              <RelativePath Value="Devices/Audio Effects/Chorus-Ensemble" />
+              <Path Value="" />
+              <Type Value="1" />
+              <LivePackName Value="Core Library" />
+              <LivePackId Value="www.ableton.com/0" />
+              <OriginalFileSize Value="0" />
+              <OriginalCrc Value="0" />
+            </FileRef>
+            <DeviceId Name="Chorus2" />
+          </AbletonDefaultPresetRef>
+        </PresetRef>
+        <BranchDeviceId Value="device:ableton:audiofx:Chorus2" />
+      </BranchSourceContext>
+    </Value>
+  </SourceContext>
+  <OverwriteProtectionNumber Value="2819" />
+  <Mode>
+    <LomId Value="0" />
+    <Manual Value="0" />
+    <AutomationTarget Id="23872">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+  </Mode>
+  <Shaping>
+    <LomId Value="0" />
+    <Manual Value="0" />
+    <MidiControllerRange>
+      <Min Value="0" />
+      <Max Value="1" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23873">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23874">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </Shaping>
+  <Rate>
+    <LomId Value="0" />
+    <Manual Value="0.9000000358" />
+    <MidiControllerRange>
+      <Min Value="0.1000000015" />
+      <Max Value="15" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23875">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23876">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </Rate>
+  <Amount>
+    <LomId Value="0" />
+    <Manual Value="0.5" />
+    <MidiControllerRange>
+      <Min Value="0" />
+      <Max Value="1" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23877">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23878">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </Amount>
+  <Feedback>
+    <LomId Value="0" />
+    <Manual Value="0" />
+    <MidiControllerRange>
+      <Min Value="0" />
+      <Max Value="0.9900000095" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23879">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23880">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </Feedback>
+  <InvertFeedback>
+    <LomId Value="0" />
+    <Manual Value="false" />
+    <AutomationTarget Id="23881">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <MidiCCOnOffThresholds>
+      <Min Value="64" />
+      <Max Value="127" />
+    </MidiCCOnOffThresholds>
+  </InvertFeedback>
+  <VibratoOffset>
+    <LomId Value="0" />
+    <Manual Value="0" />
+    <MidiControllerRange>
+      <Min Value="0" />
+      <Max Value="180" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23882">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23883">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </VibratoOffset>
+  <HighpassEnabled>
+    <LomId Value="0" />
+    <Manual Value="false" />
+    <AutomationTarget Id="23884">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <MidiCCOnOffThresholds>
+      <Min Value="64" />
+      <Max Value="127" />
+    </MidiCCOnOffThresholds>
+  </HighpassEnabled>
+  <HighpassFrequency>
+    <LomId Value="0" />
+    <Manual Value="50.0000076" />
+    <MidiControllerRange>
+      <Min Value="20" />
+      <Max Value="2000" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23885">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23886">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </HighpassFrequency>
+  <Width>
+    <LomId Value="0" />
+    <Manual Value="1" />
+    <MidiControllerRange>
+      <Min Value="0" />
+      <Max Value="2" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23887">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23888">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </Width>
+  <Warmth>
+    <LomId Value="0" />
+    <Manual Value="0" />
+    <MidiControllerRange>
+      <Min Value="0" />
+      <Max Value="1" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23889">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23890">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </Warmth>
+  <OutputGain>
+    <LomId Value="0" />
+    <Manual Value="0.9999999404" />
+    <MidiControllerRange>
+      <Min Value="0" />
+      <Max Value="2" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23891">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23892">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </OutputGain>
+  <DryWet>
+    <LomId Value="0" />
+    <Manual Value="1" />
+    <MidiControllerRange>
+      <Min Value="0" />
+      <Max Value="1" />
+    </MidiControllerRange>
+    <AutomationTarget Id="23893">
+      <LockEnvelope Value="0" />
+    </AutomationTarget>
+    <ModulationTarget Id="23894">
+      <LockEnvelope Value="0" />
+    </ModulationTarget>
+  </DryWet>
+</Chorus2>

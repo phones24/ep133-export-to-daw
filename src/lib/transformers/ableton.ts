@@ -1,5 +1,13 @@
 import omit from 'lodash/omit';
-import { ExporterParams, Note, Pad, PadCode, ProjectRawData, Sound } from '../../types/types';
+import {
+  ExporterParams,
+  FaderParam,
+  Note,
+  Pad,
+  PadCode,
+  ProjectRawData,
+  Sound,
+} from '../../types/types';
 import { getSampleName } from '../exporters/utils';
 import { findPad, findSoundByPad, findSoundIdByPad } from '../utils';
 
@@ -18,6 +26,7 @@ export type AblTrack = Omit<Pad, 'file' | 'rawData'> & {
   drumRack: boolean;
   lane?: AblLane;
   tracks: AblTrack[];
+  faderParams: { [K in FaderParam]: number };
 };
 
 export type AblLane = {
@@ -65,6 +74,8 @@ function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParam
           throw new Error(`Could not find pad for ${pattern.pad}`);
         }
 
+        const faderParams = data.settings.groupFaderParams[pad.group];
+
         track = {
           ...omit(pad, ['file', 'rawData']),
           soundId,
@@ -77,6 +88,7 @@ function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParam
           bpm: data.settings.bpm,
           drumRack: false,
           tracks: [],
+          faderParams,
         };
 
         tracks.push(track);
@@ -122,7 +134,7 @@ function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParam
       drumRack: true,
       soundId: 0,
       name: 'Drums',
-      volume: 127,
+      volume: 2,
       attack: 0,
       release: 0,
       trimLeft: 0,
@@ -139,6 +151,7 @@ function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParam
       soundLength: 0,
       tracks: [],
       inChokeGroup: false,
+      faderParams: data.settings.groupFaderParams.a,
     };
 
     for (const track of tracks) {

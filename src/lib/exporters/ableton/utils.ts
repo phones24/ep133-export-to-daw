@@ -6,44 +6,37 @@ const START_ID = 22000;
 let _id = START_ID;
 const templateCache: Record<string, any> = {};
 
+const templateMap: Record<string, () => Promise<any>> = {
+  midiClip: () => import('./templates/midiClip.xml?raw'),
+  midiTrack: () => import('./templates/midiTrack.xml?raw'),
+  project: () => import('./templates/project.xml?raw'),
+  sampler: () => import('./templates/sampler.xml?raw'),
+  simpler: () => import('./templates/simpler.xml?raw'),
+  scene: () => import('./templates/scene.xml?raw'),
+  groupTrack: () => import('./templates/groupTrack.xml?raw'),
+  drumRack: () => import('./templates/drumRack.xml?raw'),
+  drumBranch: () => import('./templates/drumBranch.xml?raw'),
+  returnTrack: () => import('./templates/returnTrack.xml?raw'),
+  trackSendHolder: () => import('./templates/trackSendHolder.xml?raw'),
+  effectReverb: () => import('./templates/effectReverb.xml?raw'),
+  effectDelay: () => import('./templates/effectDelay.xml?raw'),
+  effectChorus: () => import('./templates/effectChorus.xml?raw'),
+  effectDistortion: () => import('./templates/effectDistortion.xml?raw'),
+  effectFilter: () => import('./templates/effectFilter.xml?raw'),
+  effectCompressor: () => import('./templates/effectCompressor.xml?raw'),
+};
+
 export async function loadTemplate<T>(templateName: string): Promise<T> {
   if (templateCache[templateName]) {
     return templateCache[templateName];
   }
 
-  let templateModule: any;
-  switch (templateName) {
-    case 'midiClip':
-      templateModule = await import('./templates/midiClip.xml?raw');
-      break;
-    case 'midiTrack':
-      templateModule = await import('./templates/midiTrack.xml?raw');
-      break;
-    case 'project':
-      templateModule = await import('./templates/project.xml?raw');
-      break;
-    case 'sampler':
-      templateModule = await import('./templates/sampler.xml?raw');
-      break;
-    case 'simpler':
-      templateModule = await import('./templates/simpler.xml?raw');
-      break;
-    case 'scene':
-      templateModule = await import('./templates/scene.xml?raw');
-      break;
-    case 'groupTrack':
-      templateModule = await import('./templates/groupTrack.xml?raw');
-      break;
-    case 'drumRack':
-      templateModule = await import('./templates/drumRack.xml?raw');
-      break;
-    case 'drumBranch':
-      templateModule = await import('./templates/drumBranch.xml?raw');
-      break;
-    default:
-      throw new Error(`Unknown template: ${templateName}`);
+  const importFn = templateMap[templateName];
+  if (!importFn) {
+    throw new Error(`Unknown template: ${templateName}`);
   }
 
+  const templateModule = await importFn();
   const parsed = create(templateModule.default).toObject();
   templateCache[templateName] = parsed;
   return parsed as T;
