@@ -1,10 +1,12 @@
-interface ValueElement {
-  '@Value': any;
-}
-
-interface LomIdElement {
-  LomId: ValueElement;
-}
+import {
+  AutomationTarget,
+  LomIdElement,
+  MidiControllerRange,
+  ModulationTarget,
+  On,
+  SourceContext,
+  ValueElement,
+} from './common';
 
 interface Name {
   EffectiveName: ValueElement;
@@ -28,37 +30,6 @@ interface BranchSelectorRange {
   Max: ValueElement;
   CrossfadeMin: ValueElement;
   CrossfadeMax: ValueElement;
-}
-
-interface SourceContext {
-  Value: {};
-}
-
-interface AutomationTarget {
-  '@Id': number;
-  LockEnvelope: ValueElement;
-}
-
-interface MidiCCOnOffThresholds {
-  Min: ValueElement;
-  Max: ValueElement;
-}
-
-interface On {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  AutomationTarget: AutomationTarget;
-  MidiCCOnOffThresholds: MidiCCOnOffThresholds;
-}
-
-interface MidiControllerRange {
-  Min: ValueElement;
-  Max: ValueElement;
-}
-
-interface ModulationTarget {
-  '@Id': number;
-  LockEnvelope: ValueElement;
 }
 
 interface Volume {

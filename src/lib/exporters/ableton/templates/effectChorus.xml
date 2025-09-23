@@ -233,7 +233,7 @@
   </OutputGain>
   <DryWet>
     <LomId Value="0" />
-    <Manual Value="0.5" />
+    <Manual Value="1" />
     <MidiControllerRange>
       <Min Value="0" />
       <Max Value="1" />

@@ -1,12 +1,5 @@
+import { LomIdElement, ValueElement } from './common';
 import { Mixer } from './midiTrack';
-
-interface ValueElement {
-  '@Value': any;
-}
-
-interface LomIdElement {
-  LomId: ValueElement;
-}
 
 interface Name {
   EffectiveName: ValueElement;

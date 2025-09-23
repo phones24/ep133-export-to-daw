@@ -11,14 +11,14 @@ import { ProjectRawData } from '../types/types';
 import useAllSounds from './useAllSounds';
 import useDevice from './useDevice';
 
-function useProject(id: number | string) {
+function useProject(id?: number | string) {
   const { device, deviceService } = useDevice();
   const { data: allSounds } = useAllSounds();
 
   const result = useQuery<ProjectRawData | null>({
     queryKey: ['project', id],
     queryFn: async () => {
-      if (!deviceService || !allSounds) {
+      if (!deviceService || !allSounds || !id) {
         return null;
       }
 
@@ -34,7 +34,7 @@ function useProject(id: number | string) {
       const pads = collectPads(files, allSounds);
       const scenes = collectScenesAndPatterns(files);
       const effects = collectEffects(files);
-      console.log(effects);
+
       return {
         pads,
         scenes,

@@ -28,3 +28,13 @@ export const EFFECTS = {
   5: 'Filter',
   6: 'Compressor',
 };
+
+export const EFFECTS_SHORT = {
+  0: 'OFF',
+  1: 'DLY',
+  2: 'RVB',
+  3: 'DST',
+  4: 'CHO',
+  5: 'FLT',
+  6: 'CMP',
+};

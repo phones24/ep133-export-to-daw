@@ -1,31 +1,19 @@
+import {
+  AutomationTarget,
+  LomIdElement,
+  MidiCCOnOffThresholds,
+  MidiControllerRange,
+  ModulationTarget,
+  ValueElement,
+} from './common';
 import { ALSSceneContent } from './scene';
-
-interface ValueElement {
-  '@Value': any;
-}
-
-interface LomIdElement {
-  LomId: ValueElement;
-}
 
 interface ManualElement extends LomIdElement {
   Manual: ValueElement;
-  MidiControllerRange?: {
-    Min: ValueElement;
-    Max: ValueElement;
-  };
-  AutomationTarget: {
-    '@Id': number;
-    LockEnvelope: ValueElement;
-  };
-  ModulationTarget?: {
-    '@Id': number;
-    LockEnvelope: ValueElement;
-  };
-  MidiCCOnOffThresholds?: {
-    Min: ValueElement;
-    Max: ValueElement;
-  };
+  MidiControllerRange?: MidiControllerRange;
+  AutomationTarget: AutomationTarget;
+  ModulationTarget?: ModulationTarget;
+  MidiCCOnOffThresholds?: MidiCCOnOffThresholds;
 }
 
 interface Routing {

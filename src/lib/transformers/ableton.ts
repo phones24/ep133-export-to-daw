@@ -134,7 +134,7 @@ function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParam
       drumRack: true,
       soundId: 0,
       name: 'Drums',
-      volume: 127,
+      volume: 2,
       attack: 0,
       release: 0,
       trimLeft: 0,

@@ -1,21 +1,4 @@
-interface ValueElement {
-  '@Value': any;
-}
-
-interface AutomationTarget {
-  '@Id': number;
-  LockEnvelope: ValueElement;
-}
-
-interface MidiControllerRange {
-  Min: ValueElement;
-  Max: ValueElement;
-}
-
-interface ModulationTarget {
-  '@Id': number;
-  LockEnvelope: ValueElement;
-}
+import { AutomationTarget, MidiControllerRange, ModulationTarget, ValueElement } from './common';
 
 interface Send {
   LomId: ValueElement;

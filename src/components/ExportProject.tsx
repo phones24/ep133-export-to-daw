@@ -68,7 +68,11 @@ function ExportProject() {
   return (
     <>
       <div className="flex gap-2 ">
-        <Button onClick={handleOpen} disabled={!appState.includes(APP_STATES.CAN_EXPORT_PROJECT)}>
+        <Button
+          variant="secondary"
+          onClick={handleOpen}
+          disabled={!appState.includes(APP_STATES.CAN_EXPORT_PROJECT)}
+        >
           Export
         </Button>
       </div>
@@ -239,15 +243,11 @@ function ExportProject() {
               Submit error report
             </Button>
             {isPending ? (
-              <Button onClick={cancelExport} variant="secondary">
-                Cancel
-              </Button>
+              <Button onClick={cancelExport}>Cancel</Button>
             ) : (
-              <Button onClick={() => setOpen(false)} variant="secondary">
-                Close
-              </Button>
+              <Button onClick={() => setOpen(false)}>Close</Button>
             )}
-            <Button onClick={startExport} disabled={isPending}>
+            <Button onClick={startExport} disabled={isPending} variant="secondary">
               Export
             </Button>
           </div>

@@ -120,7 +120,7 @@
   </Drive>
   <DryWet>
     <LomId Value="0" />
-    <Manual Value="50" />
+    <Manual Value="100" />
     <MidiControllerRange>
       <Min Value="0" />
       <Max Value="100" />

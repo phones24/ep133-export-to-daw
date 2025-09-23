@@ -1,3 +1,11 @@
+import {
+  AutomationTarget,
+  LomIdElement,
+  MidiCCOnOffThresholds,
+  MidiControllerRange,
+  ModulationTarget,
+  ValueElement,
+} from './common';
 import { ALSChorus } from './effectChorus';
 import { ALSCompressor } from './effectCompressor';
 import { ALSDelay } from './effectDelay';
@@ -5,32 +13,12 @@ import { ALSDistortion } from './effectDistortion';
 import { ALSFilter } from './effectFilter';
 import { ALSReverb } from './effectReverb';
 
-interface ValueElement {
-  '@Value': any;
-}
-
-interface LomIdElement {
-  LomId: ValueElement;
-}
-
 interface ManualElement extends LomIdElement {
   Manual: ValueElement;
-  MidiControllerRange?: {
-    Min: ValueElement;
-    Max: ValueElement;
-  };
-  AutomationTarget: {
-    '@Id': number;
-    LockEnvelope: ValueElement;
-  };
-  ModulationTarget?: {
-    '@Id': number;
-    LockEnvelope: ValueElement;
-  };
-  MidiCCOnOffThresholds?: {
-    Min: ValueElement;
-    Max: ValueElement;
-  };
+  MidiControllerRange?: MidiControllerRange;
+  AutomationTarget: AutomationTarget;
+  ModulationTarget?: ModulationTarget;
+  MidiCCOnOffThresholds?: MidiCCOnOffThresholds;
 }
 
 interface Routing {
