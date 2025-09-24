@@ -68,8 +68,6 @@ export class MidiIO {
   }
 
   onMidiStateChange(event) {
-    console.log(`midiStateChange ${io_to_s(event.port)}`);
-
     const port = event.port;
     const portId = port.id;
     const state = port.state;
