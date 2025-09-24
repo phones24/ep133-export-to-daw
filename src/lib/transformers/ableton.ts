@@ -71,7 +71,7 @@ function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParam
         const pad = findPad(pattern.pad, pads);
 
         if (!pad) {
-          throw new Error(`Could not find pad for ${pattern.pad}`);
+          throw new Error(`Could not find pad for ${pattern.pad}, pads: ${JSON.stringify(pads)}`);
         }
 
         const faderParams = data.settings.groupFaderParams[pad.group];
