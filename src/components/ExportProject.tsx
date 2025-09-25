@@ -98,12 +98,21 @@ function ExportProject() {
             </Select>
             <div className="flex flex-col gap-2 mt-2">
               {format !== 'ableton' && (
-                <CheckBox
-                  checked={includeArchivedSamples}
-                  onChange={(checked) => setIncludeArchivedSamples(checked)}
-                  title="Include archived WAV samples"
-                  disabled={isPending}
-                />
+                <>
+                  <CheckBox
+                    checked={includeArchivedSamples}
+                    onChange={(checked) => setIncludeArchivedSamples(checked)}
+                    title="Include archived WAV samples"
+                    disabled={isPending}
+                  />
+                  <CheckBox
+                    checked={drumRackFirstGroup}
+                    onChange={(checked) => setDrumRackFirstGroup(checked)}
+                    title="Merge all tracks from group A into one track"
+                    disabled={isPending || !includeArchivedSamples}
+                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
+                  />
+                </>
               )}
 
               {format === 'ableton' && (
