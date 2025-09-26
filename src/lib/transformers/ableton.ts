@@ -51,9 +51,9 @@ export type AblScene = {
 
 function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParams: ExporterParams) {
   const { pads, scenes } = data;
-  let tracks: AblTrack[] = [];
   const lanes: AblLane[] = [];
   const ablScenes: AblScene[] = [];
+  let tracks: AblTrack[] = [];
   let offset = 0;
 
   scenes.forEach((scene, sceneIndex) => {

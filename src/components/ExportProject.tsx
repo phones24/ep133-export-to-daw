@@ -21,7 +21,7 @@ const NOTES: Record<ExportFormatId, string> = {
 
 function ExportProject() {
   const [open, setOpen] = useState(false);
-  const [format, setFormat] = useState<ExportFormatId>(EXPORT_FORMATS[0].value);
+  const [format, setFormat] = usePersistedState('export_format', EXPORT_FORMATS[0].value);
   const [includeArchivedSamples, setIncludeArchivedSamples] = usePersistedState(
     'export_includeArchivedSamples',
     true,
@@ -109,7 +109,7 @@ function ExportProject() {
                     checked={drumRackFirstGroup}
                     onChange={(checked) => setDrumRackFirstGroup(checked)}
                     title="Merge all tracks from group A into one track"
-                    disabled={isPending || !includeArchivedSamples}
+                    disabled={isPending}
                     helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
                   />
                 </>

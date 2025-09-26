@@ -1,4 +1,5 @@
-import { Note, Pad, PadCode, ProjectRawData, Sound } from '../../types/types';
+import { omit } from 'lodash';
+import { ExporterParams, Note, Pad, PadCode, ProjectRawData, Sound } from '../../types/types';
 import { getSampleName } from '../exporters/utils';
 import { findPad, findSoundByPad, findSoundIdByPad } from '../utils';
 
@@ -8,7 +9,7 @@ export type DawData = {
   scenes: DawScene[];
 };
 
-export type DawTrack = Pad & {
+export type DawTrack = Omit<Pad, 'file' | 'rawData'> & {
   padCode: PadCode;
   group: string;
   sampleName: string;
@@ -19,6 +20,7 @@ export type DawTrack = Pad & {
 
 export type DawLane = {
   padCode: PadCode;
+  group?: string;
   clips: DawClip[];
 };
 
@@ -34,7 +36,6 @@ export type DawClip = {
 export type DawClipSlot = {
   clip: DawClip[];
   track: DawTrack;
-  bars: number;
 };
 
 export type DawScene = {
@@ -42,11 +43,15 @@ export type DawScene = {
   clipSlot: DawClipSlot[];
 };
 
-function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
+function dawProjectTransformer(
+  data: ProjectRawData,
+  sounds: Sound[],
+  exporterParams: ExporterParams,
+) {
   const { pads, scenes } = data;
-  const tracks: DawTrack[] = [];
-  const lanes: DawLane[] = [];
   const dawScenes: DawScene[] = [];
+  let lanes: DawLane[] = [];
+  let tracks: DawTrack[] = [];
   let offset = 0;
 
   scenes.forEach((scene, sceneIndex) => {
@@ -69,7 +74,7 @@ function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
         }
 
         track = {
-          ...pad,
+          ...omit(pad, ['file', 'rawData']),
           soundId,
           padCode: pattern.pad,
           name: sound?.meta?.name || pattern.pad,
@@ -80,9 +85,6 @@ function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
           bpm: data.settings.bpm,
         };
 
-        (track as any).rawData = undefined;
-        (track as any).file = undefined;
-
         tracks.push(track);
       }
 
@@ -91,6 +93,7 @@ function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
       if (!lane) {
         lane = {
           padCode: pattern.pad,
+          group: track.group,
           clips: [],
         };
 
@@ -109,7 +112,6 @@ function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
       dawScene.clipSlot.push({
         clip: lane.clips,
         track: track,
-        bars: pattern.bars,
       });
     }
 
@@ -117,6 +119,78 @@ function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
 
     dawScenes.push(dawScene);
   });
+
+  if (exporterParams.drumRackFirstGroup) {
+    // fake track for drum rack
+    const drumTrack: DawTrack = {
+      padCode: 'a0',
+      group: 'a',
+      sampleName: '',
+      sampleChannels: 0,
+      sampleRate: 0,
+      bpm: data.settings.bpm,
+      soundId: 0,
+      name: 'Drums',
+      volume: 1,
+      attack: 0,
+      release: 0,
+      trimLeft: 0,
+      trimRight: 0,
+      pad: 0,
+      playMode: 'oneshot',
+      pan: 0,
+      pitch: 0,
+      rootNote: 60,
+      timeStretch: 'off',
+      timeStretchBpm: 0,
+      timeStretchBars: 0,
+      soundLength: 0,
+      inChokeGroup: false,
+    };
+
+    tracks = tracks.filter((t) => t.group !== 'a');
+    tracks.unshift(drumTrack);
+
+    const drumLane: DawLane = {
+      padCode: 'a0',
+      group: 'a',
+      clips: [],
+    };
+
+    const newClips: Record<string, DawClip> = {};
+
+    lanes
+      .filter((l) => l.group === 'a')
+      .forEach((lane, idx) => {
+        lane.clips.forEach((clip) => {
+          if (!newClips[clip.sceneName]) {
+            newClips[clip.sceneName] = structuredClone(clip);
+            newClips[clip.sceneName].notes = []; // resetting notes, they will be added below with new mapping
+          }
+
+          newClips[clip.sceneName].notes = [
+            ...newClips[clip.sceneName].notes,
+            ...clip.notes.map((n) => ({
+              ...n,
+              note: 36 + idx,
+            })), // remaping notes starting from C1 (36)
+          ];
+        });
+      });
+
+    drumLane.clips = Object.values(newClips);
+
+    lanes = lanes.filter((l) => l.group !== 'a');
+    lanes.unshift(drumLane);
+
+    dawScenes.forEach((scene) => {
+      scene.clipSlot = scene.clipSlot.filter((cs) => cs.track.group !== 'a');
+      scene.clipSlot.unshift({
+        clip: drumLane.clips.filter((c) => c.sceneName === scene.name),
+        track: drumTrack,
+      });
+    });
+  }
 
   return {
     tracks,

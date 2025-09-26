@@ -298,7 +298,7 @@ function buildScene(scene: DawScene) {
   };
 }
 
-function builScenes(scenes: DawScene[]) {
+function buildScenes(scenes: DawScene[]) {
   return {
     _name: 'Scenes',
     _content: scenes.map((scene) => buildScene(scene)),
@@ -330,9 +330,9 @@ export function buildMetadataXml() {
 export async function buildProjectXml(
   projectData: ProjectRawData,
   sounds: Sound[],
-  withScenes: boolean,
+  exporterParams: ExporterParams,
 ) {
-  const transformedData = dawProjectTransformer(projectData, sounds);
+  const transformedData = dawProjectTransformer(projectData, sounds, exporterParams);
   // console.log(transformedData);
   _id = 0;
 
@@ -377,7 +377,7 @@ export async function buildProjectXml(
         transport,
         buildStructure(transformedData.tracks),
         buildArrangement(transformedData.lanes),
-        withScenes ? builScenes(transformedData.scenes) : false,
+        exporterParams.clips ? buildScenes(transformedData.scenes) : false,
       ].filter(Boolean),
     },
     XML_CONFIG,
@@ -401,8 +401,8 @@ async function exportDawProject(
     throw new AbortError();
   }
 
-  const metadataXml = await buildMetadataXml();
-  const projectXml = await buildProjectXml(data, sounds, exporterParams.clips || false);
+  const metadataXml = buildMetadataXml();
+  const projectXml = await buildProjectXml(data, sounds, exporterParams);
 
   progressCallback({ progress: 2, status: 'Creating project file...' });
 
