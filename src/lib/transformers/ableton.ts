@@ -163,22 +163,24 @@ function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParam
     // we need to merge notes from all tracks in group A into one track
     // and remap them
     const newClips: Record<string, AblClip> = {};
-    drumTrack.tracks.forEach((track, idx) => {
-      track.lane?.clips.forEach((clip) => {
-        if (!newClips[clip.sceneName]) {
-          newClips[clip.sceneName] = structuredClone(clip);
-          newClips[clip.sceneName].notes = []; // resetting notes, they will be added below with new mapping
-        }
+    drumTrack.tracks
+      .sort((a, b) => a.padCode.localeCompare(b.padCode))
+      .forEach((track, idx) => {
+        track.lane?.clips.forEach((clip) => {
+          if (!newClips[clip.sceneName]) {
+            newClips[clip.sceneName] = structuredClone(clip);
+            newClips[clip.sceneName].notes = []; // resetting notes, they will be added below with new mapping
+          }
 
-        newClips[clip.sceneName].notes = [
-          ...newClips[clip.sceneName].notes,
-          ...clip.notes.map((n) => ({
-            ...n,
-            note: 36 + idx,
-          })), // remaping notes starting from C1 (36)
-        ];
+          newClips[clip.sceneName].notes = [
+            ...newClips[clip.sceneName].notes,
+            ...clip.notes.map((n) => ({
+              ...n,
+              note: 36 + idx,
+            })), // remaping notes starting from C1 (36)
+          ];
+        });
       });
-    });
 
     drumTrack.lane = {
       padCode: 'a0',

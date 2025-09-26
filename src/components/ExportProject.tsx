@@ -97,7 +97,7 @@ function ExportProject() {
               ))}
             </Select>
             <div className="flex flex-col gap-2 mt-2">
-              {format !== 'ableton' && (
+              {format === 'dawproject' && (
                 <>
                   <CheckBox
                     checked={includeArchivedSamples}
@@ -106,9 +106,15 @@ function ExportProject() {
                     disabled={isPending}
                   />
                   <CheckBox
+                    checked={clips}
+                    onChange={(checked) => setClips(checked)}
+                    title="Export with clips"
+                    disabled={isPending}
+                  />
+                  <CheckBox
                     checked={drumRackFirstGroup}
                     onChange={(checked) => setDrumRackFirstGroup(checked)}
-                    title="Merge all tracks from group A into one track"
+                    title="Merge tracks of group A into one track"
                     disabled={isPending}
                     helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
                   />
@@ -164,13 +170,22 @@ function ExportProject() {
                 </>
               )}
 
-              {format === 'dawproject' && (
-                <CheckBox
-                  checked={clips}
-                  onChange={(checked) => setClips(checked)}
-                  title="Export with clips"
-                  disabled={isPending}
-                />
+              {format === 'midi' && (
+                <>
+                  <CheckBox
+                    checked={includeArchivedSamples}
+                    onChange={(checked) => setIncludeArchivedSamples(checked)}
+                    title="Include archived WAV samples"
+                    disabled={isPending}
+                  />
+                  <CheckBox
+                    checked={drumRackFirstGroup}
+                    onChange={(checked) => setDrumRackFirstGroup(checked)}
+                    title="Merge tracks of group A into one track"
+                    disabled={isPending}
+                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
+                  />
+                </>
               )}
             </div>
 

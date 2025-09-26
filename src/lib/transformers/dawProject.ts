@@ -161,6 +161,7 @@ function dawProjectTransformer(
 
     lanes
       .filter((l) => l.group === 'a')
+      .toSorted((a, b) => a.padCode.localeCompare(b.padCode))
       .forEach((lane, idx) => {
         lane.clips.forEach((clip) => {
           if (!newClips[clip.sceneName]) {

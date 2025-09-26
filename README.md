@@ -34,6 +34,7 @@ Try it out on https://ep133-to-daw.cc/
 
 ## Latest news
 
+- [26/09/2025] Group A merging added for DAWProject and MIDI transformers
 - [23/09/2025] ABLETON: FX support! The return track will be added with attached effect and each track(or group) will be sending to this return track
 - [19/09/2025] Added feedback functionality with ability to attach your project for research
 - [17/09/2025] ABLETON: Export tracks from group A into Drum Rack (with choke group!)

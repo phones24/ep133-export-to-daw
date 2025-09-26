@@ -1,4 +1,4 @@
-import { Note, ProjectRawData, Sound } from '../../types/types';
+import { ExporterParams, Note, ProjectRawData, Sound } from '../../types/types';
 import { findSoundByPad } from '../utils';
 
 export type MidiData = {
@@ -7,15 +7,16 @@ export type MidiData = {
 
 export type MidiTrack = {
   name: string;
+  group: string;
   padCode: string;
   notes: Note[];
 };
 
 const UNITS_PER_BAR = 24 * 16;
 
-function midiTransformer(data: ProjectRawData, sounds: Sound[]) {
+function midiTransformer(data: ProjectRawData, sounds: Sound[], exporterParams: ExporterParams) {
   const { pads, scenes } = data;
-  const midiTracks: MidiTrack[] = [];
+  let midiTracks: MidiTrack[] = [];
   let offset = 0;
 
   scenes.forEach((scene) => {
@@ -30,6 +31,7 @@ function midiTransformer(data: ProjectRawData, sounds: Sound[]) {
         track = {
           name: sound?.meta.name || pattern.pad,
           padCode: pattern.pad,
+          group: pattern.group,
           notes: pattern.notes.map((note) => ({
             ...note,
             position: note.position + offset * UNITS_PER_BAR,
@@ -77,6 +79,35 @@ function midiTransformer(data: ProjectRawData, sounds: Sound[]) {
 
     offset += sceneMaxBars;
   });
+
+  if (exporterParams.drumRackFirstGroup) {
+    const groupATracks = midiTracks.filter((t) => t.group === 'a');
+
+    if (groupATracks.length > 0) {
+      const mergedNotes: Note[] = [];
+
+      groupATracks
+        .toSorted((a, b) => a.padCode.localeCompare(b.padCode))
+        .forEach((track, idx) => {
+          mergedNotes.push(
+            ...track.notes.map((note) => ({
+              ...note,
+              note: 36 + idx,
+            })),
+          );
+        });
+
+      const drumTrack: MidiTrack = {
+        name: 'Drums',
+        group: 'a',
+        padCode: 'a0',
+        notes: mergedNotes,
+      };
+
+      midiTracks = midiTracks.filter((t) => t.group !== 'a');
+      midiTracks.unshift(drumTrack);
+    }
+  }
 
   return {
     tracks: midiTracks,

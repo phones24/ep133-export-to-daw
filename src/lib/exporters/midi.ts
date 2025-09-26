@@ -34,7 +34,7 @@ async function exportMidi(
     throw new AbortError();
   }
 
-  const transformedData = midiTransformer(data, sounds);
+  const transformedData = midiTransformer(data, sounds, exporterParams);
   const midi = new Midi();
 
   midi.header.setTempo(data.settings.bpm);

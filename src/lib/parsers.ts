@@ -141,6 +141,7 @@ export function parsePatterns(data: Uint8Array, group: string) {
 
   return Object.entries(notes).map(([pad, notes]) => ({
     pad,
+    group,
     notes,
     bars: data[1],
   })) as Pattern[];
