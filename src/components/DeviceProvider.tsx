@@ -5,7 +5,7 @@ import { DeviceService } from '../ep133/device-service';
 // import { MIDIDisallowedError, MIDINotSupportedError } from '../ep133/errors';
 // import { SysExFileHandler } from '../ep133/sysex-file-handler';
 import { trackEvent } from '../lib/ga';
-import { sendIdentitySysex } from '../lib/midi';
+import { initializeMidiDevice } from '../lib/midi';
 import { Device } from '../types/ep133';
 import DeviceContext from './DeviceContext';
 
@@ -18,7 +18,7 @@ function DeviceProvider({ children }: any) {
   const [deviceError, setDeviceError] = useState<Error | null>(null);
 
   useEffect(() => {
-    sendIdentitySysex();
+    initializeMidiDevice();
     // WebMidi.enable()
     //   .then(() => {
     //     WebMidi.outputs.forEach((output) => console.log(output));
