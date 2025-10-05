@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { BlobReader } from '../ep133/stream';
+import { getProjectFiles } from '../lib/midi';
 import {
   collectEffects,
   collectPads,
@@ -12,19 +13,17 @@ import useAllSounds from './useAllSounds';
 import useDevice from './useDevice';
 
 function useProject(id?: number | string) {
-  const { device, deviceService } = useDevice();
+  const { device } = useDevice();
   const { data: allSounds } = useAllSounds();
 
   const result = useQuery<ProjectRawData | null>({
     queryKey: ['project', id],
     queryFn: async () => {
-      if (!deviceService || !allSounds || !id) {
+      if (!allSounds || !id) {
         return null;
       }
 
-      const archive = await deviceService.downloadProjectArchive(
-        `/projects/${String(id).padStart(2, '0')}`,
-      );
+      const archive = await getProjectFiles(id);
 
       const projectFile = new File([...archive.data], `project${archive.name}.tar`);
       const blobReader = new BlobReader(projectFile);
@@ -44,7 +43,7 @@ function useProject(id?: number | string) {
       };
     },
     retry: false,
-    enabled: !!id && !!device && !!deviceService,
+    enabled: !!id && !!device,
     throwOnError: true,
   });
 

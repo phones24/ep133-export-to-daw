@@ -1,13 +1,5 @@
-import {
-  TE_SYSEX,
-  TE_SYSEX_FILE_GET,
-  TE_SYSEX_FILE_GET_TYPE_DATA,
-  TE_SYSEX_FILE_GET_TYPE_INIT,
-  TE_SYSEX_FILE_INFO,
-  TE_SYSEX_FILE_INIT,
-  TE_SYSEX_FILE_LIST,
-} from './constants';
-import { TESysexMetadata } from './types';
+import { TE_SYSEX } from './constants';
+import { TEDeviceIdentification, TEDeviceMetadata } from './types';
 
 const requestIds: Map<string, number> = new Map();
 
@@ -41,7 +33,7 @@ export function unpackInPlace(packedBytes: Uint8Array): Uint8Array {
   return packedBytes.subarray(0, writeIndex);
 }
 
-export function parseMidiIdentityResponse(data: Uint8Array) {
+export function parseMidiIdentityResponse(data: Uint8Array): TEDeviceIdentification | null {
   if (
     data.length === 17 &&
     data[0] === 0xf0 && // SysEx start
@@ -63,7 +55,7 @@ export function parseMidiIdentityResponse(data: Uint8Array) {
 }
 
 export function metadataStringToObject(metaString: string) {
-  const result: TESysexMetadata = {
+  const result: TEDeviceMetadata = {
     chip_id: '',
     mode: '',
     os_version: '',
@@ -129,27 +121,6 @@ export function getNextRequestId(outputId: string): number {
   return nextId;
 }
 
-export function buildSysExFileInitRequest(maxResponseLength: number, flags: number) {
-  const buffer = new Uint8Array(6);
-  const view = new DataView(buffer.buffer);
-
-  view.setUint8(0, TE_SYSEX_FILE_INIT);
-  view.setUint8(1, flags);
-  view.setUint32(2, maxResponseLength);
-
-  return new Uint8Array(buffer);
-}
-
-export function buildSysExFileInfoRequest(fileId: number) {
-  const buffer = new Uint8Array(3);
-  const view = new DataView(buffer.buffer);
-
-  view.setUint8(0, TE_SYSEX_FILE_INFO);
-  view.setUint16(1, fileId);
-
-  return new Uint8Array(buffer);
-}
-
 export function parseNullTerminatedString(buffer: Uint8Array, startIndex: number) {
   let endIndex = startIndex;
 
@@ -160,114 +131,25 @@ export function parseNullTerminatedString(buffer: Uint8Array, startIndex: number
   return new TextDecoder().decode(buffer.subarray(startIndex, endIndex));
 }
 
-export function parseFileInfoResponse(data: Uint8Array) {
-  const nodeId = (data[0] << 8) | data[1];
-  const parentId = (data[2] << 8) | data[3];
-  const flags = data[4];
-  const fileSize = (data[5] << 24) | (data[6] << 16) | (data[7] << 8) | data[8];
-  const fileName = parseNullTerminatedString(data, 9);
-
-  return {
-    nodeId,
-    parentId,
-    flags,
-    fileSize,
-    fileName,
-  };
-}
-
-export function buildSysExFileListRequest(page: number, nodeId: number) {
-  const buffer = new Uint8Array(5);
-  const view = new DataView(buffer.buffer);
-
-  view.setUint8(0, TE_SYSEX_FILE_LIST);
-  view.setUint16(1, page);
-  view.setUint16(3, nodeId);
-
-  return buffer;
-}
-
-export function parseSysExFileListResponse(data: Uint8Array) {
-  const entries = [];
-  let offset = 0;
-
-  while (offset < data.byteLength) {
-    const nodeId = (data[offset] << 8) | data[offset + 1];
-    const flags = data[offset + 2];
-    const fileSize =
-      (data[offset + 3] << 24) |
-      (data[offset + 4] << 16) |
-      (data[offset + 5] << 8) |
-      data[offset + 6];
-    const fileName = parseNullTerminatedString(data, offset + 7);
-    const length = 7 + fileName.length;
-
-    entries.push({
-      nodeId,
-      flags,
-      fileSize,
-      fileName,
-    });
-
-    offset += length + 1;
-  }
-
-  return entries;
-}
-
-export function buildSysExGetFileInitRequest(
-  fileId: number,
+export function writeStringToView(
+  dataView: DataView,
   offset: number,
-  extraArgs: Uint8Array | null = null,
+  str: string,
+  nullTerminate = false,
 ) {
-  const length = extraArgs ? 16 + extraArgs.length : 8;
-  const buffer = new Uint8Array(length);
-  const view = new DataView(buffer.buffer);
-
-  view.setUint8(0, TE_SYSEX_FILE_GET);
-  view.setUint8(1, TE_SYSEX_FILE_GET_TYPE_INIT);
-  view.setUint16(2, fileId);
-  view.setUint32(4, offset);
-
-  if (extraArgs != null) {
-    view.setBigUint64(8, 0n);
-    for (let i = 0; i < extraArgs.length; i++) {
-      view.setUint8(16 + i, extraArgs[i]);
-    }
+  let pos = offset;
+  for (let i = 0; i < str.length; i++) {
+    dataView.setUint8(pos++, str.charCodeAt(i));
   }
-
-  return new Uint8Array(buffer);
+  if (nullTerminate && pos > 0) {
+    dataView.setUint8(pos++, 0);
+  }
+  return pos;
 }
 
-export function parseSysexGetFileInitResponse(bytes: Uint8Array) {
-  const fileId = (bytes[0] << 8) | bytes[1];
-  const flags = bytes[2];
-  const fileSize = (bytes[3] << 24) | (bytes[4] << 16) | (bytes[5] << 8) | bytes[6];
-  const fileName = parseNullTerminatedString(bytes, 7);
-
-  return {
-    fileId,
-    flags,
-    fileSize,
-    fileName,
-  };
-}
-
-export function buildSysExGetFileDataRequest(page: number) {
-  const buffer = new Uint8Array(4);
-  const view = new DataView(buffer.buffer);
-
-  view.setUint8(0, TE_SYSEX_FILE_GET);
-  view.setUint8(1, TE_SYSEX_FILE_GET_TYPE_DATA);
-  view.setUint16(2, page);
-
-  return new Uint8Array(buffer);
-}
-
-export function parseSysExGetFileDataResponse(bytes: Uint8Array) {
-  return {
-    page: (bytes[0] << 8) | bytes[1],
-    nextPage: ((bytes[0] << 8) | (bytes[1] + 1)) & 0xffff,
-    data: bytes.subarray(2),
-  };
+export function sanitizeBrokenJson(input: string) {
+  return input.replace(/:"([^"]*?)"([^,}]*)/g, (_, part1, part2) => {
+    const fixed = (part1 + part2).replace(/"/g, '\\"');
+    return `:"${fixed}"`;
+  });
 }

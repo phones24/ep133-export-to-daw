@@ -21,10 +21,10 @@ export function useAppState() {
   const projectId = useAtomValue(projectIdAtom);
   const { isLoading: isLoadingProject, isRefetching } = useProject(projectId);
   const { isLoading: isLoadingSounds } = useAllSounds();
-  const { device, deviceService, error } = useDevice();
+  const { device, error } = useDevice();
 
   const isLoading = isLoadingProject || isLoadingSounds || isRefetching;
-  const noDevice = !device || !deviceService;
+  const noDevice = !device;
 
   return useMemo(() => {
     const finalState = [];

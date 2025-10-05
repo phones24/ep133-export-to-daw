@@ -1,24 +1,28 @@
-import * as Sentry from '@sentry/react';
 import { useEffect, useState } from 'preact/hooks';
-// import { api } from '../ep133/api';
-import { DeviceService } from '../ep133/device-service';
-// import { MIDIDisallowedError, MIDINotSupportedError } from '../ep133/errors';
-// import { SysExFileHandler } from '../ep133/sysex-file-handler';
-import { trackEvent } from '../lib/ga';
-import { initializeMidiDevice } from '../lib/midi';
-import { Device } from '../types/ep133';
+import { initDevice } from '../lib/midi';
+import { TEDevice } from '../lib/midi/types';
 import DeviceContext from './DeviceContext';
 
-const skuFilter = ['TE032AS001', 'TE032AS005'];
-
 function DeviceProvider({ children }: any) {
-  const [device, setDevice] = useState<Device | null>(null);
-  const [deviceService, setDeviceService] = useState<DeviceService | null>(null);
-  const [fileHandler, setFileHandler] = useState<SysExFileHandler | null>(null);
+  const [device, setDevice] = useState<TEDevice | null>(null);
   const [deviceError, setDeviceError] = useState<Error | null>(null);
 
   useEffect(() => {
-    initializeMidiDevice();
+    initDevice({
+      onDeviceFound: (deviceInfo) => {
+        console.log('Device found:', deviceInfo);
+
+        setDevice(deviceInfo);
+      },
+      onDeviceLost: () => {
+        console.log('Device lost');
+        setDevice(null);
+      },
+      onNoMidiAccess: (error) => {
+        console.error('No MIDI access:', error);
+        setDeviceError(error);
+      },
+    });
     // WebMidi.enable()
     //   .then(() => {
     //     WebMidi.outputs.forEach((output) => console.log(output));
@@ -74,7 +78,7 @@ function DeviceProvider({ children }: any) {
   }, []);
 
   return (
-    <DeviceContext.Provider value={{ fileHandler, device, deviceService, error: deviceError }}>
+    <DeviceContext.Provider value={{ device, error: deviceError }}>
       {children}
     </DeviceContext.Provider>
   );

@@ -1,4 +1,4 @@
-export type TESysexMetadata = {
+export type TEDeviceMetadata = {
   chip_id: string;
   mode: string;
   os_version: string;
@@ -23,7 +23,7 @@ export type TESysexMessage = {
   string: string;
 };
 
-export type FileListEntry = {
+export type TEFileListEntry = {
   nodeId: number;
   flags: number;
   fileSize: number;
@@ -31,9 +31,41 @@ export type FileListEntry = {
   fileType: 'file' | 'folder';
 };
 
-export type GetFileResponse = {
+export type TEGetFileResponse = {
   name: string;
   size: number;
   data: Uint8Array[];
   crc32?: number;
+};
+
+export type TEDeviceIdentification = {
+  id: number;
+  sku: string;
+};
+
+export interface TEDevice {
+  inputId: string;
+  outputId: string;
+  sku: string;
+  serial: string;
+  metadata: TEDeviceMetadata;
+}
+
+export type TESoundMetadata = {
+  channels: number;
+  samplerate: number;
+  format: 's16' | 's24' | 'float';
+  crc: number;
+  'sound.loopstart': number;
+  'sound.loopend': number;
+  name: string;
+  'sound.amplitude': number;
+  'sound.playmode': 'oneshot' | 'loop';
+  'sound.pan': number;
+  'sound.pitch': number;
+  'sound.rootnote': number;
+  'time.mode': string;
+  'sound.bpm': number;
+  'envelope.attack': number;
+  'envelope.release': number;
 };

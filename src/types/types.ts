@@ -1,31 +1,10 @@
-import { DeviceService } from '../ep133/device-service';
-import { FSNode } from '../ep133/fs';
+import { TEFileListEntry, TESoundMetadata } from '../lib/midi/types';
 import { TarFile } from '../lib/untar';
 
-export type SoundMetadata = {
-  channels: number;
-  samplerate: number;
-  format: 's16' | 's24' | 'float';
-  crc: number;
-  'sound.loopstart': number;
-  'sound.loopend': number;
-  name: string;
-  'sound.amplitude': number;
-  'sound.playmode': 'oneshot' | 'loop';
-  'sound.pan': number;
-  'sound.pitch': number;
-  'sound.rootnote': number;
-  'time.mode': string;
-  'sound.bpm': number;
-  'envelope.attack': number;
-  'envelope.release': number;
-};
-
 export type Sound = {
-  path: string;
   id: number;
-  node: FSNode;
-  meta: SoundMetadata;
+  file: TEFileListEntry;
+  meta: TESoundMetadata;
 };
 
 export enum EffectType {
@@ -152,7 +131,6 @@ export type ExportFormat = {
     projectId: string,
     data: ProjectRawData,
     sounds: Sound[],
-    deviceService: DeviceService,
     progressCallback: ({ progress, status }: ExportStatus) => void,
     exporterParams: ExporterParams,
   ) => Promise<ExportResult>;
@@ -170,7 +148,7 @@ export type ExporterParams = {
 
 export type SoundInfo = {
   soundId: number;
-  soundMeta: SoundMetadata;
+  soundMeta: TESoundMetadata;
 };
 
 // Google Analytics gtag types
