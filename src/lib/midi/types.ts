@@ -30,3 +30,10 @@ export type FileListEntry = {
   fileName: string;
   fileType: 'file' | 'folder';
 };
+
+export type GetFileResponse = {
+  name: string;
+  size: number;
+  data: Uint8Array[];
+  crc32?: number;
+};

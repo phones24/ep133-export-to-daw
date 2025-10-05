@@ -18,12 +18,16 @@ import {
   buildSysExFileInfoRequest,
   buildSysExFileInitRequest,
   buildSysExFileListRequest,
+  buildSysExGetFileDataRequest,
+  buildSysExGetFileInitRequest,
   getNextRequestId,
   metadataStringToObject,
   packToBuffer,
   parseFileInfoResponse,
   parseMidiIdentityResponse,
   parseSysExFileListResponse,
+  parseSysExGetFileDataResponse,
+  parseSysexGetFileInitResponse,
   sysexStatusToString,
   unpackInPlace,
 } from './utils';
@@ -184,6 +188,52 @@ async function discoverDevicePorts(midiAccess: MIDIAccess): Promise<void> {
   }
 }
 
+export async function getFile(nodeId: number): Promise<GetFileResponse> {
+  let offset = 0;
+  const options = null;
+  const chunks = [];
+  let fileName = '';
+  let fileSize = 0;
+  let crc = 0;
+
+  const initResponseRaw = await sendSysexToDevice(
+    TE_SYSEX_FILE,
+    buildSysExGetFileInitRequest(nodeId, offset, options),
+  );
+  const initResponse = parseSysexGetFileInitResponse(initResponseRaw.rawData);
+
+  let bytesRead = 0;
+  let pageIndex = 0;
+  const totalRemaining = initResponse.fileSize - offset;
+
+  while (bytesRead < totalRemaining) {
+    const chunkResponseRaw = await sendSysexToDevice(
+      TE_SYSEX_FILE,
+      buildSysExGetFileDataRequest(pageIndex),
+    );
+
+    const chunkResponse = parseSysExGetFileDataResponse(chunkResponseRaw.rawData);
+
+    if (chunkResponse.page !== pageIndex) {
+      throw new Error(`unexpected page ${chunkResponse.page}, expected ${pageIndex}`);
+    }
+
+    if (chunkResponse.data.byteLength === 0) {
+      break;
+    }
+
+    chunks.push(chunkResponse.data);
+    fileSize = initResponse.fileSize;
+    fileName = initResponse.fileName;
+
+    bytesRead += chunkResponse.data.byteLength;
+    // progressCallback?.(bytesRead, totalRemaining);
+    pageIndex = chunkResponse.nextPage;
+  }
+
+  return { name: fileName, size: fileSize, data: chunks, crc32: crc };
+}
+
 export async function getFileList(
   nodeId: number = 0,
   filesList: FileListEntry[] = [],
@@ -218,7 +268,10 @@ export async function getFileList(
 
     for await (const entry of list) {
       // const entry = list[0];
-      // console.log('----------File list entry:', entry);
+      if (entry.fileName.startsWith('patters')) {
+        console.log('----------File list entry:', entry);
+      }
+
       const filePath = path === '/' ? `${path}${entry.fileName}` : `${path}/${entry.fileName}`;
       const fileType = entry.flags & TE_SYSEX_FILE_FILE_TYPE_FILE ? 1 : 2;
       filesList.push({
@@ -254,20 +307,23 @@ export async function initializeMidiDevice(): Promise<void> {
 
     console.log('Greet response:', greetResponse);
 
-    // const fileInitRequest = buildSysExFileInitRequest(4 * 1024 * 1024, 0);
+    await sendSysexToDevice(TE_SYSEX_FILE, buildSysExFileInitRequest(4 * 1024 * 1024, 0));
     // console.log('-======', fileInitRequest);
     // const fileInfoRequest = ;
+
     const fileInfoResponse = await sendSysexToDevice(
       TE_SYSEX_FILE,
-      buildSysExFileInfoRequest(11301),
+      buildSysExFileInfoRequest(7301),
     );
-
     // console.log('File info response:', fileInfoResponse);
-    const res = parseFileInfoResponse(fileInfoResponse?.rawData);
-    console.log('---Parsed file info:', res);
+    // const res = parseFileInfoResponse(fileInfoResponse?.rawData);
+    // console.log('---Parsed file info:', res);
 
-    // const fileList = await getFileList();
-    // console.log('Parsed file list info:', fileList);
+    // const res2 = await getFile(1);
+    // console.log('Downloaded file:', res2);
+
+    const fileList = await getFileList();
+    console.log('Parsed file list info:', fileList);
   } catch (error) {
     console.error('Error accessing MIDI:', error);
 
@@ -277,7 +333,7 @@ export async function initializeMidiDevice(): Promise<void> {
 
 async function sendSysexToDevice(
   command: number,
-  data: Uint8Array | Array<number>,
+  payload: Uint8Array | Array<number>,
   timeoutMs: number = 5000,
 ): Promise<TESysexMessage | null> {
   return new Promise<TESysexMessage | null>((resolve, reject) => {
@@ -305,7 +361,7 @@ async function sendSysexToDevice(
       // }
 
       const response = parseTeenageSysex(event?.data || new Uint8Array());
-      console.log('Parsed', response);
+      // console.log('Parsed', response);
 
       // if (!response && tries-- > 0) {
       //   timeoutId = setTimeout(timeoutHandler, timeoutMs);
@@ -339,8 +395,8 @@ async function sendSysexToDevice(
     };
 
     deviceInputPort.addEventListener('midimessage', handleMidiMessage);
-
-    currentRequestId = sendTESysEx(deviceOutputPort, 0, command, new Uint8Array(data));
+    // console.log('====Sending', command, payload);
+    currentRequestId = sendTESysEx(deviceOutputPort, 0, command, new Uint8Array(payload));
   });
 }
 

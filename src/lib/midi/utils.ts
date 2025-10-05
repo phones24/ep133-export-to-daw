@@ -1,4 +1,12 @@
-import { TE_SYSEX, TE_SYSEX_FILE_INFO, TE_SYSEX_FILE_INIT, TE_SYSEX_FILE_LIST } from './constants';
+import {
+  TE_SYSEX,
+  TE_SYSEX_FILE_GET,
+  TE_SYSEX_FILE_GET_TYPE_DATA,
+  TE_SYSEX_FILE_GET_TYPE_INIT,
+  TE_SYSEX_FILE_INFO,
+  TE_SYSEX_FILE_INIT,
+  TE_SYSEX_FILE_LIST,
+} from './constants';
 import { TESysexMetadata } from './types';
 
 const requestIds: Map<string, number> = new Map();
@@ -205,4 +213,61 @@ export function parseSysExFileListResponse(data: Uint8Array) {
   }
 
   return entries;
+}
+
+export function buildSysExGetFileInitRequest(
+  fileId: number,
+  offset: number,
+  extraArgs: Uint8Array | null = null,
+) {
+  const length = extraArgs ? 16 + extraArgs.length : 8;
+  const buffer = new Uint8Array(length);
+  const view = new DataView(buffer.buffer);
+
+  view.setUint8(0, TE_SYSEX_FILE_GET);
+  view.setUint8(1, TE_SYSEX_FILE_GET_TYPE_INIT);
+  view.setUint16(2, fileId);
+  view.setUint32(4, offset);
+
+  if (extraArgs != null) {
+    view.setBigUint64(8, 0n);
+    for (let i = 0; i < extraArgs.length; i++) {
+      view.setUint8(16 + i, extraArgs[i]);
+    }
+  }
+
+  return new Uint8Array(buffer);
+}
+
+export function parseSysexGetFileInitResponse(bytes: Uint8Array) {
+  const fileId = (bytes[0] << 8) | bytes[1];
+  const flags = bytes[2];
+  const fileSize = (bytes[3] << 24) | (bytes[4] << 16) | (bytes[5] << 8) | bytes[6];
+  const fileName = parseNullTerminatedString(bytes, 7);
+
+  return {
+    fileId,
+    flags,
+    fileSize,
+    fileName,
+  };
+}
+
+export function buildSysExGetFileDataRequest(page: number) {
+  const buffer = new Uint8Array(4);
+  const view = new DataView(buffer.buffer);
+
+  view.setUint8(0, TE_SYSEX_FILE_GET);
+  view.setUint8(1, TE_SYSEX_FILE_GET_TYPE_DATA);
+  view.setUint16(2, page);
+
+  return new Uint8Array(buffer);
+}
+
+export function parseSysExGetFileDataResponse(bytes: Uint8Array) {
+  return {
+    page: (bytes[0] << 8) | bytes[1],
+    nextPage: ((bytes[0] << 8) | (bytes[1] + 1)) & 0xffff,
+    data: bytes.subarray(2),
+  };
 }
