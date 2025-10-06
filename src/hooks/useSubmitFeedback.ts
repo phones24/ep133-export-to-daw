@@ -41,6 +41,7 @@ function useSubmitFeedback() {
       return ky
         .post(`${import.meta.env.VITE_API_URL}/support/submit`, {
           body: formData,
+          timeout: 100_000,
         })
         .json();
     },
