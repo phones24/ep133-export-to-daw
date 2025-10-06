@@ -23,7 +23,7 @@ export type TESysexMessage = {
   string: string;
 };
 
-export type TEFileListEntry = {
+export type TEFileNode = {
   nodeId: number;
   flags: number;
   fileSize: number;
@@ -31,10 +31,10 @@ export type TEFileListEntry = {
   fileType: 'file' | 'folder';
 };
 
-export type TEGetFileResponse = {
+export type TEFile = {
   name: string;
   size: number;
-  data: Uint8Array[];
+  data: Uint8Array;
   crc32?: number;
 };
 

@@ -1,4 +1,4 @@
-import { Note, Pad, ProjectRawData, Sound } from '../../types/types';
+import { Note, Pad, ProjectRawData } from '../../types/types';
 import { getSampleName } from '../exporters/utils';
 import { findSoundByPad, findSoundIdByPad } from '../utils';
 
@@ -24,7 +24,7 @@ export type ViewData = {
   scenes: Record<string, ViewScene[]>;
 };
 
-function webViewTransformer(data: ProjectRawData, sounds: Sound[]) {
+function webViewTransformer(data: ProjectRawData) {
   const { pads, scenes } = data;
   const newScenes: ViewScene[] = [];
   const usedPads = new Set<string>();
@@ -49,7 +49,7 @@ function webViewTransformer(data: ProjectRawData, sounds: Sound[]) {
   newScenes.forEach((scene, idx) => {
     scene.patterns = scenes[idx].patterns.map((pattern) => {
       const soundId = findSoundIdByPad(pattern.pad, pads) || 0;
-      const sound = findSoundByPad(pattern.pad, pads, sounds);
+      const sound = findSoundByPad(pattern.pad, pads, data.sounds);
 
       return {
         ...pattern,
@@ -69,7 +69,7 @@ function webViewTransformer(data: ProjectRawData, sounds: Sound[]) {
 
       if (!patternByPad) {
         const soundId = findSoundIdByPad(pad, pads) || 0;
-        const sound = findSoundByPad(pad, pads, sounds);
+        const sound = findSoundByPad(pad, pads, data.sounds);
 
         scene.patterns.push({
           pad,

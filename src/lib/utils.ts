@@ -1,4 +1,4 @@
-import { Pad, ProjectRawData, Sound, SoundInfo } from '../types/types';
+import { Pad, Sound } from '../types/types';
 
 export function findPad(pad: string, pads: Record<string, Pad[]>) {
   const group = pad[0];
@@ -41,34 +41,16 @@ export function audioFormatAsBitDepth(s: string) {
   }
 }
 
-export function getSoundsInfoFromProject(data: ProjectRawData, sounds: Sound[]) {
-  const snds: SoundInfo[] = [];
-  const existingSounds = new Set<number>();
+export function calculateSoundLength(sound: Sound) {
+  const sampleRate = sound.meta?.samplerate;
+  const channels = sound.meta?.channels;
+  const fileSize = sound.fileNode?.fileSize;
 
-  for (const group in data.pads) {
-    for (const pad of data.pads[group]) {
-      if (existingSounds.has(pad.soundId)) {
-        continue;
-      }
-
-      const soundMeta = sounds.find((s) => s.id === pad.soundId);
-
-      if (!soundMeta) {
-        continue;
-      }
-
-      if (pad.soundId > 0) {
-        snds.push({
-          soundId: pad.soundId,
-          soundMeta: soundMeta.meta,
-        });
-
-        existingSounds.add(pad.soundId);
-      }
-    }
+  if (!sampleRate || !channels || !fileSize) {
+    return 0;
   }
 
-  return snds;
+  return fileSize / 2 / sampleRate / channels;
 }
 
 export class AbortError extends Error {

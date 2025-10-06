@@ -10,6 +10,7 @@ import {
   TE_MIDI_ID_2,
   TE_SYSEX,
 } from './constants';
+import { resetFileCache } from './fs';
 import { TEDevice, TEDeviceIdentification, TESysexMessage } from './types';
 import {
   binToString,
@@ -122,7 +123,6 @@ export async function discoverDevicePorts(
 
   for (const output of outputs) {
     const response = await sendIdentAndWaitForReponse(output, midiAccess);
-
     if (response) {
       parsedResponse = parseMidiIdentityResponse(response);
 
@@ -180,7 +180,8 @@ export async function sendSysexToDevice(
     }
 
     const timeoutHandler = () => {
-      _deviceInputPort!.removeEventListener('midimessage', handleMidiMessage);
+      _deviceInputPort?.removeEventListener('midimessage', handleMidiMessage);
+
       reject('Timeout waiting for sysex response');
     };
 
@@ -196,7 +197,7 @@ export async function sendSysexToDevice(
 
       clearTimeout(timeoutId);
 
-      _deviceInputPort!.removeEventListener('midimessage', handleMidiMessage);
+      _deviceInputPort?.removeEventListener('midimessage', handleMidiMessage);
 
       if (response.status === TE_SYSEX.STATUS_OK) {
         resolve(response);
@@ -216,7 +217,7 @@ export async function tryInitDevice(
   midiAccess: MIDIAccess,
   onDeviceFound?: (deviceInfo: TEDevice) => void,
 ) {
-  if (_pendingInitialization) {
+  if (_pendingInitialization || _deviceInitialized) {
     return null;
   }
 
@@ -245,6 +246,7 @@ export async function tryInitDevice(
       metadata: deviceMetadata,
     };
 
+    resetFileCache();
     onDeviceFound?.(deviceInfo);
 
     _deviceInitialized = true;
@@ -278,6 +280,7 @@ export function setDeviceOutputPort(port: MIDIOutput | null) {
 export function disconnectDevice() {
   setDeviceInputPort(null);
   setDeviceOutputPort(null);
+  resetFileCache();
   _deviceInitialized = false;
 }
 

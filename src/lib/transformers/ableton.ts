@@ -1,13 +1,5 @@
 import omit from 'lodash/omit';
-import {
-  ExporterParams,
-  FaderParam,
-  Note,
-  Pad,
-  PadCode,
-  ProjectRawData,
-  Sound,
-} from '../../types/types';
+import { ExporterParams, FaderParam, Note, Pad, PadCode, ProjectRawData } from '../../types/types';
 import { getSampleName } from '../exporters/utils';
 import { findPad, findSoundByPad, findSoundIdByPad } from '../utils';
 
@@ -49,7 +41,7 @@ export type AblScene = {
   name: string;
 };
 
-function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParams: ExporterParams) {
+function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
   const { pads, scenes } = data;
   let tracks: AblTrack[] = [];
   const lanes: AblLane[] = [];
@@ -67,7 +59,7 @@ function abletonTransformer(data: ProjectRawData, sounds: Sound[], exporterParam
 
       if (!track) {
         const soundId = findSoundIdByPad(pattern.pad, pads) || 0;
-        const sound = findSoundByPad(pattern.pad, pads, sounds);
+        const sound = findSoundByPad(pattern.pad, pads, data.sounds);
         const pad = findPad(pattern.pad, pads);
 
         if (!pad) {

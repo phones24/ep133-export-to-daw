@@ -1,4 +1,3 @@
-import useAllSounds from '../hooks/useAllSounds';
 import useProject from '../hooks/useProject';
 import webViewTransformer from '../lib/transformers/webView';
 import { Bar } from './Bar';
@@ -8,15 +7,14 @@ import TrackMeta from './TrackMeta';
 
 function Arrangements({ projectId }: { projectId: string }) {
   const { data } = useProject(projectId);
-  const { data: allSounds } = useAllSounds();
 
-  if (!data || !allSounds) {
+  if (!data) {
     return null;
   }
 
   return (
     <div className="flex gap-4">
-      {webViewTransformer(data, allSounds).scenes.map((sceneData) => (
+      {webViewTransformer(data).scenes.map((sceneData) => (
         <div className="flex flex-col gap-2">
           <div className="bg-brand p-2 font-semibold text-white">
             <div className="inline sticky left-0">SCENE {sceneData.name}</div>

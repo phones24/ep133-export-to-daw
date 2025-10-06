@@ -1,4 +1,3 @@
-import { calculateSoundLength } from '../ep133/utils';
 import {
   GroupFaderParam,
   Note,
@@ -10,7 +9,10 @@ import {
   Sound,
 } from '../types/types';
 import { GROUPS, PADS } from './constants';
+import { getFileMetadata, getFileNodeByPath } from './midi/fs';
+import { TESoundMetadata } from './midi/types';
 import { TarFile } from './untar';
+import { calculateSoundLength } from './utils';
 
 const defaultSettings = {
   bpm: 120,
@@ -70,6 +72,44 @@ function chunkArray(arr: Uint8Array, size: number, offset = 0) {
     result.push(arr.slice(i, i + size));
   }
   return result;
+}
+
+export async function collectSounds(files: TarFile[]) {
+  const soundIds = new Set<number>();
+
+  for (let g = 0; g < 4; g++) {
+    for (let i = 1; i <= 12; i++) {
+      const file = files.find((f) => f.name === genPadFileName(GROUPS[g].id, i));
+
+      if (file?.data) {
+        const soundId = (file.data[2] << 8) + file.data[1];
+        if (soundId > 0) {
+          soundIds.add(soundId);
+        }
+      }
+    }
+  }
+
+  const selectedSounds: Sound[] = [];
+
+  for (const soundId of soundIds) {
+    const fileNode = await getFileNodeByPath(`/sounds/${String(soundId).padStart(3, '0')}.pcm`);
+
+    if (!fileNode) {
+      console.warn(`Sound file for sound ID ${soundId} not found`);
+      continue;
+    }
+
+    const meta = await getFileMetadata<TESoundMetadata>(fileNode.nodeId);
+
+    selectedSounds.push({
+      id: soundId,
+      fileNode,
+      meta,
+    });
+  }
+
+  return selectedSounds;
 }
 
 export function collectPads(files: TarFile[], sounds: Sound[]) {

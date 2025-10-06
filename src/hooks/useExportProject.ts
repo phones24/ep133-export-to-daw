@@ -12,8 +12,6 @@ import {
   ExportStatus,
   SampleReport,
 } from '../types/types';
-import useAllSounds from './useAllSounds';
-import useDevice from './useDevice';
 import useProject from './useProject';
 
 export const EXPORT_FORMATS: ExportFormat[] = [
@@ -37,10 +35,8 @@ async function getExporterFn(
   (
     projectId: string,
     data: any,
-    sounds: any,
-    deviceService: any,
     progressCallback: any,
-    exporterParams: any,
+    exporterParams: ExporterParams,
     abortSignal: AbortSignal,
   ) => Promise<any>
 > {
@@ -59,7 +55,6 @@ async function getExporterFn(
 function useExportProject(format: ExportFormatId, exporterParams: ExporterParams) {
   const projectId = useAtomValue(projectIdAtom);
   const { data: projectRawData } = useProject(projectId);
-  const { data: allSounds } = useAllSounds();
   const [isPending, setIsPending] = useState(false);
   const [pendingStatus, setPendingStatus] = useState('');
   const [percentage, setPercentage] = useState(0);
@@ -67,7 +62,6 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
   const [result, setResult] = useState<ExportResult | null>(null);
   const [sampleReport, setSampleReport] = useState<SampleReport | null>(null);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
-  const { deviceService } = useDevice();
 
   const startExport = async () => {
     trackEvent('export_start', {
@@ -77,7 +71,7 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
     try {
       const formatData = EXPORT_FORMATS.find((f) => f.value === format);
 
-      if (!formatData || !projectRawData || !allSounds || !deviceService) {
+      if (!formatData || !projectRawData) {
         return;
       }
 
@@ -94,8 +88,6 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
       const result = await exportFn(
         projectId,
         projectRawData,
-        allSounds,
-        deviceService,
         (stat: ExportStatus) => {
           setPercentage(stat.progress);
           setPendingStatus(stat.status);

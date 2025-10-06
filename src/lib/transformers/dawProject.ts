@@ -1,4 +1,4 @@
-import { Note, Pad, PadCode, ProjectRawData, Sound } from '../../types/types';
+import { Note, Pad, PadCode, ProjectRawData } from '../../types/types';
 import { getSampleName } from '../exporters/utils';
 import { findPad, findSoundByPad, findSoundIdByPad } from '../utils';
 
@@ -42,7 +42,7 @@ export type DawScene = {
   clipSlot: DawClipSlot[];
 };
 
-function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
+function dawProjectTransformer(data: ProjectRawData) {
   const { pads, scenes } = data;
   const tracks: DawTrack[] = [];
   const lanes: DawLane[] = [];
@@ -61,7 +61,7 @@ function dawProjectTransformer(data: ProjectRawData, sounds: Sound[]) {
 
       if (!track) {
         const soundId = findSoundIdByPad(pattern.pad, pads) || 0;
-        const sound = findSoundByPad(pattern.pad, pads, sounds);
+        const sound = findSoundByPad(pattern.pad, pads, data.sounds);
         const pad = findPad(pattern.pad, pads);
 
         if (!pad) {

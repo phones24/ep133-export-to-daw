@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/react';
-import { DeviceService } from '../../ep133/device-service';
-import { ExportStatus, ProjectRawData, Sound } from '../../types/types';
+import { ExportStatus, ProjectRawData, SoundInfo } from '../../types/types';
+import { getFile, getFileNodeByPath } from '../midi/fs';
 import { pcmToWavBlob } from '../pcmToWav';
-import { AbortError, audioFormatAsBitDepth, getSoundsInfoFromProject } from '../utils';
+import { AbortError, audioFormatAsBitDepth } from '../utils';
 
 let _colorIndex = 0;
 
@@ -31,23 +31,17 @@ const colors = [
 
 export async function downloadPcm(
   soundId: number,
-  deviceService: DeviceService,
   progressCallback?: (bytesRead: number, totalRemaining: number) => void,
 ) {
-  const path = `/sounds/${String(soundId).padStart(3, '0')}.pcm`;
+  const fileNode = await getFileNodeByPath(`/sounds/${String(soundId).padStart(3, '0')}.pcm`);
 
-  const nodeId = await deviceService.getNodeIdByPath(path);
-  const fileData = await deviceService.get(deviceService.device.serial, nodeId, progressCallback);
-  const length = fileData.data.reduce((acc: number, buf: Uint8Array) => acc + buf.length, 0);
-  const combined = new Uint8Array(length);
-  let offset = 0;
-
-  for (const buf of fileData.data) {
-    combined.set(buf, offset);
-    offset += buf.length;
+  if (!fileNode) {
+    throw new Error(`Sound file for sound ID ${soundId} not found`);
   }
 
-  return combined;
+  const fileData = await getFile(fileNode.nodeId, progressCallback);
+
+  return fileData.data;
 }
 
 export function getSampleName(name: string | undefined, soundId: number, extension = true) {
@@ -61,14 +55,42 @@ export function getSampleName(name: string | undefined, soundId: number, extensi
   return extension ? `${n}.wav` : n;
 }
 
+function getSoundsInfoFromProject(data: ProjectRawData) {
+  const snds: SoundInfo[] = [];
+  const existingSounds = new Set<number>();
+
+  for (const group in data.pads) {
+    for (const pad of data.pads[group]) {
+      if (existingSounds.has(pad.soundId)) {
+        continue;
+      }
+
+      const soundMeta = data.sounds.find((s) => s.id === pad.soundId);
+
+      if (!soundMeta) {
+        continue;
+      }
+
+      if (pad.soundId > 0) {
+        snds.push({
+          soundId: pad.soundId,
+          soundMeta: soundMeta.meta,
+        });
+
+        existingSounds.add(pad.soundId);
+      }
+    }
+  }
+
+  return snds;
+}
+
 export async function collectSamples(
   data: ProjectRawData,
-  sounds: Sound[],
-  deviceService: DeviceService,
   progressCallback: ({ progress, status }: ExportStatus) => void,
   abortSignal: AbortSignal,
 ) {
-  const projectSounds = getSoundsInfoFromProject(data, sounds);
+  const projectSounds = getSoundsInfoFromProject(data);
 
   const samples: { name: string; data: Blob }[] = [];
   const downloaded: string[] = [];
@@ -90,7 +112,7 @@ export async function collectSamples(
         status: `Downloading sound: ${fileName}`,
       });
 
-      const result = await downloadPcm(snd.soundId, deviceService, (bytesRead, totalRemaining) => {
+      const result = await downloadPcm(snd.soundId, (bytesRead, totalRemaining) => {
         if (abortSignal.aborted) {
           throw new AbortError();
         }

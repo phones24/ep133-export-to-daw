@@ -11,13 +11,15 @@ import {
   parseSysExGetFileDataResponse,
   parseSysexGetFileInitResponse,
 } from './fsSysex';
-import { TEFileListEntry, TEGetFileResponse } from './types';
+import { TEFile, TEFileNode } from './types';
 import { sanitizeBrokenJson } from './utils';
+
+const fileNodesCache: Record<string, TEFileNode> = {};
 
 export async function getFile(
   nodeId: number,
   progressCallback?: (bytesRead: number, totalBytes: number) => void,
-): Promise<TEGetFileResponse> {
+): Promise<TEFile> {
   const offset = 0;
   const options = null;
   const chunks = [];
@@ -63,21 +65,36 @@ export async function getFile(
     pageIndex = chunkResponse.nextPage;
   }
 
-  return { name: initResponse.fileName, size: initResponse.fileSize, data: chunks };
+  const length = chunks.reduce((acc, buf) => acc + buf.length, 0);
+  const combined = new Uint8Array(length);
+  let bufOffset = 0;
+
+  for (const buf of chunks) {
+    combined.set(buf, bufOffset);
+    bufOffset += buf.length;
+  }
+
+  return { name: initResponse.fileName, size: initResponse.fileSize, data: combined };
 }
 
-export async function getFileList(
-  nodeId: number = 0,
-  filesList: TEFileListEntry[] = [],
-  path = '/',
-): Promise<TEFileListEntry[]> {
-  let page = 0;
-
+export async function getFileList(): Promise<TEFileNode[]> {
   await sendSysexToDevice(TE_SYSEX_FILE, buildSysExFileInitRequest(4 * 1024 * 1024, 0));
 
+  return getFileListInternal();
+}
+
+async function getFileListInternal(
+  nodeId: number = 0,
+  filesList: TEFileNode[] = [],
+  path = '/',
+): Promise<TEFileNode[]> {
+  let page = 0;
+
   while (true) {
-    const fileListRequest = buildSysExFileListRequest(page, nodeId);
-    const fileListResponse = await sendSysexToDevice(TE_SYSEX_FILE, fileListRequest);
+    const fileListResponse = await sendSysexToDevice(
+      TE_SYSEX_FILE,
+      buildSysExFileListRequest(page, nodeId),
+    );
 
     if (!fileListResponse || !fileListResponse.rawData || fileListResponse.rawData.length < 2) {
       break;
@@ -97,18 +114,21 @@ export async function getFileList(
       break;
     }
 
-    for await (const entry of list) {
+    for (const entry of list) {
       const filePath = path === '/' ? `${path}${entry.fileName}` : `${path}/${entry.fileName}`;
       const fileType = entry.flags & TE_SYSEX_FILE_FILE_TYPE_FILE ? 1 : 2;
 
-      filesList.push({
+      const item = {
         ...entry,
         fileName: filePath,
         fileType: fileType === 1 ? 'file' : 'folder',
-      });
+      } as const;
+
+      fileNodesCache[filePath] = item;
+      filesList.push(item);
 
       if (fileType === 2) {
-        await getFileList(entry.nodeId, filesList, filePath);
+        await getFileListInternal(entry.nodeId, filesList, filePath);
       }
     }
   }
@@ -154,4 +174,20 @@ export async function getFileMetadata<T extends Record<string, any>>(nodeId: num
     }
   }
   return result;
+}
+
+export async function getFileNodeByPath(path: string) {
+  if (fileNodesCache[path]) {
+    return fileNodesCache[path];
+  }
+
+  const filesList = await getFileList();
+
+  return filesList.find((file) => file.fileName === path) || null;
+}
+
+export function resetFileCache() {
+  for (const key in fileNodesCache) {
+    delete fileNodesCache[key];
+  }
 }
