@@ -1,6 +1,5 @@
 import { toXML } from 'jstoxml';
 import JSZip from 'jszip';
-import { DeviceService } from '../../ep133/device-service';
 import {
   ExporterParams,
   ExportResult,
@@ -8,7 +7,6 @@ import {
   Note,
   ProjectRawData,
   SampleReport,
-  Sound,
 } from '../../types/types';
 import dawProjectTransformer, {
   DawClip,
@@ -327,12 +325,8 @@ export function buildMetadataXml() {
   return new Blob([xml], { type: 'text/xml' });
 }
 
-export async function buildProjectXml(
-  projectData: ProjectRawData,
-  sounds: Sound[],
-  exporterParams: ExporterParams,
-) {
-  const transformedData = dawProjectTransformer(projectData, sounds, exporterParams);
+export async function buildProjectXml(projectData: ProjectRawData, exporterParams: ExporterParams) {
+  const transformedData = dawProjectTransformer(projectData, exporterParams);
   // console.log(transformedData);
   _id = 0;
 
@@ -389,8 +383,6 @@ export async function buildProjectXml(
 async function exportDawProject(
   projectId: string,
   data: ProjectRawData,
-  sounds: Sound[],
-  deviceService: DeviceService,
   progressCallback: ({ progress, status }: ExportStatus) => void,
   exporterParams: ExporterParams,
   abortSignal: AbortSignal,
@@ -402,7 +394,7 @@ async function exportDawProject(
   }
 
   const metadataXml = buildMetadataXml();
-  const projectXml = await buildProjectXml(data, sounds, exporterParams);
+  const projectXml = await buildProjectXml(data, exporterParams);
 
   progressCallback({ progress: 2, status: 'Creating project file...' });
 
@@ -433,8 +425,6 @@ async function exportDawProject(
     const zipSamples = new JSZip();
     const { samples, sampleReport: report } = await collectSamples(
       data,
-      sounds,
-      deviceService,
       progressCallback,
       abortSignal,
     );

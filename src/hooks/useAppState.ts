@@ -1,7 +1,6 @@
 import { useAtomValue } from 'jotai';
 import { useMemo } from 'preact/hooks';
 import { projectIdAtom } from '../atoms/project';
-import useAllSounds from './useAllSounds';
 import useDevice from './useDevice';
 import useProject from './useProject';
 
@@ -20,11 +19,10 @@ export const APP_STATES = {
 export function useAppState() {
   const projectId = useAtomValue(projectIdAtom);
   const { isLoading: isLoadingProject, isRefetching } = useProject(projectId);
-  const { isLoading: isLoadingSounds } = useAllSounds();
-  const { device, deviceService, error } = useDevice();
+  const { device, error } = useDevice();
 
-  const isLoading = isLoadingProject || isLoadingSounds || isRefetching;
-  const noDevice = !device || !deviceService;
+  const isLoading = isLoadingProject || isRefetching;
+  const noDevice = !device;
 
   return useMemo(() => {
     const finalState = [];

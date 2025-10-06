@@ -117,12 +117,23 @@ function validateChecksum(buffer: ArrayBuffer, offset: number, expectedChecksum:
   return sum === expectedChecksum;
 }
 
-export async function untar(file: File): Promise<TarFile[]> {
-  if (!(file instanceof File)) {
-    throw new UntarError('Input must be a File object');
+export async function untar(file: File | ArrayBuffer | Uint8Array): Promise<TarFile[]> {
+  if (!(file instanceof File) && !(file instanceof ArrayBuffer) && !(file instanceof Uint8Array)) {
+    throw new UntarError('Input must be a File object or an ArrayBuffer or Uint8Array');
   }
 
-  const buffer = await file.arrayBuffer();
+  let buffer: ArrayBuffer;
+
+  if (file instanceof File) {
+    buffer = await file.arrayBuffer();
+  } else if (file instanceof Uint8Array) {
+    buffer = new ArrayBuffer(file.length);
+    const view = new Uint8Array(buffer);
+    view.set(file);
+  } else {
+    buffer = file;
+  }
+
   const files: TarFile[] = [];
   let offset = 0;
 

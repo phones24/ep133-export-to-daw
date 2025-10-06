@@ -1,12 +1,10 @@
 import JSZip from 'jszip';
-import { DeviceService } from '../../../ep133/device-service';
 import {
   ExporterParams,
   ExportResult,
   ExportStatus,
   ProjectRawData,
   SampleReport,
-  Sound,
 } from '../../../types/types';
 import { AbortError } from '../../utils';
 import { collectSamples } from '../utils';
@@ -15,8 +13,6 @@ import { buildProject } from './builders';
 async function exportAbleton(
   projectId: string,
   data: ProjectRawData,
-  sounds: Sound[],
-  deviceService: DeviceService,
   progressCallback: ({ progress, status }: ExportStatus) => void,
   exporterParams: ExporterParams,
   abortSignal: AbortSignal,
@@ -36,7 +32,7 @@ async function exportAbleton(
     throw new AbortError();
   }
 
-  const alsFile = await buildProject(data, sounds, exporterParams);
+  const alsFile = await buildProject(data, exporterParams);
 
   zippedProject.file(`${projectName} Project/${projectName}.als`, alsFile);
   zippedProject.file(`${projectName} Project/Ableton Project Info/.dummy`, '');
@@ -46,8 +42,6 @@ async function exportAbleton(
   if (exporterParams.includeArchivedSamples) {
     const { samples, sampleReport: report } = await collectSamples(
       data,
-      sounds,
-      deviceService,
       progressCallback,
       abortSignal,
     );

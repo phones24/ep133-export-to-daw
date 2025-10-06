@@ -1,13 +1,11 @@
 import { Midi } from '@tonejs/midi';
 import JSZip from 'jszip';
-import { DeviceService } from '../../ep133/device-service';
 import {
   ExporterParams,
   ExportResult,
   ExportStatus,
   ProjectRawData,
   SampleReport,
-  Sound,
 } from '../../types/types';
 import midiTransformer from '../transformers/midi';
 import { AbortError } from '../utils';
@@ -22,8 +20,6 @@ function unitsToTicks(units: number, ppq = 480) {
 async function exportMidi(
   projectId: string,
   data: ProjectRawData,
-  sounds: Sound[],
-  deviceService: DeviceService,
   progressCallback: ({ progress, status }: ExportStatus) => void,
   exporterParams: ExporterParams,
   abortSignal: AbortSignal,
@@ -34,7 +30,7 @@ async function exportMidi(
     throw new AbortError();
   }
 
-  const transformedData = midiTransformer(data, sounds, exporterParams);
+  const transformedData = midiTransformer(data, exporterParams);
   const midi = new Midi();
 
   midi.header.setTempo(data.settings.bpm);
@@ -78,8 +74,6 @@ async function exportMidi(
     const zipSamples = new JSZip();
     const { samples, sampleReport: report } = await collectSamples(
       data,
-      sounds,
-      deviceService,
       progressCallback,
       abortSignal,
     );

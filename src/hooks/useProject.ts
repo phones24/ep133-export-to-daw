@@ -1,50 +1,56 @@
 import { useQuery } from '@tanstack/react-query';
-import { BlobReader } from '../ep133/stream';
+import { getProjectFile } from '../lib/midi';
 import {
   collectEffects,
   collectPads,
   collectScenesAndPatterns,
   collectSettings,
+  collectSounds,
 } from '../lib/parsers';
 import { untar } from '../lib/untar';
 import { ProjectRawData } from '../types/types';
-import useAllSounds from './useAllSounds';
 import useDevice from './useDevice';
 
 function useProject(id?: number | string) {
-  const { device, deviceService } = useDevice();
-  const { data: allSounds } = useAllSounds();
+  const { device } = useDevice();
 
   const result = useQuery<ProjectRawData | null>({
     queryKey: ['project', id],
     queryFn: async () => {
-      if (!deviceService || !allSounds || !id) {
+      if (!id) {
         return null;
       }
 
-      const archive = await deviceService.downloadProjectArchive(
-        `/projects/${String(id).padStart(2, '0')}`,
-      );
-
-      const projectFile = new File([...archive.data], `project${archive.name}.tar`);
-      const blobReader = new BlobReader(projectFile);
-      const files = await untar(blobReader.blob);
-
+      const archive = await getProjectFile(Number(id));
+      const files = await untar(archive.data);
+      const sounds = await collectSounds(files);
       const settings = collectSettings(files);
-      const pads = collectPads(files, allSounds);
+      const pads = collectPads(files, sounds);
       const scenes = collectScenesAndPatterns(files);
       const effects = collectEffects(files);
+
+      // @ts-expect-error wrong typing?
+      const projectFileBlob = new Blob([archive.data]);
+      const projectFile = new File(
+        [projectFileBlob],
+        `project-${String(id).padStart(2, '0')}.tar`,
+        {
+          type: 'application/x-tar',
+          lastModified: Date.now(),
+        },
+      );
 
       return {
         pads,
         scenes,
         settings,
+        sounds,
         effects,
         projectFile,
       };
     },
     retry: false,
-    enabled: !!id && !!device && !!deviceService,
+    enabled: !!id && !!device,
     throwOnError: true,
   });
 

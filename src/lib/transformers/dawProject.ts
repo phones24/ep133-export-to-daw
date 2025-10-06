@@ -1,5 +1,5 @@
 import { omit } from 'lodash';
-import { ExporterParams, Note, Pad, PadCode, ProjectRawData, Sound } from '../../types/types';
+import { ExporterParams, Note, Pad, PadCode, ProjectRawData } from '../../types/types';
 import { getSampleName } from '../exporters/utils';
 import { findPad, findSoundByPad, findSoundIdByPad } from '../utils';
 
@@ -43,11 +43,7 @@ export type DawScene = {
   clipSlot: DawClipSlot[];
 };
 
-function dawProjectTransformer(
-  data: ProjectRawData,
-  sounds: Sound[],
-  exporterParams: ExporterParams,
-) {
+function dawProjectTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
   const { pads, scenes } = data;
   const dawScenes: DawScene[] = [];
   let lanes: DawLane[] = [];
@@ -66,7 +62,7 @@ function dawProjectTransformer(
 
       if (!track) {
         const soundId = findSoundIdByPad(pattern.pad, pads) || 0;
-        const sound = findSoundByPad(pattern.pad, pads, sounds);
+        const sound = findSoundByPad(pattern.pad, pads, data.sounds);
         const pad = findPad(pattern.pad, pads);
 
         if (!pad) {

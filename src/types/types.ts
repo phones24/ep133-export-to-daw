@@ -1,5 +1,4 @@
-import { DeviceService } from '../ep133/device-service';
-import { FSNode } from '../ep133/fs';
+import { TEFileNode, TESoundMetadata } from '../lib/midi/types';
 import { TarFile } from '../lib/untar';
 
 export type Group = 'a' | 'b' | 'c' | 'd';
@@ -26,10 +25,9 @@ export type SoundMetadata = {
 };
 
 export type Sound = {
-  path: string;
   id: number;
-  node: FSNode;
-  meta: SoundMetadata;
+  fileNode: TEFileNode;
+  meta: TESoundMetadata;
 };
 
 export enum EffectType {
@@ -124,6 +122,7 @@ export type ProjectRawData = {
   scenes: Scene[];
   settings: ProjectSettings;
   effects: Effects;
+  sounds: Sound[];
   projectFile: File;
 };
 
@@ -157,7 +156,6 @@ export type ExportFormat = {
     projectId: string,
     data: ProjectRawData,
     sounds: Sound[],
-    deviceService: DeviceService,
     progressCallback: ({ progress, status }: ExportStatus) => void,
     exporterParams: ExporterParams,
   ) => Promise<ExportResult>;
@@ -175,5 +173,5 @@ export type ExporterParams = {
 
 export type SoundInfo = {
   soundId: number;
-  soundMeta: SoundMetadata;
+  soundMeta: TESoundMetadata;
 };

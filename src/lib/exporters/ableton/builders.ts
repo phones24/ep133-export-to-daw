@@ -1,11 +1,5 @@
 import { create } from 'xmlbuilder2';
-import {
-  EffectType,
-  FaderParam,
-  ProjectRawData,
-  ProjectSettings,
-  Sound,
-} from '../../../types/types';
+import { EffectType, FaderParam, ProjectRawData, ProjectSettings } from '../../../types/types';
 import { EFFECTS } from '../../constants';
 import abletonTransformer, { AblClip, AblScene, AblTrack } from '../../transformers/ableton';
 import { ALSDrumBranch } from './templates/drumBranch';
@@ -467,15 +461,10 @@ export async function buildReturnTrack(projectData: ProjectRawData, trackId: num
   return { ReturnTrack: returnTrack };
 }
 
-export async function buildProject(
-  projectData: ProjectRawData,
-  sounds: Sound[],
-  exporterParams: any,
-) {
-  const transformedData = abletonTransformer(projectData, sounds, exporterParams);
+export async function buildProject(projectData: ProjectRawData, exporterParams: any) {
+  const transformedData = abletonTransformer(projectData, exporterParams);
 
   if (import.meta.env.DEV) {
-    console.log('sound', sounds);
     console.log('projectData', projectData);
     console.log('transformedData', transformedData);
   }
