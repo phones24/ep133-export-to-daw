@@ -40,8 +40,6 @@ function useProject(id?: number | string) {
         },
       );
 
-      console.log(projectFile);
-
       return {
         pads,
         scenes,

@@ -11,7 +11,6 @@ import {
   TE_SYSEX,
   TE_SYSEX_GREET,
 } from './constants';
-import { resetFileCache } from './fs';
 import { TEDevice, TEDeviceIdentification, TESysexMessage } from './types';
 import {
   binToString,
@@ -70,7 +69,7 @@ function parseTeenageSysex(bytes: Uint8Array) {
 
   msg.hStatus = sysexStatusToString(msg.status);
   if (msg.hStatus === undefined) {
-    console.error(`cannot handle message with status ${msg.status}`);
+    console.error(`Cannot handle message with status ${msg.status}`);
     return;
   }
 
@@ -151,15 +150,19 @@ function sendTESysEx(
   const message = new Uint8Array(10 + packedLength);
   const requestId = getNextRequestId(midiOutput.id);
 
-  message[0] = MIDI_SYSEX_START;
-  message[1] = TE_MIDI_ID_0;
-  message[2] = TE_MIDI_ID_1;
-  message[3] = TE_MIDI_ID_2;
-  message[4] = identityCode;
-  message[5] = MIDI_SYSEX_TE;
-  message[6] = BIT_IS_REQUEST | BIT_REQUEST_ID_AVAILABLE | ((requestId >> 7) & 0x1f);
-  message[7] = requestId & 0x7f;
-  message[8] = command;
+  const header = new Uint8Array([
+    MIDI_SYSEX_START,
+    TE_MIDI_ID_0,
+    TE_MIDI_ID_1,
+    TE_MIDI_ID_2,
+    identityCode,
+    MIDI_SYSEX_TE,
+    BIT_IS_REQUEST | BIT_REQUEST_ID_AVAILABLE | ((requestId >> 7) & 0x1f),
+    requestId & 0x7f,
+    command,
+  ]);
+
+  message.set(header, 0);
   message[message.length - 1] = MIDI_SYSEX_END;
 
   packToBuffer(data, message.subarray(9, 9 + packedLength));
@@ -182,7 +185,6 @@ export async function sendSysexToDevice(
 
     const timeoutHandler = () => {
       _deviceInputPort?.removeEventListener('midimessage', handleMidiMessage);
-
       reject('Timeout waiting for sysex response');
     };
 
@@ -247,7 +249,6 @@ export async function tryInitDevice(
       metadata: deviceMetadata,
     };
 
-    resetFileCache();
     onDeviceFound?.(deviceInfo);
 
     _deviceInitialized = true;
@@ -281,7 +282,6 @@ export function setDeviceOutputPort(port: MIDIOutput | null) {
 export function disconnectDevice() {
   setDeviceInputPort(null);
   setDeviceOutputPort(null);
-  resetFileCache();
   _deviceInitialized = false;
 }
 

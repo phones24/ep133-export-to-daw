@@ -7,7 +7,7 @@ import {
   setDeviceOutputPort,
   tryInitDevice,
 } from './device';
-import { getFile, getFileNodeByPath } from './fs';
+import { getFile, getFileNodeByPath, resetFileCache } from './fs';
 import { TEDevice } from './types';
 
 export async function initDevice({
@@ -40,7 +40,7 @@ export async function initDevice({
       (currentInputPort?.id === event.port?.id || currentOutputPort?.id === event.port?.id)
     ) {
       disconnectDevice();
-
+      resetFileCache();
       onDeviceLost?.();
     }
 

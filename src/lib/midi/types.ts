@@ -56,9 +56,9 @@ export type TESoundMetadata = {
   samplerate: number;
   format: 's16' | 's24' | 'float';
   crc: number;
+  name: string;
   'sound.loopstart': number;
   'sound.loopend': number;
-  name: string;
   'sound.amplitude': number;
   'sound.playmode': 'oneshot' | 'loop';
   'sound.pan': number;

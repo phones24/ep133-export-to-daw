@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import useDevice from '../hooks/useDevice';
 import useProject from '../hooks/useProject';
 import { EFFECTS_SHORT } from '../lib/constants';
 
@@ -56,9 +57,10 @@ function Value({ label, value }: { label: string; value: string | number | undef
 
 function ProjectMeta({ projectId }: { projectId?: string }) {
   const { data } = useProject(projectId);
+  const { device } = useDevice();
 
   return (
-    <div className={clsx('bg-[#333] flex gap-4 text-xl', !data && 'opacity-70')}>
+    <div className={clsx('bg-[#333] flex gap-4 text-xl', (!data || !device) && 'opacity-70')}>
       <Value label="TEMPO" value={data?.settings.bpm || 'N/A'} />
 
       <Value label="SCENES" value={data?.scenes.length ?? 'N/A'} />

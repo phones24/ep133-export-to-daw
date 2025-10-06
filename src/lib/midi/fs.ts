@@ -116,18 +116,18 @@ async function getFileListInternal(
 
     for (const entry of list) {
       const filePath = path === '/' ? `${path}${entry.fileName}` : `${path}/${entry.fileName}`;
-      const fileType = entry.flags & TE_SYSEX_FILE_FILE_TYPE_FILE ? 1 : 2;
+      const fileType = entry.flags & TE_SYSEX_FILE_FILE_TYPE_FILE ? 'file' : 'folder';
 
       const item = {
         ...entry,
         fileName: filePath,
-        fileType: fileType === 1 ? 'file' : 'folder',
+        fileType,
       } as const;
 
       fileNodesCache[filePath] = item;
       filesList.push(item);
 
-      if (fileType === 2) {
+      if (fileType === 'folder') {
         await getFileListInternal(entry.nodeId, filesList, filePath);
       }
     }
