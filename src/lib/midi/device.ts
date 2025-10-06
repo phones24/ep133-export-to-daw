@@ -9,6 +9,7 @@ import {
   TE_MIDI_ID_1,
   TE_MIDI_ID_2,
   TE_SYSEX,
+  TE_SYSEX_GREET,
 } from './constants';
 import { resetFileCache } from './fs';
 import { TEDevice, TEDeviceIdentification, TESysexMessage } from './types';
@@ -230,7 +231,7 @@ export async function tryInitDevice(
       throw new Error('Cannot get device identification');
     }
 
-    const greetResponse = await sendSysexToDevice(TE_SYSEX.GREET);
+    const greetResponse = await sendSysexToDevice(TE_SYSEX_GREET);
 
     if (!greetResponse) {
       throw new Error('No greetings from device');
