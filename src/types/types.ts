@@ -136,7 +136,7 @@ export type ExportResult = {
   sampleReport?: SampleReport;
 };
 
-export type ExportFormatId = 'ableton' | 'dawproject' | 'midi';
+export type ExportFormatId = 'ableton' | 'dawproject' | 'midi' | 'reaper';
 
 export type ExportStatus = {
   status: string;

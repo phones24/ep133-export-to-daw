@@ -27,6 +27,10 @@ export const EXPORT_FORMATS: ExportFormat[] = [
     name: 'MIDI',
     value: 'midi',
   },
+  {
+    name: 'REAPER',
+    value: 'reaper',
+  },
 ];
 
 async function getExporterFn(
@@ -47,6 +51,8 @@ async function getExporterFn(
       return (await import('../lib/exporters/dawProject')).default;
     case 'midi':
       return (await import('../lib/exporters/midi')).default;
+    case 'reaper':
+      return (await import('../lib/exporters/reaper')).default;
     default:
       throw new Error(`Unknown export format: ${format}`);
   }
