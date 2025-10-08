@@ -82,7 +82,7 @@ function parseTeenageSysex(bytes: Uint8Array) {
 async function sendIdentAndWaitForReponse(
   output: MIDIOutput,
   midiAccess: MIDIAccess,
-  timeoutMs: number = 5000,
+  timeoutMs: number = 5_000,
 ): Promise<Uint8Array | null> {
   return new Promise<Uint8Array | null>((resolve, reject) => {
     const input = Array.from(midiAccess.inputs.values()).find((inp) => inp.name === output.name);
@@ -175,7 +175,7 @@ function sendTESysEx(
 export async function sendSysexToDevice(
   command: number,
   payload: Uint8Array | Array<number> = [],
-  timeoutMs: number = 5000,
+  timeoutMs: number = 5_000,
 ): Promise<TESysexMessage | null> {
   return new Promise<TESysexMessage | null>((resolve, reject) => {
     if (!_deviceOutputPort || !_deviceInputPort) {
