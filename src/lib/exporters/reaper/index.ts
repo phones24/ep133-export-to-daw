@@ -1,13 +1,70 @@
 import { ExporterParams, ExportResult, ExportStatus, ProjectRawData } from '../../../types/types';
+import { reaperTransform } from '../../transformers/reaper';
 import { AbortError } from '../../utils';
 
-import { jsonToRppText, ReaperProject } from './reaperlib';
+import { generateReaperProject } from './reaperlib';
+
+function buildReaperProject(
+  data: ProjectRawData,
+  projectId: string,
+  exporterParams: ExporterParams,
+) {
+  const transformedData = reaperTransform(data, exporterParams);
+
+  if (import.meta.env.DEV) {
+    console.log(transformedData);
+  }
+
+  const rprContent = generateReaperProject({
+    projectName: `Project ${projectId}`,
+    tempo: data.settings?.bpm ?? 120,
+    tracks: transformedData.tracks.map((t) => ({
+      name: t.name,
+      tempo: t.bpm,
+      volume: t.volume,
+      pan: t.pan,
+      sample: t.sampleName
+        ? {
+            name: t.sampleName,
+            rate: t.sampleRate,
+            channels: t.sampleChannels,
+            length: t.soundLength,
+            timeStretch: t.timeStretch,
+            timeStretchBars: t.timeStretchBars,
+            timeStretchBpm: t.timeStretchBpm,
+            trimLeft: t.trimLeft,
+            trimRight: t.trimRight,
+            rootNote: t.rootNote,
+            attack: t.attack,
+            release: t.release,
+            playMode: t.playMode,
+            pitch: t.pitch,
+          }
+        : null,
+      guid: crypto.randomUUID().toUpperCase(),
+      items: t.items.map((item) => ({
+        position: (item.offset * 4 * 60) / t.bpm,
+        length: (item.sceneBars * 4 * 60) / t.bpm,
+        lengthInBars: item.bars,
+        name: `Scene ${item.sceneName}`,
+        events: item.notes.map((n) => ({
+          note: n.note,
+          position: n.position,
+          length: n.duration,
+          velocity: n.velocity,
+        })),
+      })),
+    })),
+  });
+
+  return rprContent;
+}
 
 async function exportReaper(
   projectId: string,
   data: ProjectRawData,
   progressCallback: ({ progress, status }: ExportStatus) => void,
-  _exporterParams: ExporterParams,
+  exporterParams: ExporterParams,
   abortSignal: AbortSignal,
 ): Promise<ExportResult> {
   progressCallback({ progress: 1, status: 'Preparing REAPER export...' });
@@ -16,24 +73,9 @@ async function exportReaper(
     throw new AbortError();
   }
 
-  // Map minimal fields from ProjectRawData to ReaperProjectJSON
-  const bpm = data.settings?.bpm ?? 120;
-  const pads = data.pads ?? {};
-  const tracks = Object.keys(pads).map((groupKey) => ({
-    name: `Group ${groupKey}`,
-    items: [],
-  }));
+  const rprContent = buildReaperProject(data, projectId, exporterParams);
 
-  const rproj: ReaperProject = {
-    projectName: `Project ${projectId}`,
-    tempo: bpm,
-    ppq: 960,
-    sampleRate: 44100,
-    tracks,
-  };
-
-  const rppText = jsonToRppText(rproj);
-  const blob = new Blob([rppText], { type: 'text/plain' });
+  const blob = new Blob([rprContent], { type: 'text/plain' });
 
   const files = [
     {

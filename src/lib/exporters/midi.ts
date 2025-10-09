@@ -9,13 +9,7 @@ import {
 } from '../../types/types';
 import midiTransformer from '../transformers/midi';
 import { AbortError } from '../utils';
-import { collectSamples } from './utils';
-
-const UNITS_PER_BEAT = 96; // (384 / 4 beats)
-
-function unitsToTicks(units: number, ppq = 480) {
-  return Math.round((units / UNITS_PER_BEAT) * ppq);
-}
+import { collectSamples, unitsToTicks } from './utils';
 
 async function exportMidi(
   projectId: string,

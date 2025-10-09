@@ -5,8 +5,6 @@ import { findPad, findSoundByPad, findSoundIdByPad } from '../utils';
 
 export type RprData = {
   tracks: RprTrack[];
-  lanes: RprLane[];
-  scenes: RprScene[];
 };
 
 export type RprTrack = Omit<Pad, 'file' | 'rawData'> & {
@@ -16,15 +14,10 @@ export type RprTrack = Omit<Pad, 'file' | 'rawData'> & {
   sampleChannels: number;
   sampleRate: number;
   bpm: number;
+  items: RprTrackItem[];
 };
 
-export type RprLane = {
-  padCode: PadCode;
-  group?: string;
-  clips: RprClip[];
-};
-
-export type RprClip = {
+export type RprTrackItem = {
   notes: Note[];
   bars: number;
   offset: number;
@@ -33,29 +26,13 @@ export type RprClip = {
   sceneName: string;
 };
 
-export type RprClipSlot = {
-  clip: RprClip[];
-  track: RprTrack;
-};
-
-export type RprScene = {
-  name: string;
-  clipSlot: RprClipSlot[];
-};
-
-export function RprProjectTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
+export function reaperTransform(data: ProjectRawData, exporterParams: ExporterParams) {
   const { pads, scenes } = data;
-  const rprScenes: RprScene[] = [];
-  let lanes: RprLane[] = [];
-  let tracks: RprTrack[] = [];
+  const tracks: RprTrack[] = [];
   let offset = 0;
 
   scenes.forEach((scene, sceneIndex) => {
     const sceneBars = Math.max(...scene.patterns.map((p) => p.bars));
-    const rprScene: RprScene = {
-      name: scene.name,
-      clipSlot: [],
-    };
 
     for (const pattern of scene.patterns) {
       let track = tracks.find((c) => c.padCode === pattern.pad);
@@ -79,24 +56,13 @@ export function RprProjectTransformer(data: ProjectRawData, exporterParams: Expo
           sampleChannels: sound?.meta?.channels || 0,
           sampleRate: sound?.meta?.samplerate || 0,
           bpm: data.settings.bpm,
+          items: [],
         };
 
         tracks.push(track);
       }
 
-      let lane = lanes.find((c) => c.padCode === pattern.pad);
-
-      if (!lane) {
-        lane = {
-          padCode: pattern.pad,
-          group: track.group,
-          clips: [],
-        };
-
-        lanes.push(lane);
-      }
-
-      lane.clips.push({
+      track.items.push({
         offset,
         notes: pattern.notes,
         bars: pattern.bars,
@@ -104,18 +70,11 @@ export function RprProjectTransformer(data: ProjectRawData, exporterParams: Expo
         sceneIndex,
         sceneName: scene.name,
       });
-
-      rprScene.clipSlot.push({
-        clip: lane.clips,
-        track: track,
-      });
     }
 
     offset += sceneBars;
-
-    rprScenes.push(rprScene);
   });
-
+  /*
   if (exporterParams.drumRackFirstGroup) {
     // fake track for drum rack
     const drumTrack: RprTrack = {
@@ -153,7 +112,7 @@ export function RprProjectTransformer(data: ProjectRawData, exporterParams: Expo
       clips: [],
     };
 
-    const newClips: Record<string, RprClip> = {};
+    const newClips: Record<string, RprTrackItem> = {};
 
     lanes
       .filter((l) => l.group === 'a')
@@ -188,12 +147,10 @@ export function RprProjectTransformer(data: ProjectRawData, exporterParams: Expo
       });
     });
   }
-
+*/
   return {
     tracks,
-    lanes,
-    scenes: rprScenes,
   } as RprData;
 }
 
-export default RprProjectTransformer;
+export default reaperTransform;
