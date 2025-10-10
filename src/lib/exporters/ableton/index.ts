@@ -2,6 +2,7 @@ import JSZip from 'jszip';
 import {
   ExporterParams,
   ExportResult,
+  ExportResultFile,
   ExportStatus,
   ProjectRawData,
   SampleReport,
@@ -16,13 +17,8 @@ async function exportAbleton(
   progressCallback: ({ progress, status }: ExportStatus) => void,
   exporterParams: ExporterParams,
   abortSignal: AbortSignal,
-) {
-  const files: Array<{
-    name: string;
-    url: string;
-    type: 'project' | 'archive';
-    size: number;
-  }> = [];
+): Promise<ExportResult> {
+  const files: ExportResultFile[] = [];
   const projectName = `Project${projectId}`;
   const zippedProject = new JSZip();
 
@@ -67,7 +63,7 @@ async function exportAbleton(
   return {
     files,
     sampleReport,
-  } as ExportResult;
+  };
 }
 
 export default exportAbleton;

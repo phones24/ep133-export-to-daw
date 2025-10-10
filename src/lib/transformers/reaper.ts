@@ -7,7 +7,7 @@ export type RprData = {
   tracks: RprTrack[];
 };
 
-export type RprTrack = Omit<Pad, 'file' | 'rawData'> & {
+export type RprTrack = Omit<Pad, 'file' | 'rawData' | 'group'> & {
   padCode: PadCode;
   group: string;
   sampleName: string;

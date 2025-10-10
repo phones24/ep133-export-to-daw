@@ -126,13 +126,15 @@ export type ProjectRawData = {
   projectFile: File;
 };
 
+export type ExportResultFile = {
+  name: string;
+  url: string;
+  type: 'project' | 'archive';
+  size: number;
+};
+
 export type ExportResult = {
-  files: {
-    name: string;
-    url: string;
-    type: 'project' | 'archive';
-    size: number;
-  }[];
+  files: ExportResultFile[];
   sampleReport?: SampleReport;
 };
 
