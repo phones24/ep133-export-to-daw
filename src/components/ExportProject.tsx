@@ -17,6 +17,7 @@ const NOTES: Record<ExportFormatId, string> = {
   ableton: `Please note that the exported project won't sound exactly the same as it does on the device.`,
   dawproject: `Unfortunately, the DAWproject format does not currently support the "Sampler" instrument, so you will need to manually assign the samples in your DAW.`,
   midi: `The simplest format supported by any DAW. But you have to assign the samples manually.`,
+  reaper: `Sadly, there’s no way to auto-assign samples to tracks right now, you’ll have to place them manually.`,
 };
 
 function ExportProject() {
@@ -166,6 +167,25 @@ function ExportProject() {
                     title="Send effects"
                     disabled={isPending}
                     helperText="Return track with effect will be added. Each individual track will be sending to the return track. If you select «Group tracks», each group will send its audio to the return track."
+                  />
+                </>
+              )}
+
+              {format === 'reaper' && (
+                <>
+                  <CheckBox
+                    checked={includeArchivedSamples}
+                    onChange={(checked) => setIncludeArchivedSamples(checked)}
+                    title="Include samples"
+                    disabled={isPending}
+                    helperText="Samples will be exported as WAV files and bundled with the project in Media/samples folder."
+                  />
+                  <CheckBox
+                    checked={groupTracks}
+                    onChange={(checked) => setGroupTracks(checked)}
+                    title="Group tracks"
+                    disabled={isPending}
+                    helperText="Tracks will be grouped by their groups (A, B, C, D) same as on the device."
                   />
                 </>
               )}

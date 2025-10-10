@@ -6,10 +6,13 @@ import { AbortError, audioFormatAsBitDepth } from '../utils';
 
 let _colorIndex = 0;
 
-const colors = [
+export const UNITS_PER_BEAT = 96; // (384 / 4 beats)
+const COLORS = [
+  '#B2B0E8',
   '#E27D60',
-  '#85C1A9',
+  '#26A693',
   '#E8A87C',
+  '#85C1A9',
   '#C38D9E',
   '#41B3A3',
   '#F2B880',
@@ -22,7 +25,6 @@ const colors = [
   '#47B267',
   '#B089A3',
   '#6CA6A3',
-  '#B2B0E8',
   '#A0C4B0',
   '#F5A97F',
   '#BBA0C0',
@@ -165,7 +167,11 @@ export async function collectSamples(
 }
 
 export function getNextColor() {
-  const color = colors[_colorIndex];
-  _colorIndex = (_colorIndex + 1) % colors.length;
+  const color = COLORS[_colorIndex];
+  _colorIndex = (_colorIndex + 1) % COLORS.length;
   return color;
+}
+
+export function unitsToTicks(units: number, ppq = 480) {
+  return Math.round((units / UNITS_PER_BEAT) * ppq);
 }

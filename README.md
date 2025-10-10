@@ -8,6 +8,11 @@ Try it out on https://ep133-to-daw.cc/
 
 ![EP-133 To Daw](./public/ep133-to-daw.png)
 
+<p float="left">
+  <img src="./public/ableton.jpg" width="33%"/>
+  <img src="./public/bitwig.jpg" width="33%" />
+  <img src="./public/reaper.jpg" width="33%" />
+</p>
 
 ## Features
 
@@ -16,6 +21,7 @@ Try it out on https://ep133-to-daw.cc/
 - Export projects directly from EP-133/EP-1320 to:
   - Ableton Live 11+ (project with samples)
   - DAWproject (project + archived samples)
+  - REAPER (project + samples)
   - MIDI (MIDI file + archived samples)
 - Ableton Live:
   - Minimum version: 11.3.35
@@ -26,14 +32,21 @@ Try it out on https://ep133-to-daw.cc/
   - Track grouping: 4 groups, same as on the device
   - First group can be exported as a Drum Rack track
 - DAWproject (universal DAW format created by Bitwig):
-  - Export as arrangement with clips
+  - Export as arrangements with clips
   - Includes archived samples
+  - Track grouping: 4 groups, same as on the device
+- REAPER
+  - Export arrangements
+  - Includes samples
+  - Support track grouping
 - MIDI:
   - Includes archived samples
+  - First group can be exported as a Drum Rack track
 
 
 ## Latest news
 
+- [10/10/2025] REAPER support
 - [08/10/2025] Rewrote TE sysex library
 - [26/09/2025] Group A merging added for DAWProject and MIDI transformers
 - [23/09/2025] ABLETON: FX support! The return track will be added with attached effect and each track(or group) will be sending to this return track

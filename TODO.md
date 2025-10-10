@@ -1,8 +1,4 @@
 - take care of tracks sorting for web view
-- display BPM somewhere
 - fader tracks
-- root note
-- scales
-- legato in sampler
-- optional: ableton: add default compressor on the output
-- optional: ableton: add base effect on the bus and sent the tracks to it
+- ableton: legato in sampler
+- ableton: add default compressor on the output
