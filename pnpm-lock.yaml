@@ -84,15 +84,9 @@ importers:
       '@types/node':
         specifier: ^24.3.0
         version: 24.3.0
-      '@types/picomatch':
-        specifier: ^4.0.2
-        version: 4.0.2
       '@types/xml2js':
         specifier: ^0.4.14
         version: 0.4.14
-      fast-xml-parser:
-        specifier: ^5.2.5
-        version: 5.2.5
       tsx:
         specifier: ^4.20.5
         version: 4.20.5
@@ -1358,9 +1352,6 @@ packages:
   '@types/node@24.3.0':
     resolution: {integrity: sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==}
 
-  '@types/picomatch@4.0.2':
-    resolution: {integrity: sha512-qHHxQ+P9PysNEGbALT8f8YOSHW0KJu6l2xU8DYY0fu/EmGxXdVnuTLvFUvBgPJMSqXq29SYHveejeAha+4AYgA==}
-
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
 
@@ -1694,10 +1685,6 @@ packages:
 
   fast-uri@3.1.0:
     resolution: {integrity: sha512-iPeeDKJSWf4IEOasVVrknXpaBV0IApz/gp7S2bb7Z4Lljbl2MGJRqInZiUrQwV16cpzw/D3S5j5Julj/gT52AA==}
-
-  fast-xml-parser@5.2.5:
-    resolution: {integrity: sha512-pfX9uG9Ki0yekDHx2SiuRIyFdyAr1kMIMitPvb0YBo8SUfKvia7w7FIyd/l6av85pFYRhZscS75MwMnbvY+hcQ==}
-    hasBin: true
 
   fdir@6.4.6:
     resolution: {integrity: sha512-hiFoqpyZcfNm1yc4u8oWCf9A2c4D3QjCrks3zmoVKVxpQRzmPNar1hUJcBG2RQHvEVGDN+Jm81ZheVLAQMK6+w==}
@@ -2556,9 +2543,6 @@ packages:
   strip-comments@2.0.1:
     resolution: {integrity: sha512-ZprKx+bBLXv067WTCALv8SSz5l2+XhpYCsVtSqlMnkAXMWDq+/ekVbl1ghqP9rUHTzv6sm/DwCOiYutU/yp1fw==}
     engines: {node: '>=10'}
-
-  strnum@2.1.1:
-    resolution: {integrity: sha512-7ZvoFTiCnGxBtDqJ//Cu6fWtZtc7Y3x+QOirG15wztbdngGSkht27o2pyGWrVy0b4WAy3jbKmnoK6g5VlVNUUw==}
 
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
@@ -4180,8 +4164,6 @@ snapshots:
     dependencies:
       undici-types: 7.10.0
 
-  '@types/picomatch@4.0.2': {}
-
   '@types/resolve@1.20.2': {}
 
   '@types/trusted-types@2.0.7': {}
@@ -4598,10 +4580,6 @@ snapshots:
   fast-json-stable-stringify@2.1.0: {}
 
   fast-uri@3.1.0: {}
-
-  fast-xml-parser@5.2.5:
-    dependencies:
-      strnum: 2.1.1
 
   fdir@6.4.6(picomatch@4.0.3):
     optionalDependencies:
@@ -5479,8 +5457,6 @@ snapshots:
       is-regexp: 1.0.0
 
   strip-comments@2.0.1: {}
-
-  strnum@2.1.1: {}
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
