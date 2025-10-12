@@ -1,5 +1,5 @@
 import { ExporterParams, Note, ProjectRawData } from '../../types/types';
-import { getQuarterNotesPerBar } from '../exporters/utils';
+import { getQuarterNotesPerBar, UNITS_PER_BEAT } from '../exporters/utils';
 import { findSoundByPad } from '../utils';
 
 export type MidiData = {
@@ -18,29 +18,16 @@ function midiTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
   let midiTracks: MidiTrack[] = [];
   let offset = 0;
 
-  console.log(data.scenesSettings.timeSignature);
-  console.log(
+  const barLength =
     getQuarterNotesPerBar(
       data.scenesSettings.timeSignature.numerator,
       data.scenesSettings.timeSignature.denominator,
-    ),
-  );
-
-  const barLength =
-    data.scenesSettings.timeSignature.numerator *
-    2 *
-    // getQuarterNotesPerBar(
-    //   data.scenesSettings.timeSignature.numerator,
-    //   data.scenesSettings.timeSignature.denominator,
-    // ) *
-    24;
+    ) * UNITS_PER_BEAT;
 
   scenes.forEach((scene) => {
     const sceneMaxBars = Math.max(...scene.patterns.map((p) => p.bars));
-
     for (const pattern of scene.patterns) {
       let track = midiTracks.find((t) => t.padCode === pattern.pad);
-
       if (!track) {
         const sound = findSoundByPad(pattern.pad, pads, data.sounds);
 
@@ -54,27 +41,24 @@ function midiTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
         midiTracks.push(track);
       }
 
-      track.notes = track.notes.concat(
-        pattern.notes
-          .filter((n) => n.position < barLength)
-          .map((note) => ({
-            ...note,
-            position: note.position + offset * barLength,
-          })),
+      track.notes.push(
+        ...pattern.notes.map((note) => ({
+          ...note,
+          position: note.position + offset * barLength,
+        })),
       );
 
       // copy pattern for the rest of the scene
-      // if (pattern.bars < sceneMaxBars) {
-      //   for (let i = offset + pattern.bars; i < offset + sceneMaxBars; i++) {
-      //     track.notes = [
-      //       ...track.notes,
-      //       ...pattern.notes.map((note) => ({
-      //         ...note,
-      //         position: note.position + i * UNITS_PER_BAR,
-      //       })),
-      //     ];
-      //   }
-      // }
+      if (pattern.bars < sceneMaxBars) {
+        for (let ofs = offset + pattern.bars; ofs < offset + sceneMaxBars; ofs++) {
+          track.notes.push(
+            ...pattern.notes.map((note) => ({
+              ...note,
+              position: note.position + ofs * barLength,
+            })),
+          );
+        }
+      }
     }
 
     offset += sceneMaxBars;
@@ -82,7 +66,6 @@ function midiTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
 
   if (exporterParams.drumRackFirstGroup) {
     const groupATracks = midiTracks.filter((t) => t.group === 'a');
-
     if (groupATracks.length > 0) {
       const mergedNotes: Note[] = [];
 

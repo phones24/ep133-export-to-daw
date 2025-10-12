@@ -116,7 +116,7 @@ function parseTeenageSysex(bytes: Uint8Array) {
 
 async function sendIdentAndWaitForReponse(
   output: MIDIOutput,
-  timeoutMs: number = 5_000,
+  timeoutMs: number = 2_000,
 ): Promise<Uint8Array | null> {
   return new Promise<Uint8Array | null>((resolve, reject) => {
     const requestId = 0;
