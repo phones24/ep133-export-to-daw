@@ -1,12 +1,4 @@
-import {
-  canInitializeDevice,
-  disconnectDevice,
-  getDeviceInputPort,
-  getDeviceOutputPort,
-  setDeviceInputPort,
-  setDeviceOutputPort,
-  tryInitDevice,
-} from './device';
+import { disconnectDevice, getDeviceInputPort, getDeviceOutputPort, tryInitDevice } from './device';
 import { getFile, getFileNodeByPath, resetFileCache } from './fs';
 import { TEDevice } from './types';
 
@@ -29,7 +21,7 @@ export async function initDevice({
     return;
   }
 
-  tryInitDevice(midiAccess, onDeviceFound);
+  await tryInitDevice(midiAccess, onDeviceFound);
 
   const stateChangeMidiEventHandler = (event: MIDIConnectionEvent) => {
     const currentInputPort = getDeviceInputPort();
@@ -45,17 +37,7 @@ export async function initDevice({
     }
 
     if (event.port?.state === 'connected') {
-      if (event.port?.type === 'input') {
-        setDeviceInputPort(event.port as MIDIInput);
-      }
-
-      if (event.port?.type === 'output') {
-        setDeviceOutputPort(event.port as MIDIOutput);
-      }
-
-      if (canInitializeDevice()) {
-        setTimeout(() => tryInitDevice(midiAccess, onDeviceFound), 1000);
-      }
+      setTimeout(() => tryInitDevice(midiAccess, onDeviceFound), 1000);
     }
   };
 

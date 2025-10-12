@@ -11,7 +11,6 @@ function DeviceProvider({ children }: { children: preact.ComponentChildren }) {
     initDevice({
       onDeviceFound: (deviceInfo) => {
         console.log('Device found:', deviceInfo);
-
         setDevice(deviceInfo);
       },
       onDeviceLost: () => {

@@ -49,7 +49,6 @@ export async function getFile(
     }
 
     const chunkResponse = parseSysExGetFileDataResponse(chunkResponseRaw.rawData);
-
     if (chunkResponse.page !== pageIndex) {
       throw new Error(`Unexpected page number ${chunkResponse.page}, expected ${pageIndex}`);
     }
@@ -109,7 +108,6 @@ async function getFileListInternal(
 
     const payload = fileListResponse?.rawData.slice(2);
     const list = parseSysExFileListResponse(payload);
-
     if (list.length === 0) {
       break;
     }
@@ -154,7 +152,6 @@ export async function getFileMetadata<T extends Record<string, any>>(nodeId: num
       }
 
       const parsed = parseGetMetadataResponse(response.rawData);
-
       if (parsed.page !== page) {
         throw new Error(`unexpected page ${parsed.page}, expected ${page}`);
       }

@@ -22,10 +22,45 @@ import {
   unpackInPlace,
 } from './utils';
 
-let _deviceInputPort: MIDIInput | null = null;
-let _deviceOutputPort: MIDIOutput | null = null;
-let _pendingInitialization = false;
-let _deviceInitialized = false;
+let deviceInputPort: MIDIInput | null = null;
+let deviceOutputPort: MIDIOutput | null = null;
+let pendingInitialization = false;
+let deviceInitialized = false;
+const messageHandler = new Map<number, (requestId: number, data: Uint8Array) => void>();
+const portListeners = new Map<MIDIInput, (event: MIDIMessageEvent) => void>();
+
+async function startEventListener(midiAccess: MIDIAccess) {
+  const inputs = midiAccess.inputs.values();
+
+  // remove old listeners if any
+  // mainly for hot reload during development
+  stopEventListener();
+
+  const handleMidiMessage = (event: MIDIMessageEvent) => {
+    // skip empty messages and non-sysex messages (like clock)
+    if (!event.data || event.data.length === 0 || event.data[0] !== MIDI_SYSEX_START) {
+      return;
+    }
+
+    for (const [requestId, handler] of messageHandler.entries()) {
+      handler(requestId, event.data);
+    }
+  };
+
+  for (const inputPort of inputs) {
+    inputPort.addEventListener('midimessage', handleMidiMessage);
+    portListeners.set(inputPort, handleMidiMessage);
+  }
+}
+
+function stopEventListener() {
+  for (const [port, callback] of portListeners) {
+    if (port) {
+      port.removeEventListener('midimessage', callback);
+      portListeners.delete(port);
+    }
+  }
+}
 
 function parseTeenageSysex(bytes: Uint8Array) {
   const validHeader =
@@ -81,31 +116,24 @@ function parseTeenageSysex(bytes: Uint8Array) {
 
 async function sendIdentAndWaitForReponse(
   output: MIDIOutput,
-  midiAccess: MIDIAccess,
   timeoutMs: number = 5_000,
 ): Promise<Uint8Array | null> {
   return new Promise<Uint8Array | null>((resolve, reject) => {
-    const input = Array.from(midiAccess.inputs.values()).find((inp) => inp.name === output.name);
+    const requestId = 0;
 
-    if (!input) {
-      reject(`No matching input port found for output ${output.name}`);
-      return;
-    }
-
-    const handleMidiMessage = (event: MIDIMessageEvent) => {
-      const data = event.data;
-      if (data && data[0] === 0xf0) {
-        input.removeEventListener('midimessage', handleMidiMessage);
+    const handleMidiMessage = (_requestId: number, data: Uint8Array | null) => {
+      if (_requestId === 0) {
+        messageHandler.delete(_requestId);
         resolve(data);
       }
     };
 
-    input.addEventListener('midimessage', handleMidiMessage);
+    messageHandler.set(requestId, handleMidiMessage);
 
     output.send(IDENTITY_SYSEX);
 
     setTimeout(() => {
-      input.removeEventListener('midimessage', handleMidiMessage);
+      messageHandler.delete(requestId);
       reject('Timeout waiting for identity response');
     }, timeoutMs);
   });
@@ -122,18 +150,27 @@ export async function discoverDevicePorts(
   }
 
   for (const output of outputs) {
-    const response = await sendIdentAndWaitForReponse(output, midiAccess);
-    if (response) {
-      parsedResponse = parseMidiIdentityResponse(response);
+    try {
+      console.group('Trying output port:', output.name);
 
-      if (parsedResponse) {
-        setDeviceOutputPort(output);
-        setDeviceInputPort(
-          Array.from(midiAccess.inputs.values()).find((inp) => inp.name === output.name) || null,
-        );
+      const response = await sendIdentAndWaitForReponse(output);
+      if (response) {
+        console.debug('Checking response for output port:', output.name);
 
-        break;
+        parsedResponse = parseMidiIdentityResponse(response);
+        if (parsedResponse) {
+          console.log('Found TE device on port:', output.name);
+
+          setDeviceOutputPort(output);
+          setDeviceInputPort(
+            midiAccess.inputs.values().find((inp) => inp.name?.includes('EP-133')) || null,
+          );
+
+          break;
+        }
       }
+    } finally {
+      console.groupEnd();
     }
   }
 
@@ -178,29 +215,33 @@ export async function sendSysexToDevice(
   timeoutMs: number = 5_000,
 ): Promise<TESysexMessage | null> {
   return new Promise<TESysexMessage | null>((resolve, reject) => {
-    if (!_deviceOutputPort || !_deviceInputPort) {
+    if (!deviceOutputPort || !deviceInputPort) {
       reject('No device output port available');
       return;
     }
 
+    const currentRequestId = sendTESysEx(deviceOutputPort, 0, command, new Uint8Array(payload));
+
     const timeoutHandler = () => {
-      _deviceInputPort?.removeEventListener('midimessage', handleMidiMessage);
-      reject('Timeout waiting for sysex response');
+      messageHandler.delete(currentRequestId);
+      reject(`Timeout waiting for sysex response for request ${currentRequestId}`);
     };
 
     const timeoutId = setTimeout(timeoutHandler, timeoutMs);
-    let currentRequestId = -1;
 
-    const handleMidiMessage = (event: MIDIMessageEvent) => {
-      const response = parseTeenageSysex(event?.data || new Uint8Array());
+    const handleMidiMessage = (_requestId: number, data: Uint8Array) => {
+      if (_requestId !== currentRequestId) {
+        return;
+      }
 
+      const response = parseTeenageSysex(data);
       if (!response || response.type !== 'response' || response.requestId !== currentRequestId) {
         return;
       }
 
       clearTimeout(timeoutId);
 
-      _deviceInputPort?.removeEventListener('midimessage', handleMidiMessage);
+      messageHandler.delete(currentRequestId);
 
       if (response.status === TE_SYSEX.STATUS_OK) {
         resolve(response);
@@ -211,8 +252,7 @@ export async function sendSysexToDevice(
       }
     };
 
-    _deviceInputPort.addEventListener('midimessage', handleMidiMessage);
-    currentRequestId = sendTESysEx(_deviceOutputPort, 0, command, new Uint8Array(payload));
+    messageHandler.set(currentRequestId, handleMidiMessage);
   });
 }
 
@@ -220,27 +260,26 @@ export async function tryInitDevice(
   midiAccess: MIDIAccess,
   onDeviceFound?: (deviceInfo: TEDevice) => void,
 ) {
-  if (_pendingInitialization || _deviceInitialized) {
+  if (pendingInitialization || deviceInitialized) {
     return null;
   }
 
   try {
-    _pendingInitialization = true;
+    pendingInitialization = true;
+
+    await startEventListener(midiAccess);
 
     const deviceIdentification = await discoverDevicePorts(midiAccess);
-
     if (!deviceIdentification) {
-      throw new Error('Cannot get device identification');
+      return;
     }
 
     const greetResponse = await sendSysexToDevice(TE_SYSEX_GREET);
-
     if (!greetResponse) {
       throw new Error('No greetings from device');
     }
 
     const deviceMetadata = metadataStringToObject(greetResponse.string);
-
     const deviceInfo: TEDevice = {
       inputId: getDeviceInputPort()?.id || '',
       outputId: getDeviceOutputPort()?.id || '',
@@ -251,7 +290,7 @@ export async function tryInitDevice(
 
     onDeviceFound?.(deviceInfo);
 
-    _deviceInitialized = true;
+    deviceInitialized = true;
 
     return deviceMetadata;
   } catch (error) {
@@ -259,34 +298,35 @@ export async function tryInitDevice(
 
     return null;
   } finally {
-    _pendingInitialization = false;
+    pendingInitialization = false;
   }
 }
 
 export function getDeviceInputPort() {
-  return _deviceInputPort;
+  return deviceInputPort;
 }
 
 export function getDeviceOutputPort() {
-  return _deviceOutputPort;
+  return deviceOutputPort;
 }
 
 export function setDeviceInputPort(port: MIDIInput | null) {
-  _deviceInputPort = port;
+  deviceInputPort = port;
 }
 
 export function setDeviceOutputPort(port: MIDIOutput | null) {
-  _deviceOutputPort = port;
+  deviceOutputPort = port;
 }
 
 export function disconnectDevice() {
+  stopEventListener();
   setDeviceInputPort(null);
   setDeviceOutputPort(null);
-  _deviceInitialized = false;
+  deviceInitialized = false;
 }
 
 export function canInitializeDevice() {
   return (
-    !_pendingInitialization && !_deviceInitialized && getDeviceInputPort() && getDeviceOutputPort()
+    !pendingInitialization && !deviceInitialized && getDeviceInputPort() && getDeviceOutputPort()
   );
 }
