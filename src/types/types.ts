@@ -68,11 +68,13 @@ export type ProjectSettings = {
   rawData: Uint8Array;
 };
 
+export type TimeSignature = {
+  numerator: number;
+  denominator: number;
+};
+
 export type ScenesSettings = {
-  timeSignature: {
-    numerator: number;
-    denominator: number;
-  };
+  timeSignature: TimeSignature;
 };
 
 export type Effects = {

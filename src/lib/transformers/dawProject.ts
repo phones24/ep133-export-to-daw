@@ -5,7 +5,7 @@ import {
   Pad,
   PadCode,
   ProjectRawData,
-  ScenesSettings,
+  TimeSignature,
 } from '../../types/types';
 import { getSampleName } from '../exporters/utils';
 import { findPad, findSoundByPad, findSoundIdByPad } from '../utils';
@@ -38,7 +38,7 @@ export type DawClip = {
   sceneBars: number;
   sceneIndex: number;
   sceneName: string;
-  sceneTimeSignature: ScenesSettings['timeSignature'];
+  sceneTimeSignature: TimeSignature;
 };
 
 export type DawClipSlot = {
