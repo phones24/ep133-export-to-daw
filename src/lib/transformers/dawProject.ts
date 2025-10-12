@@ -1,5 +1,12 @@
 import { omit } from 'lodash';
-import { ExporterParams, Note, Pad, PadCode, ProjectRawData } from '../../types/types';
+import {
+  ExporterParams,
+  Note,
+  Pad,
+  PadCode,
+  ProjectRawData,
+  ScenesSettings,
+} from '../../types/types';
 import { getSampleName } from '../exporters/utils';
 import { findPad, findSoundByPad, findSoundIdByPad } from '../utils';
 
@@ -31,6 +38,7 @@ export type DawClip = {
   sceneBars: number;
   sceneIndex: number;
   sceneName: string;
+  sceneTimeSignature: ScenesSettings['timeSignature'];
 };
 
 export type DawClipSlot = {
@@ -103,6 +111,7 @@ function dawProjectTransformer(data: ProjectRawData, exporterParams: ExporterPar
         sceneBars,
         sceneIndex,
         sceneName: scene.name,
+        sceneTimeSignature: data.scenesSettings.timeSignature,
       });
 
       dawScene.clipSlot.push({
