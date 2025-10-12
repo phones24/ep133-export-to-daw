@@ -16,7 +16,7 @@ import dawProjectTransformer, {
   DawTrack,
 } from '../transformers/dawProject';
 import { AbortError } from '../utils';
-import { collectSamples, getNextColor } from './utils';
+import { collectSamples, getNextColor, getQuarterNotesPerBar } from './utils';
 
 const PROJECT_NAME = 'EP-133 K.O. II: Export To DAW';
 
@@ -195,14 +195,19 @@ function buildNote(note: Note, index: number, notes: Note[]) {
 }
 
 function buildClip(clip: DawClip) {
+  const barLength = getQuarterNotesPerBar(
+    clip.sceneTimeSignature.numerator,
+    clip.sceneTimeSignature.denominator,
+  );
+
   return {
     _name: 'Clip',
     _attrs: {
-      time: clip.offset * 4,
-      duration: clip.sceneBars * 4,
+      time: clip.offset * barLength,
+      duration: clip.sceneBars * barLength,
       playStart: 0,
       loopStart: 0,
-      loopEnd: clip.bars * 4,
+      loopEnd: clip.bars * barLength,
       enable: 'true',
     },
     _content: {
@@ -250,14 +255,16 @@ function buildArrangement(lanes: DawLane[]) {
 }
 
 function buildSceneClip(clip: DawClip) {
+  const beatsInBar = clip.sceneTimeSignature.numerator;
+
   return {
     _name: 'Clip',
     _attrs: {
-      time: clip.offset * 4,
-      duration: clip.bars * 4,
+      time: clip.offset * beatsInBar,
+      duration: clip.bars * beatsInBar,
       playStart: 0,
       loopStart: 0,
-      loopEnd: clip.bars * 4,
+      loopEnd: clip.bars * beatsInBar,
       enable: 'true',
     },
     _content: {
@@ -327,7 +334,13 @@ export function buildMetadataXml() {
 
 export async function buildProjectXml(projectData: ProjectRawData, exporterParams: ExporterParams) {
   const transformedData = dawProjectTransformer(projectData, exporterParams);
-  // console.log(transformedData);
+  const { timeSignature } = projectData.scenesSettings;
+
+  if (import.meta.env.DEV) {
+    console.log('projectData', projectData);
+    console.log('transformedData', transformedData);
+  }
+
   _id = 0;
 
   const application = {
@@ -353,8 +366,8 @@ export async function buildProjectXml(projectData: ProjectRawData, exporterParam
       {
         _name: 'TimeSignature',
         _attrs: {
-          numerator: '4',
-          denominator: '4',
+          numerator: timeSignature.numerator,
+          denominator: timeSignature.denominator,
         },
       },
     ],

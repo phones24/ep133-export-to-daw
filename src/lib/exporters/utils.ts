@@ -175,3 +175,7 @@ export function getNextColor() {
 export function unitsToTicks(units: number, ppq = 480) {
   return Math.round((units / UNITS_PER_BEAT) * ppq);
 }
+
+export function getQuarterNotesPerBar(numerator: number, denominator: number) {
+  return (4 / denominator) * numerator;
+}

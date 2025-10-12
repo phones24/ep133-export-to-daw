@@ -1,4 +1,5 @@
 import { ExporterParams, Note, ProjectRawData } from '../../types/types';
+import { getQuarterNotesPerBar } from '../exporters/utils';
 import { findSoundByPad } from '../utils';
 
 export type MidiData = {
@@ -12,12 +13,27 @@ export type MidiTrack = {
   notes: Note[];
 };
 
-const UNITS_PER_BAR = 24 * 16;
-
 function midiTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
   const { pads, scenes } = data;
   let midiTracks: MidiTrack[] = [];
   let offset = 0;
+
+  console.log(data.scenesSettings.timeSignature);
+  console.log(
+    getQuarterNotesPerBar(
+      data.scenesSettings.timeSignature.numerator,
+      data.scenesSettings.timeSignature.denominator,
+    ),
+  );
+
+  const barLength =
+    data.scenesSettings.timeSignature.numerator *
+    2 *
+    // getQuarterNotesPerBar(
+    //   data.scenesSettings.timeSignature.numerator,
+    //   data.scenesSettings.timeSignature.denominator,
+    // ) *
+    24;
 
   scenes.forEach((scene) => {
     const sceneMaxBars = Math.max(...scene.patterns.map((p) => p.bars));
@@ -32,49 +48,33 @@ function midiTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
           name: sound?.meta.name || pattern.pad,
           padCode: pattern.pad,
           group: pattern.group,
-          notes: pattern.notes.map((note) => ({
-            ...note,
-            position: note.position + offset * UNITS_PER_BAR,
-          })),
+          notes: [],
         };
 
-        // copy pattern for the rest of the scene
-        if (pattern.bars < sceneMaxBars) {
-          for (let i = offset + pattern.bars; i < offset + sceneMaxBars; i++) {
-            track.notes = [
-              ...track.notes,
-              ...pattern.notes.map((note) => ({
-                ...note,
-                position: note.position + i * UNITS_PER_BAR,
-              })),
-            ];
-          }
-        }
-
         midiTracks.push(track);
-
-        continue;
       }
 
       track.notes = track.notes.concat(
-        pattern.notes.map((note) => ({
-          ...note,
-          position: note.position + offset * UNITS_PER_BAR,
-        })),
+        pattern.notes
+          .filter((n) => n.position < barLength)
+          .map((note) => ({
+            ...note,
+            position: note.position + offset * barLength,
+          })),
       );
 
       // copy pattern for the rest of the scene
-      if (pattern.bars < sceneMaxBars) {
-        for (let i = offset + pattern.bars; i < offset + sceneMaxBars; i++) {
-          track.notes = [
-            ...track.notes,
-            ...pattern.notes.map((note) => ({
-              ...note,
-              position: note.position + i * UNITS_PER_BAR,
-            })),
-          ];
-        }
-      }
+      // if (pattern.bars < sceneMaxBars) {
+      //   for (let i = offset + pattern.bars; i < offset + sceneMaxBars; i++) {
+      //     track.notes = [
+      //       ...track.notes,
+      //       ...pattern.notes.map((note) => ({
+      //         ...note,
+      //         position: note.position + i * UNITS_PER_BAR,
+      //       })),
+      //     ];
+      //   }
+      // }
     }
 
     offset += sceneMaxBars;
