@@ -1,5 +1,5 @@
 import { omit } from 'lodash';
-import { Note, Pad, PadCode, ProjectRawData } from '../../types/types';
+import { Note, Pad, PadCode, ProjectRawData, TimeSignature } from '../../types/types';
 import { getSampleName } from '../exporters/utils';
 import { findPad, findSoundByPad, findSoundIdByPad } from '../utils';
 
@@ -15,6 +15,7 @@ export type RprTrack = Omit<Pad, 'file' | 'rawData' | 'group'> & {
   sampleRate: number;
   bpm: number;
   items: RprTrackItem[];
+  timeSignature: TimeSignature;
 };
 
 export type RprTrackItem = {
@@ -56,6 +57,7 @@ export function reaperTransform(data: ProjectRawData) {
           sampleChannels: sound?.meta?.channels || 0,
           sampleRate: sound?.meta?.samplerate || 0,
           bpm: data.settings.bpm,
+          timeSignature: data.scenesSettings.timeSignature,
           items: [],
         };
 

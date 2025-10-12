@@ -33,23 +33,10 @@ async function exportMidi(
     console.log(transformedData);
   }
 
-  // const unitsToTicks = (units: number, ppq = 480) => {
-  //   const UNITS_PER_BEAT = 24 * 1.5;
-  //   return Math.round((units / UNITS_PER_BEAT) * ppq);
-  // };
-
-  // const getQuarterNotesPerBar = (clip: DawClip) => {
-  //   const { numerator, denominator } = clip.sceneTimeSignature;
-  //   return (4 / denominator) * numerator;
-  // }
-
   midi.header.setTempo(data.settings.bpm);
   midi.header.timeSignatures.push({
     ticks: 0,
-    timeSignature: [
-      data.scenesSettings.timeSignature.numerator,
-      data.scenesSettings.timeSignature.denominator,
-    ],
+    timeSignature: [timeSignature.numerator, timeSignature.denominator],
   });
 
   transformedData.tracks.forEach((track) => {
