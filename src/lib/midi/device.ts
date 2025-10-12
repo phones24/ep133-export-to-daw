@@ -118,11 +118,18 @@ async function sendIdentAndWaitForReponse(
   output: MIDIOutput,
   timeoutMs: number = 5_000,
 ): Promise<Uint8Array | null> {
-  return new Promise<Uint8Array | null>((resolve, reject) => {
+  return new Promise<Uint8Array | null>((resolve) => {
     const requestId = 0;
 
-    const handleMidiMessage = (_requestId: number, data: Uint8Array | null) => {
+    const timeoutId = setTimeout(() => {
+      messageHandler.delete(requestId);
+      console.warn('Timeout waiting for identity response');
+      resolve(null);
+    }, timeoutMs);
+
+    const handleMidiMessage = (_requestId: number, data: Uint8Array) => {
       if (_requestId === 0) {
+        clearTimeout(timeoutId);
         messageHandler.delete(_requestId);
         resolve(data);
       }
@@ -131,11 +138,6 @@ async function sendIdentAndWaitForReponse(
     messageHandler.set(requestId, handleMidiMessage);
 
     output.send(IDENTITY_SYSEX);
-
-    setTimeout(() => {
-      messageHandler.delete(requestId);
-      reject('Timeout waiting for identity response');
-    }, timeoutMs);
   });
 }
 
