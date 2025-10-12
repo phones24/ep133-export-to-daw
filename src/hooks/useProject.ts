@@ -4,6 +4,7 @@ import {
   collectEffects,
   collectPads,
   collectScenesAndPatterns,
+  collectScenesSettings,
   collectSettings,
   collectSounds,
 } from '../lib/parsers';
@@ -27,6 +28,7 @@ function useProject(id?: number | string) {
       const settings = collectSettings(files);
       const pads = collectPads(files, sounds);
       const scenes = collectScenesAndPatterns(files);
+      const scenesSettings = collectScenesSettings(files);
       const effects = collectEffects(files);
 
       // @ts-expect-error wrong typing?
@@ -47,6 +49,7 @@ function useProject(id?: number | string) {
         sounds,
         effects,
         projectFile,
+        scenesSettings,
       };
     },
     retry: false,

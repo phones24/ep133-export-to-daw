@@ -6,6 +6,7 @@ import {
   Pattern,
   ProjectSettings,
   Scene,
+  ScenesSettings,
   Sound,
 } from '../types/types';
 import { GROUPS, PADS } from './constants';
@@ -14,7 +15,7 @@ import { TESoundMetadata } from './midi/types';
 import { TarFile } from './untar';
 import { calculateSoundLength } from './utils';
 
-const defaultSettings = {
+const defaultProjectSettings = {
   bpm: 120,
   groupFaderParams: {
     a: { 0: -1, 1: -1, 2: -1, 3: -1, 4: -1, 5: -1, 6: -1, 7: -1, 8: -1, 9: -1, 10: -1, 11: -1 },
@@ -23,6 +24,10 @@ const defaultSettings = {
     d: { 0: -1, 1: -1, 2: -1, 3: -1, 4: -1, 5: -1, 6: -1, 7: -1, 8: -1, 9: -1, 10: -1, 11: -1 },
   },
   faderAssignment: { a: 0, b: 0, c: 0, d: 0 },
+};
+
+const defaultScenesSettings = {
+  timeSignature: { numerator: 4, denominator: 4 },
 };
 
 export function noteNumberToName(noteNumber: number): string {
@@ -221,7 +226,7 @@ export function collectSettings(files: TarFile[]): ProjectSettings {
     console.error('Could not find settings file');
 
     return {
-      ...defaultSettings,
+      ...defaultProjectSettings,
       rawData: new Uint8Array(),
     };
   }
@@ -285,5 +290,22 @@ export function collectEffects(files: TarFile[]) {
     effectType,
     param1,
     param2,
+  };
+}
+
+export function collectScenesSettings(files: TarFile[]): ScenesSettings {
+  const scenesSettingsFile = files.find((f) => f.name === 'scenes' && f.type === 'file');
+
+  if (!scenesSettingsFile || !scenesSettingsFile.data) {
+    console.error('Could not find scenes settings file');
+    return defaultScenesSettings;
+  }
+
+  const numerator = scenesSettingsFile.data[11];
+  const denominator = scenesSettingsFile.data[12];
+
+  return {
+    ...defaultScenesSettings,
+    timeSignature: { numerator, denominator },
   };
 }

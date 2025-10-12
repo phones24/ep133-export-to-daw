@@ -28,30 +28,6 @@
   </TakeLanes>
   <LinkedTrackGroupId Value="-1" />
   <Slots>
-    <GroupTrackSlot Id="0">
-      <LomId Value="0" />
-    </GroupTrackSlot>
-    <GroupTrackSlot Id="1">
-      <LomId Value="0" />
-    </GroupTrackSlot>
-    <GroupTrackSlot Id="2">
-      <LomId Value="0" />
-    </GroupTrackSlot>
-    <GroupTrackSlot Id="3">
-      <LomId Value="0" />
-    </GroupTrackSlot>
-    <GroupTrackSlot Id="4">
-      <LomId Value="0" />
-    </GroupTrackSlot>
-    <GroupTrackSlot Id="5">
-      <LomId Value="0" />
-    </GroupTrackSlot>
-    <GroupTrackSlot Id="6">
-      <LomId Value="0" />
-    </GroupTrackSlot>
-    <GroupTrackSlot Id="7">
-      <LomId Value="0" />
-    </GroupTrackSlot>
   </Slots>
   <DeviceChain>
     <AutomationLanes>

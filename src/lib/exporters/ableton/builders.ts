@@ -1,5 +1,11 @@
 import { create } from 'xmlbuilder2';
-import { EffectType, FaderParam, ProjectRawData, ProjectSettings } from '../../../types/types';
+import {
+  EffectType,
+  ExporterParams,
+  FaderParam,
+  ProjectRawData,
+  ProjectSettings,
+} from '../../../types/types';
 import { EFFECTS } from '../../constants';
 import abletonTransformer, { AblClip, AblScene, AblTrack } from '../../transformers/ableton';
 import { ALSDrumBranch } from './templates/drumBranch';
@@ -216,7 +222,7 @@ export async function buildDrumRackDevice(koTrack: AblTrack) {
 export async function buildTrack(
   koTrack: AblTrack,
   trackIdx: number,
-  exporterParams: any,
+  exporterParams: ExporterParams,
   maxScenes: number,
   trackGroupId: number,
 ): Promise<ALSMidiTrack> {
@@ -316,7 +322,12 @@ export async function buildTrack(
   return { MidiTrack: midiTrack };
 }
 
-export async function buildGroupTrack(koTrack: AblTrack, id: number, exporterParams: any) {
+export async function buildGroupTrack(
+  koTrack: AblTrack,
+  id: number,
+  exporterParams: ExporterParams,
+  maxScenes: number,
+) {
   const groupTrackTemplate = await loadTemplate<ALSGroupTrack>('groupTrack');
   const groupTrack = structuredClone(groupTrackTemplate.GroupTrack);
 
@@ -324,6 +335,17 @@ export async function buildGroupTrack(koTrack: AblTrack, id: number, exporterPar
   groupTrack.Name.EffectiveName['@Value'] = koTrack.group.toLocaleUpperCase();
   groupTrack.Name.UserName['@Value'] = koTrack.group.toLocaleUpperCase();
   groupTrack.Color['@Value'] = 20 + id;
+  groupTrack.Slots.GroupTrackSlot = [];
+
+  // adding empty slots for clips (or Ableton will crash)
+  for (let sc = 0; sc < maxScenes; sc++) {
+    groupTrack.Slots.GroupTrackSlot.push({
+      '@Id': sc,
+      LomId: {
+        '@Value': 0,
+      },
+    });
+  }
 
   if (exporterParams.sendEffects) {
     const trackSendHolderTemplate = await loadTemplate<ALSTrackSendHolder>('trackSendHolder');
@@ -354,7 +376,11 @@ export async function buildScenes(scenes: AblScene[], settings: ProjectSettings)
   return result;
 }
 
-export async function buildTracks(tracks: AblTrack[], maxScenes: number, exporterParams: any) {
+export async function buildTracks(
+  tracks: AblTrack[],
+  maxScenes: number,
+  exporterParams: ExporterParams,
+) {
   const result = [];
   let id = 1;
   let trackGroupId = -1;
@@ -366,7 +392,7 @@ export async function buildTracks(tracks: AblTrack[], maxScenes: number, exporte
     if (exporterParams.groupTracks && koTrack.group !== currentGroup[0]) {
       trackGroupId = id++;
       currentGroup = koTrack.group;
-      const groupTrack = await buildGroupTrack(koTrack, trackGroupId, exporterParams);
+      const groupTrack = await buildGroupTrack(koTrack, trackGroupId, exporterParams, maxScenes);
       result.push(groupTrack);
     }
 
@@ -461,7 +487,7 @@ export async function buildReturnTrack(projectData: ProjectRawData, trackId: num
   return { ReturnTrack: returnTrack };
 }
 
-export async function buildProject(projectData: ProjectRawData, exporterParams: any) {
+export async function buildProject(projectData: ProjectRawData, exporterParams: ExporterParams) {
   const transformedData = abletonTransformer(projectData, exporterParams);
 
   if (import.meta.env.DEV) {

@@ -68,6 +68,13 @@ export type ProjectSettings = {
   rawData: Uint8Array;
 };
 
+export type ScenesSettings = {
+  timeSignature: {
+    numerator: number;
+    denominator: number;
+  };
+};
+
 export type Effects = {
   rawData: Uint8Array;
   effectType: EffectType;
@@ -124,6 +131,7 @@ export type ProjectRawData = {
   effects: Effects;
   sounds: Sound[];
   projectFile: File;
+  scenesSettings: ScenesSettings;
 };
 
 export type ExportResultFile = {
