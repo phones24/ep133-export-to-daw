@@ -168,13 +168,13 @@ async function exportReaper(
 
   const zippedProjectFile = await zippedProject.generateAsync({ type: 'blob' });
 
-  // const blob = new Blob([rprContent], { type: 'application/octet-stream' });
-  // files.push({
-  //   name: `${projectName}.rpp`,
-  //   url: URL.createObjectURL(blob),
-  //   type: 'archive',
-  //   size: blob.size,
-  // });
+  const blob = new Blob([rprContent], { type: 'application/octet-stream' });
+  files.push({
+    name: `${projectName}.rpp`,
+    url: URL.createObjectURL(blob),
+    type: 'archive',
+    size: blob.size,
+  });
   files.push({
     name: `${projectName}.zip`,
     url: URL.createObjectURL(zippedProjectFile),
