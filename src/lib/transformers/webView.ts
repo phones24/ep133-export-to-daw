@@ -41,7 +41,7 @@ function webViewTransformer(data: ProjectRawData) {
   scenes.forEach((scene, idx) => {
     newScenes[idx] = {
       name: scene.name,
-      maxBars: Math.max(...scene.patterns.map((p) => p.bars)),
+      maxBars: Math.max(...scene.patterns.map((p) => p.bars), 0),
       patterns: [],
     };
 
