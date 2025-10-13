@@ -10,7 +10,7 @@ import {
 } from '../../../types/types';
 import { RprTrack, reaperTransform } from '../../transformers/reaper';
 import { AbortError } from '../../utils';
-import { collectSamples } from '../utils';
+import { collectSamples, getQuarterNotesPerBar } from '../utils';
 import { generateReaperProject, ReaperTrack } from './reaperlib';
 
 function buildTrack(track: RprTrack): ReaperTrack {
@@ -37,10 +37,19 @@ function buildTrack(track: RprTrack): ReaperTrack {
           pitch: track.pitch,
         }
       : null,
+    timeSignature: track.timeSignature,
     guid: crypto.randomUUID().toUpperCase(),
     items: track.items.map((item) => ({
-      position: (item.offset * 4 * 60) / track.bpm,
-      length: (item.sceneBars * 4 * 60) / track.bpm,
+      position:
+        (item.offset *
+          getQuarterNotesPerBar(track.timeSignature.numerator, track.timeSignature.denominator) *
+          60) /
+        track.bpm,
+      length:
+        (item.sceneBars *
+          getQuarterNotesPerBar(track.timeSignature.numerator, track.timeSignature.denominator) *
+          60) /
+        track.bpm,
       lengthInBars: item.bars,
       name: `Scene ${item.sceneName}`,
       events: item.notes.map((n) => ({
@@ -75,6 +84,7 @@ function buildReaperProject(
         groupedTracks.push({
           ...buildTrack({
             name: `Group ${group.toUpperCase()}`,
+            timeSignature: data.scenesSettings.timeSignature,
             bpm: data.settings.bpm,
             volume: 1,
             pan: 0,
@@ -113,6 +123,7 @@ function buildReaperProject(
   const rprContent = generateReaperProject({
     projectName: `Project ${projectId}`,
     tempo: data.settings?.bpm ?? 120,
+    timeSignature: data.scenesSettings.timeSignature,
     tracks,
   });
 
@@ -157,13 +168,13 @@ async function exportReaper(
 
   const zippedProjectFile = await zippedProject.generateAsync({ type: 'blob' });
 
-  // const blob = new Blob([rprContent], { type: 'application/octet-stream' });
-  // files.push({
-  //   name: `${projectName}.rpp`,
-  //   url: URL.createObjectURL(blob),
-  //   type: 'archive',
-  //   size: blob.size,
-  // });
+  const blob = new Blob([rprContent], { type: 'application/octet-stream' });
+  files.push({
+    name: `${projectName}.rpp`,
+    url: URL.createObjectURL(blob),
+    type: 'archive',
+    size: blob.size,
+  });
   files.push({
     name: `${projectName}.zip`,
     url: URL.createObjectURL(zippedProjectFile),

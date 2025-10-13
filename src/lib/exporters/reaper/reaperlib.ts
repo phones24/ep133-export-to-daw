@@ -1,4 +1,5 @@
-import { getNextColor, UNITS_PER_BEAT, unitsToTicks } from '../utils';
+import { TimeSignature } from '../../../types/types';
+import { getNextColor, getQuarterNotesPerBar, UNITS_PER_BEAT, unitsToTicks } from '../utils';
 
 export type ReaperMidiEvent = {
   note: number;
@@ -39,6 +40,7 @@ export type ReaperTrack = {
   volume: number;
   pan: number;
   sample: ReaperSample | null;
+  timeSignature: TimeSignature;
   tracks?: ReaperTrack[];
   items?: ReaperMidiItem[];
 };
@@ -46,6 +48,7 @@ export type ReaperTrack = {
 export type ReaperProject = {
   projectName?: string;
   tempo: number;
+  timeSignature: TimeSignature;
   tracks?: ReaperTrack[];
 };
 
@@ -56,7 +59,6 @@ type ReaperFileElem = {
 };
 
 const PPQ = 960; // default reaper midi ppq
-const BAR_IN_TICKS = PPQ * 4;
 
 function hexToReaperColor(hexColor: string, alpha = 0xff) {
   hexColor = hexColor.replace('#', '');
@@ -119,47 +121,55 @@ function addTrackItem(
 
   let offset = 0;
   let totalTicks = 0;
-  const clipLengthInUnits = rprItem.lengthInBars * UNITS_PER_BEAT * 4;
-  const events = rprItem.events.flatMap((evt, index) => {
-    const nextEvent = rprItem.events[index + 1];
-    let noteLength = evt.length;
+  const barLength = getQuarterNotesPerBar(
+    rprTrack.timeSignature.numerator,
+    rprTrack.timeSignature.denominator,
+  );
 
-    // prevent notes overlapping
-    if (
-      nextEvent &&
-      nextEvent.note === evt.note &&
-      nextEvent.position < evt.position + evt.length
-    ) {
-      noteLength = nextEvent.position - evt.position;
-    }
+  const clipLengthInUnits = rprItem.lengthInBars * barLength * UNITS_PER_BEAT;
 
-    // prevent notes going beyond the item length
-    if (evt.position + noteLength > clipLengthInUnits) {
-      noteLength = evt.position + noteLength - clipLengthInUnits;
-    }
+  const events = rprItem.events
+    .flat()
+    .filter((evt) => evt.position < clipLengthInUnits)
+    .reduce(
+      (acc, evt, index) => {
+        const nextEvent = rprItem.events[index + 1];
+        let noteLength = evt.length;
 
-    const noteOn = [
-      'e',
-      unitsToTicks(evt.position - offset, PPQ),
-      '90',
-      evt.note.toString(16),
-      evt.velocity.toString(16),
-    ];
-    const noteOff = ['e', unitsToTicks(noteLength, PPQ), '80', evt.note.toString(16), '00'];
+        if (
+          nextEvent &&
+          nextEvent.note === evt.note &&
+          nextEvent.position < evt.position + evt.length
+        ) {
+          // prevent notes overlapping
+          noteLength = nextEvent.position - evt.position;
+        }
 
-    offset = evt.position + noteLength;
-    totalTicks += (noteOn[1] as number) + (noteOff[1] as number);
+        // prevent notes going beyond the item length
+        if (evt.position + noteLength > clipLengthInUnits) {
+          noteLength = evt.position + noteLength - clipLengthInUnits;
+        }
 
-    return [noteOn, noteOff];
-  });
+        const noteOn = [
+          'e',
+          unitsToTicks(evt.position - offset, PPQ),
+          '90',
+          evt.note.toString(16),
+          evt.velocity.toString(16),
+        ];
+        const noteOff = ['e', unitsToTicks(noteLength, PPQ), '80', evt.note.toString(16), '00'];
 
-  events.push([
-    'E',
-    Math.max(BAR_IN_TICKS * rprItem.lengthInBars - totalTicks, 0),
-    'b0',
-    '7b',
-    '00',
-  ]);
+        offset = evt.position + noteLength;
+        totalTicks += (noteOn[1] as number) + (noteOff[1] as number);
+
+        return acc.concat([noteOn, noteOff]);
+      },
+      [] as (string | number)[][],
+    );
+
+  const barInTicks = PPQ * barLength;
+
+  events.push(['E', Math.max(barInTicks * rprItem.lengthInBars - totalTicks, 0), 'b0', '7b', '00']);
 
   const item = {
     name: 'ITEM',
@@ -307,7 +317,7 @@ const addTrack = (
   return iid;
 };
 
-function createReaperProject({ tempo = 120, tracks = [] }: ReaperProject) {
+function createReaperProject({ tempo = 120, timeSignature, tracks = [] }: ReaperProject) {
   let _iid = 1;
 
   const _root: ReaperFileElem[] = [
@@ -324,7 +334,6 @@ function createReaperProject({ tempo = 120, tracks = [] }: ReaperProject) {
         ['AUTOXFADE', 129],
         ['ENVATTACH', 3],
         ['POOLEDENVATTACH', 0],
-        ['TCPUIFLAGS', 0],
         ['MIXERUIFLAGS', 11, 48],
         ['ENVFADESZ10', 40],
         ['PEAKGAIN', 1],
@@ -344,7 +353,7 @@ function createReaperProject({ tempo = 120, tracks = [] }: ReaperProject) {
         ['RECMODE', 1],
         ['SMPTESYNC', 0, 30, 100, 40, 1000, 300, 0, 0, 1, 0, 0],
         ['LOOP', 1],
-        ['LOOPGRAN', 0, 4],
+        ['LOOPGRAN', 0],
         ['RECORD_PATH', 'Media', ''],
         {
           name: 'RECORD_CFG',
@@ -362,7 +371,6 @@ function createReaperProject({ tempo = 120, tracks = [] }: ReaperProject) {
         ['RENDER_ADDTOPROJ', 0],
         ['RENDER_STEMS', 0],
         ['RENDER_DITHER', 0],
-        ['RENDER_TRIM', 0.000001, 0.000001, 0, 0],
         ['TIMELOCKMODE', 1],
         ['TEMPOENVLOCKMODE', 1],
         ['ITEMMIX', 1],
@@ -391,7 +399,7 @@ function createReaperProject({ tempo = 120, tracks = [] }: ReaperProject) {
           ],
         },
         ['GLOBAL_AUTO', -1],
-        ['TEMPO', tempo, 4, 4, 0],
+        ['TEMPO', tempo, timeSignature.numerator, timeSignature.denominator, 0],
         ['PLAYRATE', 1, 0, 0.25, 4],
         ['SELECTION', 0, 0],
         ['SELECTION2', 0, 0],

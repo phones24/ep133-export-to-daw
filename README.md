@@ -46,6 +46,7 @@ Try it out on https://ep133-to-daw.cc/
 
 ## Latest news
 
+- [10/10/2025] Added time signature support
 - [10/10/2025] REAPER support
 - [08/10/2025] Rewrote TE sysex library
 - [26/09/2025] Group A merging added for DAWProject and MIDI transformers

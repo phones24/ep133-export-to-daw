@@ -26,8 +26,18 @@ async function exportMidi(
 
   const transformedData = midiTransformer(data, exporterParams);
   const midi = new Midi();
+  const timeSignature = data.scenesSettings.timeSignature;
+
+  if (import.meta.env.DEV) {
+    console.log(data);
+    console.log(transformedData);
+  }
 
   midi.header.setTempo(data.settings.bpm);
+  midi.header.timeSignatures.push({
+    ticks: 0,
+    timeSignature: [timeSignature.numerator, timeSignature.denominator],
+  });
 
   transformedData.tracks.forEach((track) => {
     const midiTrack = midi.addTrack();
