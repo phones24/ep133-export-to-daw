@@ -1,12 +1,15 @@
 import { Note, Pad, ProjectRawData } from '../../types/types';
 import { getSampleName } from '../exporters/utils';
+import { noteNumberToName } from '../parsers';
 import { findSoundByPad, findSoundIdByPad } from '../utils';
+
+export type ViewNote = Note & { name: string };
 
 export type ViewPattern = {
   pad: string;
   bars: number;
   soundName: string;
-  notes: Note[];
+  notes: ViewNote[];
   group: string;
   padNumber: number;
 };
@@ -29,6 +32,10 @@ function webViewTransformer(data: ProjectRawData) {
   const newScenes: ViewScene[] = [];
   const usedPads = new Set<string>();
 
+  if (import.meta.env.DEV) {
+    console.log(data);
+  }
+
   // construct new scenes array
   // and collect the used pads
   scenes.forEach((scene, idx) => {
@@ -45,29 +52,13 @@ function webViewTransformer(data: ProjectRawData) {
     }
   });
 
-  // copy patterns and add some additional fields
   newScenes.forEach((scene, idx) => {
-    scene.patterns = scenes[idx].patterns.map((pattern) => {
-      const soundId = findSoundIdByPad(pattern.pad, pads) || 0;
-      const sound = findSoundByPad(pattern.pad, pads, data.sounds);
-
-      return {
-        ...pattern,
-        soundName: getSampleName(sound?.meta?.name, soundId, false),
-        group: pattern.pad[0],
-        padNumber: parseInt(pattern.pad.slice(1), 10),
-      };
-    });
-  });
-
-  // make sure each scene have the same tracks/pads
-  for (const scene of newScenes) {
+    // make sure each scene have the same tracks/pads
     usedPads.forEach((pad) => {
       const patternByPad = scene.patterns.find((p) => p.pad === pad);
-      const group = pad[0];
-      const padNumber = parseInt(pad.slice(1), 10);
-
       if (!patternByPad) {
+        const group = pad[0];
+        const padNumber = parseInt(pad.slice(1), 10);
         const soundId = findSoundIdByPad(pad, pads) || 0;
         const sound = findSoundByPad(pad, pads, data.sounds);
 
@@ -81,25 +72,38 @@ function webViewTransformer(data: ProjectRawData) {
         });
       }
     });
-  }
 
-  // sort patterns by pad names
-  for (const scene of newScenes) {
-    scene.patterns = scene.patterns.toSorted((a, b) => {
-      const la = a.pad[0];
-      const lb = b.pad[0];
-
-      if (la !== lb) {
-        return la.localeCompare(lb);
+    // copy notes to exiting patterns
+    scenes[idx].patterns.forEach((pattern) => {
+      const patternInScene = scene.patterns.find((p) => p.pad === pattern.pad);
+      if (!patternInScene) {
+        return;
       }
 
-      return parseInt(a.pad.slice(1), 10) - parseInt(b.pad.slice(1), 10);
+      patternInScene.notes = pattern.notes
+        .map((note) => ({
+          ...note,
+          name: noteNumberToName(note.note),
+        }))
+        .reduce((acc, note) => {
+          const existingNoteInThisPosition = acc.find((n) => n.position === note.position);
+
+          if (existingNoteInThisPosition) {
+            existingNoteInThisPosition.name = `${existingNoteInThisPosition.name},${note.name}`;
+            return acc;
+          }
+
+          acc.push({ ...note });
+          return acc;
+        }, [] as ViewNote[]);
+      patternInScene.bars = pattern.bars;
     });
-  }
+  });
 
   return {
     pads,
     scenes: newScenes,
+    scenesSettings: data.scenesSettings,
   };
 }
 

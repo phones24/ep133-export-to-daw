@@ -8,7 +8,6 @@ import useDevice from '../hooks/useDevice';
 import queryClient from '../lib/queryClient';
 import { store } from '../lib/store';
 import AppStateDisplay from './AppStateDisplay';
-import Arrangements from './Arrangements';
 import DeviceProvider from './DeviceProvider';
 import Donate from './Donate';
 import ErrorBoundary from './ErrorBoundary';
@@ -21,6 +20,7 @@ import OfflineInformer from './OfflineInformer';
 import Page404 from './Page404';
 import ProjectManager from './ProjectManager';
 import ProjectMeta from './ProjectMeta';
+import Arrangements from './ProjectView/Arrangements';
 import Button from './ui/Button';
 import Toast from './ui/Toast';
 
