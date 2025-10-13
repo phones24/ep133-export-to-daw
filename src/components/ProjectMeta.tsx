@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { ReactNode } from 'preact/compat';
 import useDevice from '../hooks/useDevice';
 import useProject from '../hooks/useProject';
 import { EFFECTS_SHORT } from '../lib/constants';
@@ -47,7 +48,13 @@ function valueToPercent(value: number | undefined) {
   return `${val < 10 ? '0' : ''}${val.toFixed(1)}%`;
 }
 
-function Value({ label, value }: { label: string; value: string | number | undefined }) {
+function Value({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number | undefined | ReactNode;
+}) {
   return (
     <p className="flex gap-1 text-white px-3 w-fit min-h-0 items-center">
       {label}:<span className="font-bold">{value || 'N/A'}</span>
@@ -61,16 +68,31 @@ function ProjectMeta({ projectId }: { projectId?: string }) {
 
   return (
     <div className={clsx('bg-[#333] flex gap-4 text-xl', (!data || !device) && 'opacity-70')}>
-      <Value label="TEMPO" value={data?.settings.bpm || 'N/A'} />
+      <Value
+        label="TEMPO"
+        value={
+          data?.settings.bpm ? (
+            <span>
+              {data.settings.bpm}
+              <span className="text-gray-300 ml-1 font-normal">
+                ({data.scenesSettings.timeSignature.numerator}/
+                {data.scenesSettings.timeSignature.denominator})
+              </span>
+            </span>
+          ) : (
+            'N/A'
+          )
+        }
+      />
 
       <Value label="SCENES" value={data?.scenes.length ?? 'N/A'} />
 
-      <div className="text-white px-3 w-fit min-h-0 flex gap-1  items-center">
+      <div className="text-white px-3 w-fit min-h-0 flex gap-1 items-center">
         FX:
         <span className="font-bold">
           {data?.effects.effectType !== undefined ? EFFECTS_SHORT[data?.effects.effectType] : 'N/A'}
         </span>
-        <div className="flex gap-1 items-center ml-4">
+        <div className="flex gap-1 items-center ml-2">
           <Knob className="size-5" />
           {data?.effects.param1 !== undefined ? valueToPercent(data?.effects.param1) : 'N/A'}
           <Knob className="size-5 ml-2" />

@@ -121,12 +121,12 @@ function addTrackItem(
 
   let offset = 0;
   let totalTicks = 0;
-  const quarterNotesPerBar = getQuarterNotesPerBar(
+  const beatLength = getQuarterNotesPerBar(
     rprTrack.timeSignature.numerator,
     rprTrack.timeSignature.denominator,
   );
 
-  const clipLengthInUnits = rprItem.lengthInBars * quarterNotesPerBar * UNITS_PER_BEAT;
+  const clipLengthInUnits = rprItem.lengthInBars * beatLength * UNITS_PER_BEAT;
 
   const events = rprItem.events
     .flat()
@@ -167,7 +167,7 @@ function addTrackItem(
       [] as (string | number)[][],
     );
 
-  const barInTicks = PPQ * quarterNotesPerBar;
+  const barInTicks = PPQ * beatLength;
 
   events.push(['E', Math.max(barInTicks * rprItem.lengthInBars - totalTicks, 0), 'b0', '7b', '00']);
 

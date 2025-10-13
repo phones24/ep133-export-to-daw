@@ -1,5 +1,13 @@
 import omit from 'lodash/omit';
-import { ExporterParams, FaderParam, Note, Pad, PadCode, ProjectRawData } from '../../types/types';
+import {
+  ExporterParams,
+  FaderParam,
+  Note,
+  Pad,
+  PadCode,
+  ProjectRawData,
+  TimeSignature,
+} from '../../types/types';
 import { getSampleName } from '../exporters/utils';
 import { findPad, findSoundByPad, findSoundIdByPad } from '../utils';
 
@@ -19,6 +27,7 @@ export type AblTrack = Omit<Pad, 'file' | 'rawData'> & {
   lane?: AblLane;
   tracks: AblTrack[];
   faderParams: { [K in FaderParam]: number };
+  timeSignature: TimeSignature;
 };
 
 export type AblLane = {
@@ -35,6 +44,7 @@ export type AblClip = {
   sceneBars: number;
   sceneIndex: number;
   sceneName: string;
+  timeSignature: TimeSignature;
 };
 
 export type AblScene = {
@@ -81,6 +91,7 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
           drumRack: false,
           tracks: [],
           faderParams,
+          timeSignature: data.scenesSettings.timeSignature,
         };
 
         tracks.push(track);
@@ -104,6 +115,7 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
         sceneBars,
         sceneIndex,
         sceneName: scene.name,
+        timeSignature: data.scenesSettings.timeSignature,
       });
 
       track.lane = lane;
@@ -144,6 +156,7 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
       tracks: [],
       inChokeGroup: false,
       faderParams: data.settings.groupFaderParams.a,
+      timeSignature: data.scenesSettings.timeSignature,
     };
 
     for (const track of tracks) {

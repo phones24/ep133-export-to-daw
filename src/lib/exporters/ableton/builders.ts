@@ -8,6 +8,7 @@ import {
 } from '../../../types/types';
 import { EFFECTS } from '../../constants';
 import abletonTransformer, { AblClip, AblScene, AblTrack } from '../../transformers/ableton';
+import { getQuarterNotesPerBar } from '../utils';
 import { ALSDrumBranch } from './templates/drumBranch';
 import { ALSDrumRack } from './templates/drumRack';
 import { ALSChorus } from './templates/effectChorus';
@@ -25,7 +26,14 @@ import { ALSMultiSamplerContent, ALSSampler } from './templates/sampler';
 import { ALSScene, ALSSceneContent } from './templates/scene';
 import { ALSOriginalSimplerContent, ALSSimpler } from './templates/simpler';
 import { ALSTrackSendHolder } from './templates/trackSendHolder';
-import { fixIds, getId, gzipString, koEnvRangeToSeconds, loadTemplate } from './utils';
+import {
+  fixIds,
+  getId,
+  gzipString,
+  koEnvRangeToSeconds,
+  loadTemplate,
+  TIME_SIGNATURES,
+} from './utils';
 
 export async function buildMidiClip(
   koClip: AblClip,
@@ -36,9 +44,13 @@ export async function buildMidiClip(
   const midiClipTemplate = await loadTemplate<ALSMidiClip>('midiClip');
   const midiClip = structuredClone(midiClipTemplate.MidiClip);
 
-  const time = koClip.offset * 4;
+  const beats = getQuarterNotesPerBar(
+    koClip.timeSignature.numerator,
+    koClip.timeSignature.denominator,
+  );
+  const time = koClip.offset * beats;
   const start = time;
-  const end = time + koClip.sceneBars * 4;
+  const end = time + koClip.sceneBars * beats;
 
   midiClip['@Id'] = clipIdx;
   midiClip['@Time'] = time;
@@ -46,16 +58,20 @@ export async function buildMidiClip(
   midiClip.CurrentEnd['@Value'] = end;
   midiClip.Loop.LoopOn['@Value'] = 'true';
   midiClip.Loop.LoopStart['@Value'] = 0;
-  midiClip.Loop.LoopEnd['@Value'] = koClip.bars * 4;
+  midiClip.Loop.LoopEnd['@Value'] = koClip.bars * beats;
   midiClip.Loop.HiddenLoopStart['@Value'] = 0;
-  midiClip.Loop.HiddenLoopEnd['@Value'] = koClip.bars * 4;
+  midiClip.Loop.HiddenLoopEnd['@Value'] = koClip.bars * beats;
   midiClip.Color['@Value'] = color;
   midiClip.Name['@Value'] = `Scene ${koClip.sceneName}`;
+  midiClip.TimeSignature.TimeSignatures.RemoteableTimeSignature.Numerator['@Value'] =
+    koClip.timeSignature.numerator;
+  midiClip.TimeSignature.TimeSignatures.RemoteableTimeSignature.Denominator['@Value'] =
+    koClip.timeSignature.denominator;
 
   if (clipForLauncher) {
     midiClip['@Time'] = 0;
     midiClip.CurrentStart['@Value'] = 0;
-    midiClip.CurrentEnd['@Value'] = koClip.bars * 4;
+    midiClip.CurrentEnd['@Value'] = koClip.bars * beats;
   }
 
   // ableton group notes
@@ -126,6 +142,13 @@ export async function buildSamplerDevice(koTrack: AblTrack, useSampler = false) 
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.Name['@Value'] = koTrack.name;
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleStart['@Value'] = koTrack.trimLeft;
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleEnd['@Value'] = koTrack.trimRight;
+  device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleWarpProperties.TimeSignature.TimeSignatures.RemoteableTimeSignature.Numerator[
+    '@Value'
+  ] = koTrack.timeSignature.numerator;
+  device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleWarpProperties.TimeSignature.TimeSignatures.RemoteableTimeSignature.Denominator[
+    '@Value'
+  ] = koTrack.timeSignature.denominator;
+
   device.VolumeAndPan.Envelope.ReleaseTime.Manual['@Value'] =
     koEnvRangeToSeconds(koTrack.release, koTrack.soundLength) * 1000;
   device.VolumeAndPan.Envelope.AttackTime.Manual['@Value'] =
@@ -150,7 +173,7 @@ export async function buildSamplerDevice(koTrack: AblTrack, useSampler = false) 
         {
           '@Id': 1,
           '@SecTime': koTrack.soundLength,
-          '@BeatTime': koTrack.timeStretchBars * 4, // convert bars to beats
+          '@BeatTime': koTrack.timeStretchBars * koTrack.timeSignature.numerator, // convert bars to beats
         },
       ];
   }
@@ -504,6 +527,13 @@ export async function buildProject(projectData: ProjectRawData, exporterParams: 
   project.Ableton.LiveSet.MasterTrack.AutomationEnvelopes.Envelopes.AutomationEnvelope[1].Automation.Events.FloatEvent[
     '@Value'
   ] = projectData.settings.bpm;
+  // setting up time signature
+  project.Ableton.LiveSet.MasterTrack.AutomationEnvelopes.Envelopes.AutomationEnvelope[0].Automation.Events.EnumEvent[
+    '@Value'
+  ] =
+    TIME_SIGNATURES[
+      `${projectData.scenesSettings.timeSignature.numerator}/${projectData.scenesSettings.timeSignature.denominator}`
+    ] || TIME_SIGNATURES['4/4'];
 
   project.Ableton.LiveSet.Tracks['#'] = await buildTracks(
     transformedData.tracks,
