@@ -1,9 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans:
-    "Atkinson Hyperlegible Mono", "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji",
-    sans-serif;
+  --font-sans: "Atkinson Hyperlegible Mono", sans-serif;
   --color-brand: #ef4e27;
   --color-brand-gray: #dbdddb;
 }

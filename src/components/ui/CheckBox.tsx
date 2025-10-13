@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { JSX } from 'preact';
+import IconInfo from '../icons/info.svg?react';
 
 function CheckBox({
   checked,
@@ -32,7 +33,9 @@ function CheckBox({
 
       {helperText && (
         <div className="relative">
-          <div className="text-gray-400 cursor-help peer">🛈</div>
+          <div className="text-gray-400 cursor-help peer">
+            <IconInfo className="w-4 h-4" />
+          </div>
           <div
             className={clsx(
               'absolute shadow-lg bottom-full left-1/2 -translate-x-1/2 mb-2 p-3 bg-[#b0babe] text-black border-1 border-black text-sm',
