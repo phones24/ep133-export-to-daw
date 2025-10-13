@@ -14,7 +14,7 @@ export function Bar({
 }) {
   return (
     <div
-      className={clsx('h-full relative', {
+      className={clsx('h-full relative overflow-hidden', {
         hidden: length === 0,
         'bg-red-500/10': index % 2 === 0,
         'bg-blue-500/10': index % 2 === 1,

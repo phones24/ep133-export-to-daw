@@ -7,6 +7,7 @@ export function SingleNote({ note }: { note: ViewNote }) {
       style={{
         left: note.position,
         width: note.duration,
+        zIndex: note.position,
       }}
     >
       {note.name}

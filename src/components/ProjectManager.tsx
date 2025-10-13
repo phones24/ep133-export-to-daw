@@ -4,6 +4,7 @@ import { projectIdAtom } from '../atoms/project';
 import { APP_STATES, useAppState } from '../hooks/useAppState';
 import useProject from '../hooks/useProject';
 import ExportProject from './ExportProject';
+import IconReload from './icons/reload.svg?react';
 import Button from './ui/Button';
 import Select from './ui/Select';
 
@@ -22,6 +23,8 @@ function ProjectManager() {
         }
         value={projectId}
         name="project"
+        size="sm"
+        variant="secondary"
         disabled={!appState.includes(APP_STATES.CAN_SELECT_PROJECT)}
       >
         <option value="">Select project</option>
@@ -34,8 +37,11 @@ function ProjectManager() {
       <Button
         onClick={() => refetch()}
         disabled={!appState.includes(APP_STATES.CAN_RELOAD_PROJECT)}
+        size="sm"
+        variant="secondary"
+        title="Reload project data from device"
       >
-        ⟳
+        <IconReload className="w-4 h-4" />
       </Button>
       <ExportProject />
     </div>

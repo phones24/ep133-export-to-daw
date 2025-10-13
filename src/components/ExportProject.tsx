@@ -12,6 +12,7 @@ import Button from './ui/Button';
 import CheckBox from './ui/CheckBox';
 import Dialog from './ui/Dialog';
 import Select from './ui/Select';
+import IconArrowDialog from './icons/arrow-dialog.svg?react';
 
 const NOTES: Record<ExportFormatId, string> = {
   ableton: `Please note that the exported project won't sound exactly the same as it does on the device.`,
@@ -73,8 +74,12 @@ function ExportProject() {
           variant="secondary"
           onClick={handleOpen}
           disabled={!appState.includes(APP_STATES.CAN_EXPORT_PROJECT)}
+          size="sm"
         >
-          Export
+          <span className="inline-flex items-center gap-2">
+            <IconArrowDialog className="w-4 h-4" />
+            <span>Export</span>
+          </span>
         </Button>
       </div>
 

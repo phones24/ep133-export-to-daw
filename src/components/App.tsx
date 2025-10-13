@@ -16,9 +16,9 @@ import FacePlateHeader from './FacePlateHeader';
 import FeedbackDialog from './FeedbackDialog';
 import IconGitHub from './icons/github.svg?react';
 import IconMail from './icons/mail.svg?react';
+import IconArrowDialog from './icons/arrow-dialog.svg?react';
 import OfflineInformer from './OfflineInformer';
 import Page404 from './Page404';
-import ProjectManager from './ProjectManager';
 import ProjectMeta from './ProjectMeta';
 import Arrangements from './ProjectView/Arrangements';
 import Button from './ui/Button';
@@ -68,14 +68,14 @@ function Main() {
                 size="sm"
                 onClick={() => openFeedbackDialog(true)}
               >
-                Feedback
+                <span className="inline-flex items-center gap-2">
+                  <IconArrowDialog className="w-4 h-4" />
+                  Feedback
+                </span>
               </Button>
             </div>
           </div>
-          <div className="flex justify-between">
-            <ProjectManager />
-            <ProjectMeta projectId={projectId} />
-          </div>
+          <ProjectMeta projectId={projectId} />
         </header>
 
         <main className="bg-white h-full overflow-scroll border-1 border-black p-4">
