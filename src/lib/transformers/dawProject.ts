@@ -16,7 +16,7 @@ export type DawData = {
   scenes: DawScene[];
 };
 
-export type DawTrack = Omit<Pad, 'file' | 'rawData'> & {
+export type DawTrack = Omit<Pad, 'file' | 'rawData' | 'midiChannel'> & {
   padCode: PadCode;
   group: string;
   sampleName: string;

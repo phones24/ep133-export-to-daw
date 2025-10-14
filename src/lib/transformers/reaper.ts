@@ -7,7 +7,7 @@ export type RprData = {
   tracks: RprTrack[];
 };
 
-export type RprTrack = Omit<Pad, 'file' | 'rawData' | 'group'> & {
+export type RprTrack = Omit<Pad, 'file' | 'rawData' | 'group' | 'midiChannel'> & {
   padCode: PadCode;
   group: string;
   sampleName: string;

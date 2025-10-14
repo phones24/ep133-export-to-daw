@@ -124,6 +124,7 @@ export type Pad = {
   timeStretchBpm: number;
   timeStretchBars: number;
   inChokeGroup: boolean;
+  midiChannel: number;
 };
 
 export type ProjectRawData = {

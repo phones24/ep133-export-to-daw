@@ -151,11 +151,12 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
           playMode: file.data[23] === 0 ? 'oneshot' : file.data[23] === 1 ? 'key' : 'legato',
           soundLength: sound ? calculateSoundLength(sound) : 0,
           pitch: Math.max(-12, Math.min(12, parseFloat(`${pitch}.${pitchDecimal}`))),
-          rootNote: sound?.meta?.['sound.rootnote'] || 60,
+          rootNote: sound?.meta?.['sound.rootnote'] ?? 60,
           timeStretch: file.data[21] === 1 ? 'bpm' : file.data[21] === 2 ? 'bars' : 'off',
           timeStretchBpm: Number(bytesToFloat32(file.data.slice(12, 16)).toFixed(2)),
           timeStretchBars: timeStretchBars(file.data[25]),
           inChokeGroup: file.data[22] === 1,
+          midiChannel: file.data[3],
         });
       }
     }

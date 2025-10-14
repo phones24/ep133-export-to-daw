@@ -16,12 +16,14 @@ export type AblData = {
   scenes: AblScene[];
 };
 
-export type AblTrack = Omit<Pad, 'file' | 'rawData'> & {
+export type AblTrack = Omit<Pad, 'file' | 'rawData' | 'midiChannel'> & {
   padCode: PadCode;
   group: string;
   sampleName: string;
   sampleChannels: number;
   sampleRate: number;
+  sampleRootNote: number;
+  samplePitch: number;
   bpm: number;
   drumRack: boolean;
   lane?: AblLane;
@@ -87,6 +89,8 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
           sampleName: getSampleName(sound?.meta?.name, soundId),
           sampleChannels: sound?.meta?.channels || 0,
           sampleRate: sound?.meta?.samplerate || 0,
+          sampleRootNote: sound?.meta?.['sound.rootnote'] ?? 60,
+          samplePitch: sound?.meta?.['sound.pitch'] ?? 0,
           bpm: data.settings.bpm,
           drumRack: false,
           tracks: [],
@@ -134,6 +138,8 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
       sampleName: '',
       sampleChannels: 0,
       sampleRate: 0,
+      sampleRootNote: 60,
+      samplePitch: 0,
       bpm: data.settings.bpm,
       drumRack: true,
       soundId: 0,

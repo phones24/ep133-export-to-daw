@@ -1,7 +1,7 @@
 import { Note, Pad, ProjectRawData } from '../../types/types';
 import { getSampleName } from '../exporters/utils';
 import { noteNumberToName } from '../parsers';
-import { findSoundByPad, findSoundIdByPad } from '../utils';
+import { findPad, findSoundByPad, findSoundIdByPad } from '../utils';
 
 export type ViewNote = Note & { name: string };
 
@@ -12,6 +12,7 @@ export type ViewPattern = {
   notes: ViewNote[];
   group: string;
   padNumber: number;
+  midiChannel: number;
 };
 
 export type ViewScene = {
@@ -61,6 +62,7 @@ function webViewTransformer(data: ProjectRawData) {
         const padNumber = parseInt(pad.slice(1), 10);
         const soundId = findSoundIdByPad(pad, pads) || 0;
         const sound = findSoundByPad(pad, pads, data.sounds);
+        const padObject = findPad(pad, pads);
 
         scene.patterns.push({
           pad,
@@ -69,6 +71,7 @@ function webViewTransformer(data: ProjectRawData) {
           group,
           padNumber,
           soundName: getSampleName(sound?.meta?.name, soundId, false),
+          midiChannel: padObject?.midiChannel || 0,
         });
       }
     });

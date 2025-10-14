@@ -7,7 +7,7 @@
 0  0,
 1  0,     // INSTRUMENT NUM
 2  0,     // INSTRUMENT NUM
-3  0,
+3  0,     // MIDI CHANNEL
 4  0,     // TRIM LEFT
 5  0,     // TRIM LEFT
 6  0,     // TRIM LEFT

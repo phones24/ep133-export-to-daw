@@ -35,13 +35,15 @@ function Arrangements({ projectId }: { projectId: string }) {
                 className="overflow-hidden"
               >
                 <Track>
-                  {[...Array(sceneData.maxBars).keys()].map((index) => (
-                    <Bar length={pattern.bars} barLength={barLength} index={index}>
-                      {pattern.notes.map((note) => (
-                        <SingleNote key={`${note.note}-${note.position}`} note={note} />
-                      ))}
-                    </Bar>
-                  ))}
+                  {pattern.bars > 0
+                    ? [...Array(sceneData.maxBars / pattern.bars).keys()].map((index) => (
+                        <Bar lengthInBars={pattern.bars} barLength={barLength} index={index}>
+                          {pattern.notes.map((note) => (
+                            <SingleNote key={`${note.note}-${note.position}`} note={note} />
+                          ))}
+                        </Bar>
+                      ))
+                    : null}
                 </Track>
               </div>
             </div>

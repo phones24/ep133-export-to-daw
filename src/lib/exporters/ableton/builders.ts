@@ -140,6 +140,7 @@ export async function buildSamplerDevice(koTrack: AblTrack, useSampler = false) 
     '@Value'
   ] = `Samples/Imported/${koTrack.sampleName}`;
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.Name['@Value'] = koTrack.name;
+  // device.Player.MultiSampleMap.SampleParts.MultiSamplePart.RootKey['@Value'] = koTrack.rootNote;
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleStart['@Value'] = koTrack.trimLeft;
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleEnd['@Value'] = koTrack.trimRight;
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleWarpProperties.TimeSignature.TimeSignatures.RemoteableTimeSignature.Numerator[
@@ -154,7 +155,9 @@ export async function buildSamplerDevice(koTrack: AblTrack, useSampler = false) 
   device.VolumeAndPan.Envelope.AttackTime.Manual['@Value'] =
     koEnvRangeToSeconds(koTrack.attack, koTrack.soundLength) * 1000;
   device.VolumeAndPan.Panorama.Manual['@Value'] = koTrack.pan;
-  device.Pitch.TransposeKey.Manual['@Value'] = (koTrack.pitch || 0) + (60 - koTrack.rootNote); // root note of the sample should be taken into account
+  device.Pitch.TransposeKey.Manual['@Value'] =
+    // (koTrack.pitch || 0) + koTrack.samplePitch + (60 - koTrack.rootNote); // root note of the sample should be taken into account
+    (koTrack.pitch || 0) + koTrack.samplePitch + (60 - koTrack.rootNote); // root note of the sample should be taken into account
 
   if (koTrack.timeStretch === 'bars') {
     device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleWarpProperties.IsWarped[
