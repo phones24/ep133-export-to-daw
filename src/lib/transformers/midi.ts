@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { ExporterParams, Note, ProjectRawData } from '../../types/types';
 import { getQuarterNotesPerBar, UNITS_PER_BEAT } from '../exporters/utils';
 import { findSoundByPad } from '../utils';
@@ -91,6 +92,10 @@ function midiTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
       midiTracks.unshift(drumTrack);
     }
   }
+
+  Sentry.setContext('midiData', {
+    tracks: midiTracks,
+  });
 
   return {
     tracks: midiTracks,

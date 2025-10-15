@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import omit from 'lodash/omit';
 import {
   ExporterParams,
@@ -202,6 +203,11 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
 
     tracks.unshift(drumTrack);
   }
+
+  Sentry.setContext(`abletonData`, {
+    tracks,
+    scenes: ablScenes,
+  });
 
   return {
     tracks,

@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { omit } from 'lodash';
 import {
   ExporterParams,
@@ -197,6 +198,12 @@ function dawProjectTransformer(data: ProjectRawData, exporterParams: ExporterPar
       });
     });
   }
+
+  Sentry.setContext(`dawprojectData`, {
+    tracks,
+    lanes,
+    scenes: dawScenes,
+  });
 
   return {
     tracks,

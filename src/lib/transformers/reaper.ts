@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { omit } from 'lodash';
 import { Note, Pad, PadCode, ProjectRawData, TimeSignature } from '../../types/types';
 import { getSampleName } from '../exporters/utils';
@@ -75,6 +76,10 @@ export function reaperTransform(data: ProjectRawData) {
     }
 
     offset += sceneBars;
+  });
+
+  Sentry.setContext('reaperData', {
+    tracks,
   });
 
   return {

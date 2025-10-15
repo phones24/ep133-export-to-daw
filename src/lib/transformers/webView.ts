@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { Note, Pad, ProjectRawData } from '../../types/types';
 import { getSampleName } from '../exporters/utils';
 import { noteNumberToName } from '../parsers';
@@ -25,10 +26,11 @@ export type ViewPad = Pad;
 
 export type ViewData = {
   pads: Record<string, ViewPad[]>;
-  scenes: Record<string, ViewScene[]>;
+  scenes: ViewScene[];
+  scenesSettings: ProjectRawData['scenesSettings'];
 };
 
-function webViewTransformer(data: ProjectRawData) {
+function webViewTransformer(data: ProjectRawData): ViewData {
   const { pads, scenes } = data;
   const newScenes: ViewScene[] = [];
   const usedPads = new Set<string>();
@@ -101,6 +103,12 @@ function webViewTransformer(data: ProjectRawData) {
         }, [] as ViewNote[]);
       patternInScene.bars = pattern.bars;
     });
+  });
+
+  Sentry.setContext('webViewData', {
+    pads,
+    scenes: newScenes,
+    scenesSettings: data.scenesSettings,
   });
 
   return {

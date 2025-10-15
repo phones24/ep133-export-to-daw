@@ -35,7 +35,7 @@ function Arrangements({ projectId }: { projectId: string }) {
                 className="overflow-hidden"
               >
                 <Track>
-                  {pattern.bars > 0
+                  {pattern.bars > 0 && sceneData.maxBars % pattern.bars === 0
                     ? [...Array(sceneData.maxBars / pattern.bars).keys()].map((index) => (
                         <Bar lengthInBars={pattern.bars} barLength={barLength} index={index}>
                           {pattern.notes.map((note) => (
