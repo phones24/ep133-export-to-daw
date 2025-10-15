@@ -1,5 +1,6 @@
 import { TimeSignature } from '../../../types/types';
 import { getNextColor, getQuarterNotesPerBar, UNITS_PER_BEAT, unitsToTicks } from '../utils';
+import { buildVstState } from './sampler';
 
 export type ReaperMidiEvent = {
   note: number;
@@ -82,8 +83,19 @@ function renderLine(name: string, attrs: (string | number)[] = []) {
     .join(' ')}`;
 }
 
-/*
 function addFxChain(root: ReaperFileElem['content'], rprTrack: ReaperTrack) {
+  if (!rprTrack.sample?.length) {
+    return;
+  }
+
+  const result = buildVstState({
+    filePath: `Media/samples/${rprTrack.sample.name}`,
+    sampleLengthMs: rprTrack.sample.length * 1000,
+    rootNote: rprTrack.sample.rootNote,
+    attack: rprTrack.sample.attack,
+    release: rprTrack.sample.release,
+  });
+
   root?.push({
     name: 'FXCHAIN',
     content: [
@@ -102,12 +114,11 @@ function addFxChain(root: ReaperFileElem['content'], rprTrack: ReaperTrack) {
           '1920167789<56535472736F6D72656173616D706C6F>',
           '',
         ],
-        content: [],
+        content: [[result.header], [result.body], ['AAAQAAAA']],
       },
     ],
   });
 }
-*/
 
 function addTrackItem(
   root: ReaperFileElem['content'],
@@ -299,8 +310,7 @@ const addTrack = (
     ],
   };
 
-  // commented out until I figured how ReaSamplOmatic5000 is storing its state
-  // addFxChain(newTrack.content, rprTrack);
+  addFxChain(newTrack.content, rprTrack);
 
   if (rprTrack.items) {
     rprTrack.items.forEach((rprItem) => {

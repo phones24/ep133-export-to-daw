@@ -153,15 +153,15 @@ async function exportReaper(
   zippedProject.file(`${projectName}/${projectName}.RPP`, rprContent);
 
   if (exporterParams.includeArchivedSamples) {
-    const { samples, sampleReport: report } = await collectSamples(
-      data,
-      progressCallback,
-      abortSignal,
-    );
-    samples.forEach((s) => {
-      zippedProject.file(`${projectName}/Media/samples/${s.name}`, s.data);
-    });
-    sampleReport = report;
+    // const { samples, sampleReport: report } = await collectSamples(
+    //   data,
+    //   progressCallback,
+    //   abortSignal,
+    // );
+    // samples.forEach((s) => {
+    //   zippedProject.file(`${projectName}/Media/samples/${s.name}`, s.data);
+    // });
+    // sampleReport = report;
   }
 
   progressCallback({ progress: 90, status: 'Bundle everything...' });
@@ -170,17 +170,17 @@ async function exportReaper(
 
   const blob = new Blob([rprContent], { type: 'application/octet-stream' });
   files.push({
-    name: `${projectName}.rpp`,
+    name: `${projectName}.RPP`,
     url: URL.createObjectURL(blob),
     type: 'archive',
     size: blob.size,
   });
-  files.push({
-    name: `${projectName}.zip`,
-    url: URL.createObjectURL(zippedProjectFile),
-    type: 'archive',
-    size: zippedProjectFile.size,
-  });
+  // files.push({
+  //   name: `${projectName}.zip`,
+  //   url: URL.createObjectURL(zippedProjectFile),
+  //   type: 'archive',
+  //   size: zippedProjectFile.size,
+  // });
 
   progressCallback({ progress: 100, status: 'Done' });
 
