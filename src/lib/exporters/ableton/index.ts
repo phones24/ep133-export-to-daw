@@ -49,7 +49,10 @@ async function exportAbleton(
 
   progressCallback({ progress: 90, status: 'Bundle everything...' });
 
-  const zippedProjectFile = await zippedProject.generateAsync({ type: 'blob' });
+  const zippedProjectFile = await zippedProject.generateAsync({
+    type: 'blob',
+    compression: 'DEFLATE',
+  });
 
   files.push({
     name: `${projectName}.zip`,

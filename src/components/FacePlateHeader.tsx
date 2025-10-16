@@ -14,7 +14,7 @@ function FacePlateHeader() {
           Export your projects to Ableton Live, DAWproject, REAPER or MIDI
         </h2>
 
-        <div className="absolute left-0 bottom-0">
+        <div className="absolute left-0 bottom-0 leading-4">
           {!device && (
             <div className="flex gap-2 items-center">
               <div className="border-1 border-black bg-gray-300 size-4 rounded-full" />

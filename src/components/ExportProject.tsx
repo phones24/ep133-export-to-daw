@@ -7,18 +7,18 @@ import useDevice from '../hooks/useDevice';
 import useExportProject, { EXPORT_FORMATS } from '../hooks/useExportProject';
 import usePersistedState from '../hooks/usePersistedState';
 import { ExportFormatId } from '../types/types';
+import IconArrowDialog from './icons/arrow-dialog.svg?react';
 import IconFile from './icons/file.svg?react';
 import Button from './ui/Button';
 import CheckBox from './ui/CheckBox';
 import Dialog from './ui/Dialog';
 import Select from './ui/Select';
-import IconArrowDialog from './icons/arrow-dialog.svg?react';
 
 const NOTES: Record<ExportFormatId, string> = {
   ableton: `Please note that the exported project won't sound exactly the same as it does on the device.`,
   dawproject: `Unfortunately, the DAWproject format does not currently support the "Sampler" instrument, so you will need to manually assign the samples in your DAW.`,
   midi: `The simplest format supported by any DAW. But you have to assign the samples manually.`,
-  reaper: `Sadly, there’s no way to auto-assign samples to tracks right now, you’ll have to place them manually.`,
+  reaper: `Only basic sampler features are supported`,
 };
 
 function ExportProject() {

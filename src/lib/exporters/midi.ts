@@ -88,7 +88,7 @@ async function exportMidi(
 
     progressCallback({ progress: 90, status: 'Bundle samples...' });
 
-    const sampleFile = await zipSamples.generateAsync({ type: 'blob' });
+    const sampleFile = await zipSamples.generateAsync({ type: 'blob', compression: 'DEFLATE' });
 
     files.push({
       name: `project${projectId}_samples.zip`,

@@ -37,6 +37,7 @@ Try it out on https://ep133-to-daw.cc/
   - Track grouping: 4 groups, same as on the device
 - REAPER
   - Export arrangements
+  - Basic sampler instrument has added to each track
   - Includes samples
   - Support track grouping
 - MIDI:
@@ -46,6 +47,7 @@ Try it out on https://ep133-to-daw.cc/
 
 ## Latest news
 
+- [16/10/2025] Added REAPER's sampler (just envs, root note, volume)
 - [13/10/2025] Added time signature support
 - [10/10/2025] REAPER support
 - [08/10/2025] Rewrote TE sysex library

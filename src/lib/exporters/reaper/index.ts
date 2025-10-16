@@ -120,12 +120,15 @@ function buildReaperProject(
     tracks = transformedData.tracks.map(buildTrack);
   }
 
-  const rprContent = generateReaperProject({
-    projectName: `Project ${projectId}`,
-    tempo: data.settings?.bpm ?? 120,
-    timeSignature: data.scenesSettings.timeSignature,
-    tracks,
-  });
+  const rprContent = generateReaperProject(
+    {
+      projectName: `Project ${projectId}`,
+      tempo: data.settings?.bpm ?? 120,
+      timeSignature: data.scenesSettings.timeSignature,
+      tracks,
+    },
+    exporterParams,
+  );
 
   return rprContent;
 }
@@ -166,15 +169,21 @@ async function exportReaper(
 
   progressCallback({ progress: 90, status: 'Bundle everything...' });
 
-  const zippedProjectFile = await zippedProject.generateAsync({ type: 'blob' });
-
-  const blob = new Blob([rprContent], { type: 'application/octet-stream' });
-  files.push({
-    name: `${projectName}.rpp`,
-    url: URL.createObjectURL(blob),
-    type: 'archive',
-    size: blob.size,
+  const zippedProjectFile = await zippedProject.generateAsync({
+    type: 'blob',
+    compression: 'DEFLATE',
   });
+
+  if (import.meta.env.DEV) {
+    const blob = new Blob([rprContent], { type: 'application/octet-stream' });
+    files.push({
+      name: `${projectName}.RPP`,
+      url: URL.createObjectURL(blob),
+      type: 'archive',
+      size: blob.size,
+    });
+  }
+
   files.push({
     name: `${projectName}.zip`,
     url: URL.createObjectURL(zippedProjectFile),
