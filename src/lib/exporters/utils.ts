@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/react';
 import { ExportStatus, ProjectRawData, SoundInfo } from '../../types/types';
 import { getFile, getFileNodeByPath } from '../midi/fs';
 import { pcmToWavBlob } from '../pcmToWav';
-import { AbortError, audioFormatAsBitDepth } from '../utils';
+import { AbortError, audioFormatAsBitDepth, findSoundIdByPad } from '../utils';
 
 let _colorIndex = 0;
 
@@ -60,27 +60,40 @@ export function getSampleName(name: string | undefined, soundId: number, extensi
 function getSoundsInfoFromProject(data: ProjectRawData) {
   const snds: SoundInfo[] = [];
   const existingSounds = new Set<number>();
+  const usedSoundIds = new Set<number>();
+
+  for (const scene of data.scenes) {
+    for (const pattern of scene.patterns) {
+      if (pattern.notes.length > 0) {
+        const sid = findSoundIdByPad(pattern.pad, data.pads);
+        if (sid) {
+          usedSoundIds.add(sid);
+        }
+      }
+    }
+  }
 
   for (const group in data.pads) {
     for (const pad of data.pads[group]) {
+      if (pad.soundId <= 0) {
+        continue;
+      }
+
+      if (!usedSoundIds.has(pad.soundId)) {
+        continue;
+      }
+
       if (existingSounds.has(pad.soundId)) {
         continue;
       }
 
       const soundMeta = data.sounds.find((s) => s.id === pad.soundId);
-
       if (!soundMeta) {
         continue;
       }
 
-      if (pad.soundId > 0) {
-        snds.push({
-          soundId: pad.soundId,
-          soundMeta: soundMeta.meta,
-        });
-
-        existingSounds.add(pad.soundId);
-      }
+      snds.push({ soundId: pad.soundId, soundMeta: soundMeta.meta });
+      existingSounds.add(pad.soundId);
     }
   }
 
@@ -98,7 +111,8 @@ export async function collectSamples(
   const downloaded: string[] = [];
   const missing: { name: string; error: string }[] = [];
   const percentStart = 3;
-  const percentPerSound = 80 / projectSounds.length;
+  const totalSounds = projectSounds.length || 1;
+  const percentPerSound = 80 / totalSounds;
   let cnt = 0;
 
   for (const snd of projectSounds) {
@@ -158,7 +172,7 @@ export async function collectSamples(
   const sampleReport = { downloaded, missing };
 
   progressCallback({
-    progress: percentStart + percentPerSound * cnt,
+    progress: projectSounds.length === 0 ? percentStart + 80 : percentStart + percentPerSound * cnt,
     status: 'Sample collection completed',
     sampleReport,
   });

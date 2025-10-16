@@ -6,6 +6,8 @@ This tool allows you to export your EP-133 K.O.II (EP-1320) project into a DAW (
 
 Try it out on https://ep133-to-daw.cc/
 
+Check the project blog here: https://ko-fi.com/phones24
+
 ![EP-133 To Daw](./public/ep133-to-daw.png)
 
 <p float="left">
@@ -21,7 +23,7 @@ Try it out on https://ep133-to-daw.cc/
 - Export projects directly from EP-133/EP-1320 to:
   - Ableton Live 11+ (project with samples)
   - DAWproject (project + archived samples)
-  - REAPER (project + samples)
+  - REAPER (project with samples)
   - MIDI (MIDI file + archived samples)
 - Ableton Live:
   - Minimum version: 11.3.35
