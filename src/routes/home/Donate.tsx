@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { useState } from 'preact/hooks';
 import Button from '../../components/ui/Button';
 import Dialog from '../../components/ui/Dialog';
@@ -42,7 +43,7 @@ function Donate({ className = '' }: { className?: string }) {
 
   return (
     <>
-      <button type="button" className={className} onClick={() => setOpen(true)}>
+      <button type="button" className={clsx(className, 'italic')} onClick={() => setOpen(true)}>
         Donate!
       </button>
       <Dialog isOpen={open} onClose={() => setOpen(false)}>
