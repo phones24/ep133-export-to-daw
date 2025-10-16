@@ -56,8 +56,15 @@ function msToBytes(msValue: number, sampleLengthMs: number): number[] {
   return doubleToBytes(cappedAttackMs);
 }
 
-function midiNoteToBytes(note: number): number[] {
-  return doubleToBytes((note - 40) / 160);
+function midiNoteToBytes(midiNote: number): number[] {
+  const referenceNote = 60; // C4
+  const referenceValue = 0.125;
+  const valuePerSemitone = 0.075 / 12; // 0.00625
+
+  const semitoneOffset = referenceNote - midiNote;
+  const pluginValue = referenceValue + semitoneOffset * valuePerSemitone;
+
+  return doubleToBytes(pluginValue);
 }
 
 function bytesToBase64(bytes: Array<number>): string {

@@ -138,7 +138,7 @@ const cut2 = bin2.slice(idx);
 // console.log(bin2.length);
 // console.dir(val.slice(207, 214), { maxArrayLength: null, compact: false });
 
-const ofs = 72;
+const ofs = 40;
 console.dir(cut2.slice(ofs, ofs + 8), { compact: false });
 console.log(bytesToDouble(cut2.slice(ofs, ofs + 8)));
 // console.dir(paramToBytes(18.11), { compact: false });

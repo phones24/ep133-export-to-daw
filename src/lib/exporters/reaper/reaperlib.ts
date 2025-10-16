@@ -1,4 +1,4 @@
-import { TimeSignature } from '../../../types/types';
+import { ExporterParams, TimeSignature } from '../../../types/types';
 import { getNextColor, getQuarterNotesPerBar, UNITS_PER_BEAT, unitsToTicks } from '../utils';
 import { buildVstState } from './sampler';
 
@@ -267,7 +267,8 @@ const addTrack = (
   root: ReaperFileElem['content'],
   rprTrack: ReaperTrack,
   iid: number,
-  endOfGroup = false,
+  endOfGroup: boolean,
+  exporterParams: ExporterParams,
 ) => {
   let isBus = [0, 0];
 
@@ -310,7 +311,9 @@ const addTrack = (
     ],
   };
 
-  addFxChain(newTrack.content, rprTrack);
+  if (exporterParams.includeArchivedSamples) {
+    addFxChain(newTrack.content, rprTrack);
+  }
 
   if (rprTrack.items) {
     rprTrack.items.forEach((rprItem) => {
@@ -321,13 +324,16 @@ const addTrack = (
   root?.push(newTrack);
 
   rprTrack.tracks?.forEach((_track, idx) => {
-    iid = addTrack(root, _track, iid, idx === rprTrack.tracks!.length - 1);
+    iid = addTrack(root, _track, iid, idx === rprTrack.tracks!.length - 1, exporterParams);
   });
 
   return iid;
 };
 
-function createReaperProject({ tempo = 120, timeSignature, tracks = [] }: ReaperProject) {
+function createReaperProject(
+  { tempo = 120, timeSignature, tracks = [] }: ReaperProject,
+  exporterParams: ExporterParams,
+) {
   let _iid = 1;
 
   const _root: ReaperFileElem[] = [
@@ -456,7 +462,7 @@ function createReaperProject({ tempo = 120, timeSignature, tracks = [] }: Reaper
   ];
 
   tracks.forEach((_track) => {
-    _iid = addTrack(_root[0].content, _track, _iid);
+    _iid = addTrack(_root[0].content, _track, _iid, false, exporterParams);
   });
 
   return {
@@ -465,12 +471,12 @@ function createReaperProject({ tempo = 120, timeSignature, tracks = [] }: Reaper
 
       for (const elem of rootElems) {
         if (Array.isArray(elem)) {
-          // biome-ignore lint/style/useTemplate: to messy
+          // biome-ignore lint/style/useTemplate: too messy
           result += `${' '.repeat(2 * offset)}` + renderLine(elem[0], elem.slice(1)) + '\n';
           continue;
         }
 
-        // biome-ignore lint/style/useTemplate: to messy
+        // biome-ignore lint/style/useTemplate: too messy
         result += `${' '.repeat(2 * offset)}<` + renderLine(elem.name, elem.attrs) + '\n';
 
         if (elem.content && elem.content.length > 0) {
@@ -485,8 +491,11 @@ function createReaperProject({ tempo = 120, timeSignature, tracks = [] }: Reaper
   };
 }
 
-export function generateReaperProject(input: ReaperProject): string {
-  const reaperProject = createReaperProject(input);
+export function generateReaperProject(
+  input: ReaperProject,
+  exporterParams: ExporterParams,
+): string {
+  const reaperProject = createReaperProject(input, exporterParams);
 
   return reaperProject.toString();
 }

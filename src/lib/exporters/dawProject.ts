@@ -416,7 +416,10 @@ async function exportDawProject(
   zipProject.file('metadata.xml', metadataXml);
   zipProject.file('project.xml', projectXml);
 
-  const projectFile = await zipProject.generateAsync({ type: 'blob' });
+  const projectFile = await zipProject.generateAsync({
+    type: 'blob',
+    compression: 'DEFLATE',
+  });
 
   const files: Array<{
     name: string;
@@ -448,7 +451,10 @@ async function exportDawProject(
 
     progressCallback({ progress: 90, status: 'Bundle samples...' });
 
-    const sampleFile = await zipSamples.generateAsync({ type: 'blob' });
+    const sampleFile = await zipSamples.generateAsync({
+      type: 'blob',
+      compression: 'DEFLATE',
+    });
 
     files.push({
       name: `project${projectId}_samples.zip`,

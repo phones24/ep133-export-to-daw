@@ -21,7 +21,7 @@
 14  248,  // TIME STRETCH BPM
 15  66,   // TIME STRETCH BPM
 16  100,  // VOLUME (0-200)
-17  0,    // PITCH (negative: 254-255, zero: 0, positive: 1-12, )
+17  0,    // PITCH (negative: 254-255, zero: 0, positive: 1-12)
 18  0,    // PAN (left: 240-255, center: 0, right: 1-16)
 19  0,    // ATACK (0-255), when in KEY/LEG mode
 20  255,  // RELEASE (0-255), when in KEY/LEG mode
