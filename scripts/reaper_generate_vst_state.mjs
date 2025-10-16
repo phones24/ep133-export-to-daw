@@ -31,13 +31,13 @@ function bytesToDouble(bytes) {
   const buffer = new ArrayBuffer(8);
   const view = new DataView(buffer);
   bytes.forEach((b, i) => view.setUint8(i, b));
-  return view.getFloat64(0, true); // true = little-endian
+  return view.getFloat64(0, true);
 }
 
 function doubleToBytes(num) {
   const buffer = new ArrayBuffer(8);
   const view = new DataView(buffer);
-  view.setFloat64(0, num, true); // true = little-endian
+  view.setFloat64(0, num, true);
   const bytes = [];
   for (let i = 0; i < 8; i++) {
     bytes.push(view.getUint8(i));
@@ -46,12 +46,11 @@ function doubleToBytes(num) {
 }
 
 function paramToBytes(paramValue) {
-  // Normalize the parameter value (0-100 range becomes 0.0-0.4)
   const normalizedValue = paramValue / 250.0;
 
   const buffer = new ArrayBuffer(8);
   const view = new DataView(buffer);
-  view.setFloat64(0, normalizedValue, true); // true = little-endian
+  view.setFloat64(0, normalizedValue, true);
 
   const bytes = [];
   for (let i = 0; i < 8; i++) {
@@ -61,12 +60,11 @@ function paramToBytes(paramValue) {
 }
 
 function dbToBytes(dbValue) {
-  // Convert dB to linear gain: 10^(dB/20)
   const linearGain = Math.pow(10, dbValue / 20);
 
   const buffer = new ArrayBuffer(8);
   const view = new DataView(buffer);
-  view.setFloat64(0, linearGain, true); // true = little-endian
+  view.setFloat64(0, linearGain, true);
 
   const bytes = [];
   for (let i = 0; i < 8; i++) {
@@ -75,13 +73,12 @@ function dbToBytes(dbValue) {
   return bytes;
 }
 
-function msToBytes(msValue, sampleLengthMs = 460.59) {
-  // Normalize by sample length
+function msToBytes(msValue, sampleLengthMs) {
   const normalizedValue = msValue / sampleLengthMs;
 
   const buffer = new ArrayBuffer(8);
   const view = new DataView(buffer);
-  view.setFloat64(0, normalizedValue, true); // true = little-endian
+  view.setFloat64(0, normalizedValue, true);
 
   const bytes = [];
   for (let i = 0; i < 8; i++) {

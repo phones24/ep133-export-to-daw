@@ -15,13 +15,13 @@ function bytesToDouble(bytes) {
   const buffer = new ArrayBuffer(8);
   const view = new DataView(buffer);
   bytes.forEach((b, i) => view.setUint8(i, b));
-  return view.getFloat64(0, true); // true = little-endian
+  return view.getFloat64(0, true);
 }
 
 function doubleToBytes(num) {
   const buffer = new ArrayBuffer(8);
   const view = new DataView(buffer);
-  view.setFloat64(0, num, true); // true = little-endian
+  view.setFloat64(0, num, true);
   const bytes = [];
   for (let i = 0; i < 8; i++) {
     bytes.push(view.getUint8(i));
@@ -30,12 +30,11 @@ function doubleToBytes(num) {
 }
 
 function paramToBytes(paramValue) {
-  // Normalize the parameter value (0-100 range becomes 0.0-0.4)
   const normalizedValue = paramValue / 250.0;
 
   const buffer = new ArrayBuffer(8);
   const view = new DataView(buffer);
-  view.setFloat64(0, normalizedValue, true); // true = little-endian
+  view.setFloat64(0, normalizedValue, true);
 
   const bytes = [];
   for (let i = 0; i < 8; i++) {
@@ -45,12 +44,11 @@ function paramToBytes(paramValue) {
 }
 
 function dbToBytes(dbValue) {
-  // Convert dB to linear gain: 10^(dB/20)
   const linearGain = Math.pow(10, dbValue / 20);
 
   const buffer = new ArrayBuffer(8);
   const view = new DataView(buffer);
-  view.setFloat64(0, linearGain, true); // true = little-endian
+  view.setFloat64(0, linearGain, true);
 
   const bytes = [];
   for (let i = 0; i < 8; i++) {
@@ -59,13 +57,12 @@ function dbToBytes(dbValue) {
   return bytes;
 }
 
-function msToBytes(msValue, sampleLengthMs = 460.59) {
-  // Normalize by sample length
+function msToBytes(msValue, sampleLengthMs) {
   const normalizedValue = msValue / sampleLengthMs;
 
   const buffer = new ArrayBuffer(8);
   const view = new DataView(buffer);
-  view.setFloat64(0, normalizedValue, true); // true = little-endian
+  view.setFloat64(0, normalizedValue, true);
 
   const bytes = [];
   for (let i = 0; i < 8; i++) {
@@ -104,15 +101,7 @@ for (let i = startIdx; i < lines.length; i++) {
   section.push(lines[i]);
 }
 
-// const firstPart = section[1].trim();
-// const secondPart =
-//   section[2].trim() + section[3].trim() + section[4].trim() + section[5].trim() + section[6].trim();
-
-// const firstPartDecoded = Buffer.from(firstPart, 'base64');
-// const secondPartDecoded = Buffer.from(secondPart, 'base64');
-
 const joined = section.slice(1).join('');
-// const [firstPart, secondPart] = joined.split('=\n');
 
 const sections = [];
 let buf = '';
@@ -125,11 +114,6 @@ for (let i = 0; i < joined.length; i++) {
   }
 }
 
-// console.log(sections);
-
-// console.log([firstPart, secondPart]);
-
-// const str = Buffer.from(sections[1], 'base64').toString('utf8');
 const bin1 = Buffer.from(sections[0], 'base64');
 const bin2 = Buffer.from(sections[1], 'base64');
 
@@ -141,10 +125,6 @@ const cut2 = bin2.slice(idx);
 // console.dir(Array.from(cut2), { maxArrayLength: null, compact: false });
 // console.log(cut.length);
 // console.log(bytesToString(cut2));
-
-// const size = (bin1[33] << 8) + bin1[32];
-
-// console.dir(new Uint8Array(bin1), { maxArrayLength: null, compact: false });
 
 // console.log('Size:', size);
 // console.log(int32ToLEBytes(size));

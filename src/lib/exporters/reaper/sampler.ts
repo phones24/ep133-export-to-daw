@@ -41,15 +41,8 @@ function doubleToBytes(num: number): number[] {
   return bytes;
 }
 
-function paramToBytes(paramValue: number): number[] {
-  // Normalize the parameter value (0-100 range becomes 0.0-0.4)
-  const normalizedValue = paramValue / 250.0;
-
-  return doubleToBytes(normalizedValue);
-}
-
 function dbToBytes(dbValue: number): number[] {
-  // Convert dB to linear gain: 10^(dB/20)
+  // convert dB to linear gain: 10^(dB/20)
   const linearGain = Math.pow(10, dbValue / 20);
 
   return doubleToBytes(linearGain);
@@ -94,12 +87,10 @@ export function buildVstState({
   rootNote?: number;
 }) {
   const encoder = new TextEncoder();
-  const bufferHeader = VST_HEADER;
+  const bufferHeader = [...VST_HEADER];
   const bufferBody = [...VST_BODY];
-  console.log(release, sampleLengthMs);
-  bufferBody.splice(0, 8, ...dbToBytes(volume));
-  // bufferBody.splice(72, 8, ...doubleToBytes(attack / 255 / 2)); // atack
-  // bufferBody.splice(80, 8, ...doubleToBytes(release / 255 / 2)); // release
+
+  bufferBody.splice(0, 8, ...dbToBytes(volume)); // volume
   bufferBody.splice(72, 8, ...msToBytes(attack, sampleLengthMs)); // atack
   bufferBody.splice(80, 8, ...msToBytes(release, sampleLengthMs)); // release
   bufferBody.splice(40, 8, ...midiNoteToBytes(rootNote)); // root note

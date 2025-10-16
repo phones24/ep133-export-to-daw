@@ -1,8 +1,5 @@
-0+8 - volume
-16+8 - max volume
-280-287 - attack
-
-
+State format of REAPER's ReaSamplOmatic 5000
+I used the verson that bundled with REAPER 7.48
 
 // volume
 000  82
@@ -114,7 +111,7 @@
 086  64
 087  63
 
-// obey note off
+// obey note off: 0, 1
 088  0
 089  0
 090  0
@@ -178,6 +175,7 @@
 138  0
 139  0
 
+//
 140  0
 141  0
 142  0
@@ -192,6 +190,7 @@
 150  0
 151  0
 
+//
 152  85
 153  85
 154  85
