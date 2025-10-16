@@ -1,8 +1,8 @@
 import clsx from 'clsx';
 import { ReactNode } from 'preact/compat';
-import useDevice from '../hooks/useDevice';
-import useProject from '../hooks/useProject';
-import { EFFECTS_SHORT } from '../lib/constants';
+import useDevice from '../../hooks/useDevice';
+import useProject from '../../hooks/useProject';
+import { EFFECTS_SHORT } from '../../lib/constants';
 import ProjectManager from './ProjectManager';
 
 function Knob({ className }: { className?: string }) {
@@ -68,7 +68,7 @@ function ProjectMeta({ projectId }: { projectId?: string }) {
   const { device } = useDevice();
 
   return (
-    <div className="flex bg-[#000] p-2 pl-4">
+    <div className="flex bg-[#000] p-2 pl-4  shadow-my">
       <div className={clsx('flex gap-4 text-xl', (!data || !device) && 'opacity-70')}>
         <Value
           label="TEMPO"

@@ -1,6 +1,6 @@
-import useProject from '../../hooks/useProject';
-import { getQuarterNotesPerBar } from '../../lib/exporters/utils';
-import webViewTransformer from '../../lib/transformers/webView';
+import useProject from '~/hooks/useProject';
+import { getQuarterNotesPerBar } from '~/lib/exporters/utils';
+import webViewTransformer from '~/lib/transformers/webView';
 import { Bar } from './Bar';
 import { SingleNote } from './SingleNote';
 import Track from './Track';

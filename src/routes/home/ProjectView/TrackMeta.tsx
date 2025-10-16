@@ -1,4 +1,4 @@
-import { ViewPattern } from '../../lib/transformers/webView';
+import { ViewPattern } from '~/lib/transformers/webView';
 
 function TrackMeta({ pattern }: { pattern: ViewPattern }) {
   let name = pattern.soundName;

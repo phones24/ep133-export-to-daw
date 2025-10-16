@@ -1,14 +1,14 @@
 import { useAtom, useAtomValue } from 'jotai';
 import { useState } from 'preact/hooks';
-import { feedbackDialogAtom } from '../atoms/feedbackDialog';
-import { projectIdAtom } from '../atoms/project';
-import useSubmitFeedback from '../hooks/useSubmitFeedback';
-import { showToast } from '../lib/toast';
-import Button from './ui/Button';
-import CheckBox from './ui/CheckBox';
-import Dialog from './ui/Dialog';
-import FileInput from './ui/FileInput';
-import Input from './ui/Input';
+import { feedbackDialogAtom } from '../../atoms/feedbackDialog';
+import { projectIdAtom } from '../../atoms/project';
+import Button from '../../components/ui/Button';
+import CheckBox from '../../components/ui/CheckBox';
+import Dialog from '../../components/ui/Dialog';
+import FileInput from '../../components/ui/FileInput';
+import Input from '../../components/ui/Input';
+import useSubmitFeedback from '../../hooks/useSubmitFeedback';
+import { showToast } from '../../lib/toast';
 
 function FeedbackDialog() {
   const [open, setOpen] = useAtom(feedbackDialogAtom);

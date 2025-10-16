@@ -1,4 +1,4 @@
-import { ViewNote } from '../../lib/transformers/webView';
+import { ViewNote } from '~/lib/transformers/webView';
 
 export function SingleNote({ note }: { note: ViewNote }) {
   return (

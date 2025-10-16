@@ -1,12 +1,12 @@
 import { useAtom } from 'jotai';
 import { JSX } from 'preact';
-import { projectIdAtom } from '../atoms/project';
-import { APP_STATES, useAppState } from '../hooks/useAppState';
-import useProject from '../hooks/useProject';
+import IconReload from '~/components/icons/reload.svg?react';
+import Button from '~/components/ui/Button';
+import Select from '~/components/ui/Select';
+import { projectIdAtom } from '../../atoms/project';
+import { APP_STATES, useAppState } from '../../hooks/useAppState';
+import useProject from '../../hooks/useProject';
 import ExportProject from './ExportProject';
-import IconReload from './icons/reload.svg?react';
-import Button from './ui/Button';
-import Select from './ui/Select';
 
 const PROJECTS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 

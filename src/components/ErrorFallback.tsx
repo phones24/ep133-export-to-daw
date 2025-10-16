@@ -7,7 +7,8 @@ function ErrorFallback() {
         <h1 className="text-xl font-medium">Something went wrong</h1>
 
         <div className="mb-4 text-sm text-red-700 mb-2">
-          An unexpected error occurred. Please try refreshing the page.
+          An unexpected error occurred. Please try refreshing the page. If the problem persists,
+          please submit a bug report. There is a feedback button in the top right corner of the app.
         </div>
 
         <div className="flex gap-2">

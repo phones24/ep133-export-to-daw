@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
-import Button from './ui/Button';
-import Dialog from './ui/Dialog';
+import Button from '../../components/ui/Button';
+import Dialog from '../../components/ui/Dialog';
 
 type Wallet = {
   currency: string;
@@ -26,7 +26,7 @@ const WALLETS: Wallet[] = [
   },
 ];
 
-function Donate() {
+function Donate({ className = '' }: { className?: string }) {
   const [open, setOpen] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
 
@@ -42,12 +42,8 @@ function Donate() {
 
   return (
     <>
-      <button
-        type="button"
-        className="font-semibold  animate-pulse-slow cursor-pointer"
-        onClick={() => setOpen(true)}
-      >
-        💝 Donate!
+      <button type="button" className={className} onClick={() => setOpen(true)}>
+        Donate!
       </button>
       <Dialog isOpen={open} onClose={() => setOpen(false)}>
         <div className="flex flex-col gap-2 min-w-[600px]">

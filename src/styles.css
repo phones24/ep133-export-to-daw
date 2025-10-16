@@ -2,8 +2,12 @@
 
 @theme {
   --font-sans: "Atkinson Hyperlegible Mono", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
   --color-brand: #ef4e27;
   --color-brand-gray: #dbdddb;
+
+  --shadow-my: 1px 1px 0px 1px #00000077;
 }
 
 @layer base {

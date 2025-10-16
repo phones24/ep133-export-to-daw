@@ -1,18 +1,18 @@
 import { useAtom } from 'jotai';
 import { JSX } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
-import { feedbackDialogAtom } from '../atoms/feedbackDialog';
-import { APP_STATES, useAppState } from '../hooks/useAppState';
-import useDevice from '../hooks/useDevice';
-import useExportProject, { EXPORT_FORMATS } from '../hooks/useExportProject';
-import usePersistedState from '../hooks/usePersistedState';
-import { ExportFormatId } from '../types/types';
-import IconArrowDialog from './icons/arrow-dialog.svg?react';
-import IconFile from './icons/file.svg?react';
-import Button from './ui/Button';
-import CheckBox from './ui/CheckBox';
-import Dialog from './ui/Dialog';
-import Select from './ui/Select';
+import IconArrowDialog from '~/components/icons/arrow-dialog.svg?react';
+import IconFile from '~/components/icons/file.svg?react';
+import { feedbackDialogAtom } from '../../atoms/feedbackDialog';
+import Button from '../../components/ui/Button';
+import CheckBox from '../../components/ui/CheckBox';
+import Dialog from '../../components/ui/Dialog';
+import Select from '../../components/ui/Select';
+import { APP_STATES, useAppState } from '../../hooks/useAppState';
+import useDevice from '../../hooks/useDevice';
+import useExportProject, { EXPORT_FORMATS } from '../../hooks/useExportProject';
+import usePersistedState from '../../hooks/usePersistedState';
+import { ExportFormatId } from '../../types/types';
 
 const NOTES: Record<ExportFormatId, string> = {
   ableton: `Please note that the exported project won't sound exactly the same as it does on the device.`,
