@@ -165,7 +165,7 @@ export async function discoverDevicePorts(
 
           setDeviceOutputPort(output);
           setDeviceInputPort(
-            midiAccess.inputs.values().find((inp) => inp.name?.includes('EP-133')) || null,
+            midiAccess.inputs.values().find((inp) => inp.name?.includes('EP-13')) || null, // handle both EP-133 and EP-1320
           );
 
           break;
