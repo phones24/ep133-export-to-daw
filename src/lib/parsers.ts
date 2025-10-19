@@ -172,7 +172,6 @@ export function parsePatterns(data: Uint8Array, group: string) {
   chunks.forEach((chunk) => {
     const pad = String(chunk[2] / 8);
     const patternName = `${group}${pad}` as PadCode;
-
     if (!notes[patternName]) {
       notes[patternName] = [];
     }

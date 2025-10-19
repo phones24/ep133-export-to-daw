@@ -1,6 +1,8 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Provider } from 'jotai';
-import { Route, Switch } from 'wouter';
+import { DndProvider } from 'react-dnd/dist/core/DndProvider';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { Route, Switch } from 'wouter-preact';
 import Faq from '~/routes/faq/Faq';
 import Home from '~/routes/home/Home';
 import queryClient from '../lib/queryClient';
@@ -18,7 +20,9 @@ function App() {
           <Switch>
             <Route path="/">
               <DeviceProvider>
-                <Home />
+                <DndProvider backend={HTML5Backend}>
+                  <Home />
+                </DndProvider>
               </DeviceProvider>
             </Route>
             <Route path="/faq">

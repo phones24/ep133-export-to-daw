@@ -12,7 +12,7 @@ import {
   parseSysexGetFileInitResponse,
 } from './fsSysex';
 import { TEFile, TEFileNode } from './types';
-import { sanitizeBrokenJson } from './utils';
+import { crc32, sanitizeBrokenJson } from './utils';
 
 const fileNodesCache: Record<string, TEFileNode> = {};
 
@@ -73,7 +73,12 @@ export async function getFile(
     bufOffset += buf.length;
   }
 
-  return { name: initResponse.fileName, size: initResponse.fileSize, data: combined };
+  return {
+    name: initResponse.fileName,
+    size: initResponse.fileSize,
+    data: combined,
+    crc32: crc32(combined),
+  };
 }
 
 export async function getFileList(): Promise<TEFileNode[]> {

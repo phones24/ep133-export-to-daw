@@ -1,9 +1,11 @@
 import { useAtom } from 'jotai';
+
 import { projectIdAtom } from '~/atoms/project';
 import OfflineInformer from '~/components/OfflineInformer';
 import Toast from '~/components/ui/Toast';
 import { APP_STATES, useAppState } from '~/hooks/useAppState';
 import useDevice from '~/hooks/useDevice';
+import useDroppedProjectFile from '~/hooks/useDroppedProjectFile';
 import AppStateDisplay from './AppStateDisplay';
 import FacePlateHeader from './FacePlateHeader';
 import FeedbackDialog from './FeedbackDialog';
@@ -15,6 +17,7 @@ function Home() {
   const [projectId] = useAtom(projectIdAtom);
   const { error } = useDevice();
   const appState = useAppState();
+  const { dropRef } = useDroppedProjectFile();
 
   return (
     <div className="min-w-[1100px] max-w-[1800px] p-4 min-h-screen grid grid-rows-[auto_1fr] mx-auto">
@@ -34,7 +37,10 @@ function Home() {
           <ProjectMeta projectId={projectId} />
         </header>
 
-        <main className="bg-white h-full overflow-scroll border-1 border-black p-4 shadow-[1px_1px_0px_1px_#00000099]">
+        <main
+          ref={dropRef as any}
+          className="bg-white h-full overflow-scroll border-1 p-4 shadow-[1px_1px_0px_1px_#00000099]"
+        >
           {appState.includes(APP_STATES.CAN_DISPLAY_PROJECT) && (
             <Arrangements projectId={projectId} />
           )}
@@ -49,7 +55,7 @@ function Home() {
           {appState.includes(APP_STATES.NO_PROJECT_SELECTED) && (
             <AppStateDisplay
               title="Ready to Export!"
-              message="Please select a project from the dropdown."
+              message="Select a project from the dropdown."
             />
           )}
 

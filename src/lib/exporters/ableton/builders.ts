@@ -35,6 +35,8 @@ import {
   TIME_SIGNATURES,
 } from './utils';
 
+let _localId = 1;
+
 export async function buildMidiClip(
   koClip: AblClip,
   clipIdx: number,
@@ -389,10 +391,10 @@ export async function buildScenes(scenes: AblScene[], settings: ProjectSettings)
   const sceneTemplate = await loadTemplate<ALSScene>('scene');
   const result: ALSSceneContent[] = [];
 
-  scenes.forEach((scene, idx) => {
+  scenes.forEach((scene) => {
     const sceneContent = structuredClone(sceneTemplate.Scene);
 
-    sceneContent['@Id'] = idx;
+    sceneContent['@Id'] = _localId++;
     sceneContent.Name['@Value'] = scene.name;
     sceneContent.Tempo['@Value'] = settings.bpm;
 
@@ -408,21 +410,27 @@ export async function buildTracks(
   exporterParams: ExporterParams,
 ) {
   const result = [];
-  let id = 1;
   let trackGroupId = -1;
   let currentGroup = '';
 
   // if the tracks are grouped, we need to create a group track for each group BEFORE the children midi tracks
   // this took me around 3 hours to figure out
+
   for (const koTrack of tracks.sort((a, b) => a.group.localeCompare(b.group))) {
     if (exporterParams.groupTracks && koTrack.group !== currentGroup[0]) {
-      trackGroupId = id++;
+      trackGroupId = _localId++;
       currentGroup = koTrack.group;
       const groupTrack = await buildGroupTrack(koTrack, trackGroupId, exporterParams, maxScenes);
       result.push(groupTrack);
     }
 
-    const midiTrack = await buildTrack(koTrack, id++, exporterParams, maxScenes, trackGroupId);
+    const midiTrack = await buildTrack(
+      koTrack,
+      _localId++,
+      exporterParams,
+      maxScenes,
+      trackGroupId,
+    );
 
     result.push(midiTrack);
   }
@@ -576,7 +584,7 @@ export async function buildProject(projectData: ProjectRawData, exporterParams: 
     console.log('ROOT', fixedRoot);
   }
 
-  const newXml = create(fixedRoot).end({ prettyPrint: true });
+  const newXml = create(fixedRoot).end({ prettyPrint: true, indent: '    ' });
   const gzipped = gzipString(newXml);
 
   return gzipped;

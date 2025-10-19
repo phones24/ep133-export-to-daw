@@ -6,14 +6,14 @@ import Select from '~/components/ui/Select';
 import { projectIdAtom } from '../../atoms/project';
 import { APP_STATES, useAppState } from '../../hooks/useAppState';
 import useProject from '../../hooks/useProject';
+import useProjectsList from '../../hooks/useProjectsList';
 import ExportProject from './ExportProject';
-
-const PROJECTS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 function ProjectManager() {
   const [projectId, setProjectId] = useAtom(projectIdAtom);
   const { refetch } = useProject(projectId);
   const appState = useAppState();
+  const projects = useProjectsList();
 
   return (
     <div className="flex gap-2 items-center">
@@ -28,9 +28,9 @@ function ProjectManager() {
         disabled={!appState.includes(APP_STATES.CAN_SELECT_PROJECT)}
       >
         <option value="">Select project</option>
-        {PROJECTS.map((p) => (
-          <option key={p} value={p}>
-            Project {p}
+        {projects.map((p) => (
+          <option key={p.value} value={p.value}>
+            {p.label}
           </option>
         ))}
       </Select>

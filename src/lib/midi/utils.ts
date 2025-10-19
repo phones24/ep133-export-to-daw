@@ -3,6 +3,21 @@ import { TEDeviceIdentification, TEDeviceMetadata } from './types';
 
 const requestIds: Map<string, number> = new Map();
 
+export const crc32 = (data: Uint8Array, initial = 0) => {
+  const normalize = (value: number) => (value >= 0 ? value : 0xffffffff + value + 1);
+
+  let crc = normalize(initial) ^ 0xffffffff;
+
+  for (const byte of data) {
+    crc ^= byte;
+    for (let i = 0; i < 8; i++) {
+      crc = crc & 1 ? (crc >>> 1) ^ 0xedb88320 : crc >>> 1;
+    }
+  }
+
+  return normalize(crc ^ 0xffffffff);
+};
+
 export function unpackInPlace(packedBytes: Uint8Array): Uint8Array {
   let writeIndex = 0; // Index where unpacked bytes will be written
   let msbIndex = 0; // Index in array holding the MSB flags

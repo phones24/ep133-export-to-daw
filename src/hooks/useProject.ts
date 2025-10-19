@@ -1,4 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
+import { useAtomValue } from 'jotai';
+import { droppedProjectFileAtom } from '~/atoms/droppedProjectFile';
 import { getProjectFile } from '../lib/midi';
 import {
   collectEffects,
@@ -11,9 +13,11 @@ import {
 import { untar } from '../lib/untar';
 import { ProjectRawData } from '../types/types';
 import useDevice from './useDevice';
+import { DROPPED_FILE_ID } from './useDroppedProjectFile';
 
 function useProject(id?: number | string) {
   const { device } = useDevice();
+  const droppedProjectFile = useAtomValue(droppedProjectFileAtom);
 
   const result = useQuery<ProjectRawData | null>({
     queryKey: ['project', id],
@@ -22,8 +26,16 @@ function useProject(id?: number | string) {
         return null;
       }
 
-      const archive = await getProjectFile(Number(id));
-      const files = await untar(archive.data);
+      let archiveData: Uint8Array | undefined;
+
+      if (id === DROPPED_FILE_ID && droppedProjectFile) {
+        archiveData = droppedProjectFile.data;
+      } else {
+        const archive = await getProjectFile(Number(id));
+        archiveData = archive.data;
+      }
+
+      const files = await untar(archiveData);
       const sounds = await collectSounds(files);
       const settings = collectSettings(files);
       const pads = collectPads(files, sounds);
@@ -32,7 +44,7 @@ function useProject(id?: number | string) {
       const effects = collectEffects(files);
 
       // @ts-expect-error wrong typing?
-      const projectFileBlob = new Blob([archive.data]);
+      const projectFileBlob = new Blob([archiveData]);
       const projectFile = new File(
         [projectFileBlob],
         `project-${String(id).padStart(2, '0')}.tar`,
