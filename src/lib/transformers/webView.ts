@@ -103,6 +103,10 @@ function webViewTransformer(data: ProjectRawData): ViewData {
         }, [] as ViewNote[]);
       patternInScene.bars = pattern.bars;
     });
+
+    scene.patterns.sort((a, b) =>
+      a.pad.localeCompare(b.pad, undefined, { numeric: true, sensitivity: 'base' }),
+    );
   });
 
   Sentry.setContext('webViewData', {

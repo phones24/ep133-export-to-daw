@@ -67,7 +67,7 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
       name: scene.name,
     };
 
-    for (const pattern of scene.patterns) {
+    scene.patterns.forEach((pattern) => {
       let track = tracks.find((c) => c.padCode === pattern.pad);
 
       if (!track) {
@@ -124,12 +124,16 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
       });
 
       track.lane = lane;
-    }
+    });
 
     offset += sceneBars;
 
     ablScenes.push(ablScene);
   });
+
+  tracks.sort((a, b) =>
+    a.padCode.localeCompare(b.padCode, undefined, { numeric: true, sensitivity: 'base' }),
+  );
 
   if (exporterParams.drumRackFirstGroup) {
     // fake track for drum rack
@@ -176,7 +180,9 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
     // and remap them
     const newClips: Record<string, AblClip> = {};
     drumTrack.tracks
-      .sort((a, b) => a.padCode.localeCompare(b.padCode))
+      .sort((a, b) =>
+        a.padCode.localeCompare(b.padCode, undefined, { numeric: true, sensitivity: 'base' }),
+      )
       .forEach((track, idx) => {
         track.lane?.clips.forEach((clip) => {
           if (!newClips[clip.sceneName]) {

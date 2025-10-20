@@ -35,7 +35,10 @@ import {
   TIME_SIGNATURES,
 } from './utils';
 
-let _localId = 1;
+let _localId = -1;
+let _localGroupId = -1;
+let _localTrackColor = -1;
+let _localGroupTrackColor = -1;
 
 export async function buildMidiClip(
   koClip: AblClip,
@@ -249,20 +252,19 @@ export async function buildDrumRackDevice(koTrack: AblTrack) {
 
 export async function buildTrack(
   koTrack: AblTrack,
-  trackIdx: number,
-  exporterParams: ExporterParams,
   maxScenes: number,
   trackGroupId: number,
+  exporterParams: ExporterParams,
 ): Promise<ALSMidiTrack> {
   const midiTrackTemplate = await loadTemplate<ALSMidiTrack>('midiTrack');
   const midiTrack = structuredClone(midiTrackTemplate.MidiTrack);
 
-  midiTrack['@Id'] = trackIdx;
+  midiTrack['@Id'] = _localId++;
   midiTrack.Name.EffectiveName['@Value'] = koTrack.soundId
     ? `${String(koTrack.soundId).padStart(3, '0')} ${koTrack.name}`
     : koTrack.name;
   midiTrack.Name.UserName['@Value'] = midiTrack.Name.EffectiveName['@Value'];
-  midiTrack.Color['@Value'] = 8 + trackIdx; // started with 8th color in the Ableton palette, why not
+  midiTrack.Color['@Value'] = 8 + _localTrackColor++; // started with 8th color in the Ableton palette, why not
   midiTrack.DeviceChain.MainSequencer.ClipTimeable.ArrangerAutomation.Events.MidiClip = [];
   midiTrack.DeviceChain.Mixer.Volume.Manual['@Value'] = koTrack.volume / 2;
   midiTrack.TrackGroupId['@Value'] = trackGroupId;
@@ -279,33 +281,32 @@ export async function buildTrack(
   }
 
   // make sure each tracks has the same empty slots for clips
-  if (exporterParams.clips) {
-    for (let sc = 0; sc < maxScenes; sc++) {
-      midiTrack.DeviceChain.MainSequencer.ClipSlotList.ClipSlot[sc] = {
-        '@Id': sc,
-        LomId: {
-          '@Value': 0,
-        },
-        ClipSlot: {
-          Value: {},
-        },
-      };
-      midiTrack.DeviceChain.FreezeSequencer.ClipSlotList.ClipSlot[sc] = {
-        '@Id': sc,
-        LomId: {
-          '@Value': 0,
-        },
-        ClipSlot: {
-          Value: {},
-        },
-        HasStop: {
-          '@Value': 'true',
-        },
-        NeedRefreeze: {
-          '@Value': 'true',
-        },
-      };
-    }
+  // must be equeal to GroupTrackSlot if this track is in a group
+  for (let sc = 0; sc < maxScenes; sc++) {
+    midiTrack.DeviceChain.MainSequencer.ClipSlotList.ClipSlot[sc] = {
+      '@Id': sc,
+      LomId: {
+        '@Value': 0,
+      },
+      ClipSlot: {
+        Value: {},
+      },
+    };
+    midiTrack.DeviceChain.FreezeSequencer.ClipSlotList.ClipSlot[sc] = {
+      '@Id': sc,
+      LomId: {
+        '@Value': 0,
+      },
+      ClipSlot: {
+        Value: {},
+      },
+      HasStop: {
+        '@Value': 'true',
+      },
+      NeedRefreeze: {
+        '@Value': 'true',
+      },
+    };
   }
 
   if (koTrack.lane) {
@@ -352,17 +353,16 @@ export async function buildTrack(
 
 export async function buildGroupTrack(
   koTrack: AblTrack,
-  id: number,
   exporterParams: ExporterParams,
   maxScenes: number,
 ) {
   const groupTrackTemplate = await loadTemplate<ALSGroupTrack>('groupTrack');
   const groupTrack = structuredClone(groupTrackTemplate.GroupTrack);
 
-  groupTrack['@Id'] = id;
+  groupTrack['@Id'] = _localGroupId++;
   groupTrack.Name.EffectiveName['@Value'] = koTrack.group.toLocaleUpperCase();
   groupTrack.Name.UserName['@Value'] = koTrack.group.toLocaleUpperCase();
-  groupTrack.Color['@Value'] = 20 + id;
+  groupTrack.Color['@Value'] = 5 + _localGroupTrackColor++;
   groupTrack.Slots.GroupTrackSlot = [];
 
   // adding empty slots for clips (or Ableton will crash)
@@ -415,22 +415,15 @@ export async function buildTracks(
 
   // if the tracks are grouped, we need to create a group track for each group BEFORE the children midi tracks
   // this took me around 3 hours to figure out
-
   for (const koTrack of tracks.sort((a, b) => a.group.localeCompare(b.group))) {
     if (exporterParams.groupTracks && koTrack.group !== currentGroup[0]) {
-      trackGroupId = _localId++;
       currentGroup = koTrack.group;
-      const groupTrack = await buildGroupTrack(koTrack, trackGroupId, exporterParams, maxScenes);
+      const groupTrack = await buildGroupTrack(koTrack, exporterParams, maxScenes);
+      trackGroupId = groupTrack.GroupTrack['@Id'];
       result.push(groupTrack);
     }
 
-    const midiTrack = await buildTrack(
-      koTrack,
-      _localId++,
-      exporterParams,
-      maxScenes,
-      trackGroupId,
-    );
+    const midiTrack = await buildTrack(koTrack, maxScenes, trackGroupId, exporterParams);
 
     result.push(midiTrack);
   }
@@ -529,6 +522,12 @@ export async function buildProject(projectData: ProjectRawData, exporterParams: 
     console.log('transformedData', transformedData);
   }
 
+  // reset local ids
+  _localId = 1;
+  _localGroupId = 50;
+  _localTrackColor = 1;
+  _localGroupTrackColor = 1;
+
   const projectTemplate = await loadTemplate<ALSProject>('project');
   const project = structuredClone(projectTemplate);
 
@@ -584,7 +583,7 @@ export async function buildProject(projectData: ProjectRawData, exporterParams: 
     console.log('ROOT', fixedRoot);
   }
 
-  const newXml = create(fixedRoot).end({ prettyPrint: true, indent: '    ' });
+  const newXml = create(fixedRoot).end({ prettyPrint: true, indent: '\t' });
   const gzipped = gzipString(newXml);
 
   return gzipped;

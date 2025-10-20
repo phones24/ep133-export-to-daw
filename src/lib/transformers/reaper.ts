@@ -35,8 +35,7 @@ export function reaperTransform(data: ProjectRawData) {
 
   scenes.forEach((scene, sceneIndex) => {
     const sceneBars = Math.max(...scene.patterns.map((p) => p.bars));
-
-    for (const pattern of scene.patterns) {
+    scene.patterns.forEach((pattern) => {
       let track = tracks.find((c) => c.padCode === pattern.pad);
 
       if (!track) {
@@ -73,7 +72,7 @@ export function reaperTransform(data: ProjectRawData) {
         sceneIndex,
         sceneName: scene.name,
       });
-    }
+    });
 
     offset += sceneBars;
   });

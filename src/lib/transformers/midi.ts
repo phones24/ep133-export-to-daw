@@ -27,7 +27,7 @@ function midiTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
 
   scenes.forEach((scene) => {
     const sceneMaxBars = Math.max(...scene.patterns.map((p) => p.bars));
-    for (const pattern of scene.patterns) {
+    scene.patterns.forEach((pattern) => {
       let track = midiTracks.find((t) => t.padCode === pattern.pad);
       if (!track) {
         const sound = findSoundByPad(pattern.pad, pads, data.sounds);
@@ -60,7 +60,7 @@ function midiTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
           );
         }
       }
-    }
+    });
 
     offset += sceneMaxBars;
   });
@@ -71,7 +71,9 @@ function midiTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
       const mergedNotes: Note[] = [];
 
       groupATracks
-        .toSorted((a, b) => a.padCode.localeCompare(b.padCode))
+        .toSorted((a, b) =>
+          a.padCode.localeCompare(b.padCode, undefined, { numeric: true, sensitivity: 'base' }),
+        )
         .forEach((track, idx) => {
           mergedNotes.push(
             ...track.notes.map((note) => ({
