@@ -96,7 +96,11 @@ function ProjectMeta({ projectId }: { projectId?: string }) {
               ? EFFECTS_SHORT[data?.effects.effectType]
               : 'N/A'}
           </span>
-          <div className="flex gap-1 items-center ml-2">
+          <div
+            className={clsx('flex gap-1 items-center ml-2', {
+              'opacity-60': data?.effects.effectType === 0,
+            })}
+          >
             <Knob className="size-5" />
             {data?.effects.param1 !== undefined ? valueToPercent(data?.effects.param1) : 'N/A'}
             <Knob className="size-5 ml-2" />

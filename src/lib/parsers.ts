@@ -15,6 +15,21 @@ import { TESoundMetadata } from './midi/types';
 import { TarFile } from './untar';
 import { calculateSoundLength } from './utils';
 
+type SceneMeta = {
+  a: number;
+  b: number;
+  c: number;
+  d: number;
+};
+
+type IntermediateScenes = Record<
+  number,
+  {
+    name: string;
+    groups: Record<string, { bars: number; notes: Record<number, Note[]> }>;
+  }
+>;
+
 const defaultProjectSettings = {
   bpm: 120,
   groupFaderParams: {
@@ -165,18 +180,23 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
   return result;
 }
 
-export function parsePatterns(data: Uint8Array, group: string) {
+function parsePatterns(data: Uint8Array) {
   const chunks = chunkArray(data, 8, 4);
-  const notes: Record<PadCode, Note[]> = {};
+  const notes: Record<number, Note[]> = {};
 
   chunks.forEach((chunk) => {
-    const pad = String(chunk[2] / 8);
-    const patternName = `${group}${pad}` as PadCode;
-    if (!notes[patternName]) {
-      notes[patternName] = [];
+    // I discovered there could be some weird chunks with pad numbers not multiple of 8
+    // since I don't know what they are, just skip them
+    if (chunk[2] % 8 !== 0) {
+      return;
     }
 
-    notes[patternName].push({
+    const pad = chunk[2] / 8;
+    if (!notes[pad]) {
+      notes[pad] = [];
+    }
+
+    notes[pad].push({
       note: chunk[3],
       position: (chunk[1] << 8) + chunk[0],
       duration: (chunk[6] << 8) + chunk[5],
@@ -184,16 +204,57 @@ export function parsePatterns(data: Uint8Array, group: string) {
     });
   });
 
-  return Object.entries(notes).map(([pad, notes]) => ({
-    pad,
-    group,
-    notes,
+  return {
     bars: data[1],
-  })) as Pattern[];
+    notes,
+  };
+}
+
+function getPatternsForScene(scenesIntermediate: IntermediateScenes, sceneMeta: SceneMeta) {
+  const patterns: Pattern[] = [];
+
+  for (const group of ['a', 'b', 'c', 'd'] as const) {
+    const lookupScene = sceneMeta[group];
+    const lookupSceneData = scenesIntermediate[lookupScene];
+
+    if (lookupSceneData?.groups[group]) {
+      const groupData = lookupSceneData.groups[group];
+      Object.entries(groupData.notes).forEach(([padNum, notes]) => {
+        patterns.push({
+          pad: `${group}${padNum}` as PadCode,
+          group,
+          notes,
+          bars: groupData.bars,
+        });
+      });
+    }
+  }
+
+  return patterns;
 }
 
 export function collectScenesAndPatterns(files: TarFile[]) {
+  const scenesIntermediateData: IntermediateScenes = {};
   const scenes: Record<string, Scene> = {};
+  const sceneMetadata: Record<string, SceneMeta> = {};
+
+  // build group/pattern lookup table
+  const scenesFile = files.find((f) => f.name === 'scenes' && f.type === 'file');
+  if (scenesFile?.data) {
+    const chunks = chunkArray(scenesFile.data, 6, 7);
+    chunks.forEach((chunk, i) => {
+      if (i > 98) {
+        return;
+      }
+
+      sceneMetadata[i + 1] = {
+        a: chunk[0],
+        b: chunk[1],
+        c: chunk[2],
+        d: chunk[3],
+      };
+    });
+  }
 
   for (const file of files) {
     if (!file.name.startsWith('patterns') || file.type !== 'file' || !file.data) {
@@ -206,15 +267,36 @@ export function collectScenesAndPatterns(files: TarFile[]) {
     }
 
     const [, group, scene] = matches;
-    if (!scenes[scene]) {
-      scenes[scene] = {
+    const sceneIndex = Number(scene);
+    if (!scenesIntermediateData[sceneIndex]) {
+      scenesIntermediateData[sceneIndex] = {
         name: String(scene).padStart(2, '0'),
-        patterns: [],
+        groups: {},
       };
     }
 
-    scenes[scene].patterns = [...scenes[scene].patterns, ...parsePatterns(file.data, group)];
+    // build intermediate scenes data
+    // will be used to resolve patterns later using sceneMetadata
+    scenesIntermediateData[sceneIndex] = {
+      ...scenesIntermediateData[sceneIndex],
+      groups: {
+        ...scenesIntermediateData[sceneIndex].groups,
+        [group]: parsePatterns(file.data),
+      },
+    };
   }
+
+  Object.entries(scenesIntermediateData).forEach(([sceneIndex, sceneData]) => {
+    const patterns = getPatternsForScene(scenesIntermediateData, sceneMetadata[sceneIndex]);
+    if (patterns.length === 0) {
+      return;
+    }
+
+    scenes[sceneIndex] = {
+      name: sceneData.name,
+      patterns,
+    };
+  });
 
   return Object.values(scenes).sort((a, b) => a.name.localeCompare(b.name));
 }
@@ -223,7 +305,7 @@ export function collectSettings(files: TarFile[]): ProjectSettings {
   const settings = files.find((f) => f.name === 'settings' && f.type === 'file');
 
   if (!settings || !settings.data) {
-    console.error('Could not find settings file');
+    console.warn('Could not find settings file');
 
     return {
       ...defaultProjectSettings,
@@ -267,7 +349,7 @@ export function collectEffects(files: TarFile[]) {
   const fxFile = files.find((f) => f.name === 'fx_settings' && f.type === 'file');
 
   if (!fxFile || !fxFile.data) {
-    console.error('Could not find fx file');
+    console.warn('Could not find fx file');
 
     return {
       rawData: new Uint8Array(),
@@ -297,7 +379,7 @@ export function collectScenesSettings(files: TarFile[]): ScenesSettings {
   const scenesSettingsFile = files.find((f) => f.name === 'scenes' && f.type === 'file');
 
   if (!scenesSettingsFile || !scenesSettingsFile.data) {
-    console.error('Could not find scenes settings file');
+    console.warn('Could not find scenes settings file');
     return defaultScenesSettings;
   }
 

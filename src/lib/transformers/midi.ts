@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react';
 import { ExporterParams, Note, ProjectRawData } from '../../types/types';
-import { getQuarterNotesPerBar, UNITS_PER_BEAT } from '../exporters/utils';
+import { getQuarterNotesPerBar, TICKS_PER_BEAT } from '../exporters/utils';
 import { findSoundByPad } from '../utils';
 
 export type MidiData = {
@@ -23,7 +23,7 @@ function midiTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
     getQuarterNotesPerBar(
       data.scenesSettings.timeSignature.numerator,
       data.scenesSettings.timeSignature.denominator,
-    ) * UNITS_PER_BEAT;
+    ) * TICKS_PER_BEAT;
 
   scenes.forEach((scene) => {
     const sceneMaxBars = Math.max(...scene.patterns.map((p) => p.bars));

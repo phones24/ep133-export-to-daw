@@ -20,12 +20,12 @@ function Home() {
   const { dropRef } = useDroppedProjectFile();
 
   return (
-    <div className="min-w-[1100px] max-w-[1800px] p-4 min-h-screen grid grid-rows-[auto_1fr] mx-auto">
+    <div className="min-w-[1100px] max-w-[1800px] p-4 h-screen grid grid-rows-[auto_1fr] mx-auto">
       <div className="mb-2 empty:mb-0">
         <OfflineInformer />
       </div>
 
-      <div className="grid grid-rows-[auto_1fr_auto] gap-2">
+      <div className="grid grid-rows-[auto_1fr_auto] gap-2 max-h-full min-h-0">
         <header className="flex flex-col gap-2">
           <div className="flex justify-between">
             <FacePlateHeader />
@@ -39,7 +39,7 @@ function Home() {
 
         <main
           ref={dropRef as any}
-          className="bg-white h-full overflow-scroll border-1 p-4 shadow-[1px_1px_0px_1px_#00000099]"
+          className="bg-white h-full border-1 p-4 shadow-[1px_1px_0px_1px_#00000099] overflow-scroll"
         >
           {appState.includes(APP_STATES.CAN_DISPLAY_PROJECT) && (
             <Arrangements projectId={projectId} />

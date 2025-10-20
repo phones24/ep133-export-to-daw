@@ -1,5 +1,5 @@
 import { ExporterParams, TimeSignature } from '../../../types/types';
-import { getNextColor, getQuarterNotesPerBar, UNITS_PER_BEAT, unitsToTicks } from '../utils';
+import { getNextColor, getQuarterNotesPerBar, TICKS_PER_BEAT, ticksToMidiTicks } from '../utils';
 import { buildVstState } from './sampler';
 
 export type ReaperMidiEvent = {
@@ -137,11 +137,11 @@ function addTrackItem(
     rprTrack.timeSignature.denominator,
   );
 
-  const clipLengthInUnits = rprItem.lengthInBars * barLength * UNITS_PER_BEAT;
+  const clipLengthInTicks = rprItem.lengthInBars * barLength * TICKS_PER_BEAT;
 
   const events = rprItem.events
     .flat()
-    .filter((evt) => evt.position < clipLengthInUnits)
+    .filter((evt) => evt.position < clipLengthInTicks)
     .reduce(
       (acc, evt, index) => {
         const nextEvent = rprItem.events[index + 1];
@@ -157,18 +157,18 @@ function addTrackItem(
         }
 
         // prevent notes going beyond the item length
-        if (evt.position + noteLength > clipLengthInUnits) {
-          noteLength = evt.position + noteLength - clipLengthInUnits;
+        if (evt.position + noteLength > clipLengthInTicks) {
+          noteLength = evt.position + noteLength - clipLengthInTicks;
         }
 
         const noteOn = [
           'e',
-          unitsToTicks(evt.position - offset, PPQ),
+          ticksToMidiTicks(evt.position - offset, PPQ),
           '90',
           evt.note.toString(16),
           evt.velocity.toString(16),
         ];
-        const noteOff = ['e', unitsToTicks(noteLength, PPQ), '80', evt.note.toString(16), '00'];
+        const noteOff = ['e', ticksToMidiTicks(noteLength, PPQ), '80', evt.note.toString(16), '00'];
 
         offset = evt.position + noteLength;
         totalTicks += (noteOn[1] as number) + (noteOff[1] as number);

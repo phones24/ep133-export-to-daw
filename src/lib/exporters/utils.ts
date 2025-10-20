@@ -6,7 +6,7 @@ import { AbortError, audioFormatAsBitDepth, findSoundIdByPad } from '../utils';
 
 let _colorIndex = 0;
 
-export const UNITS_PER_BEAT = 96; // (384 / 4 beats)
+export const TICKS_PER_BEAT = 96; // (384 / 4 beats)
 const COLORS = [
   '#B2B0E8',
   '#E27D60',
@@ -186,8 +186,8 @@ export function getNextColor() {
   return color;
 }
 
-export function unitsToTicks(units: number, ppq = 480) {
-  return Math.round((units / UNITS_PER_BEAT) * ppq);
+export function ticksToMidiTicks(ticks: number, ppq = 480) {
+  return Math.round((ticks / TICKS_PER_BEAT) * ppq);
 }
 
 export function getQuarterNotesPerBar(numerator: number, denominator: number) {

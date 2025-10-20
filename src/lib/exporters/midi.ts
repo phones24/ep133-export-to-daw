@@ -9,7 +9,7 @@ import {
 } from '../../types/types';
 import midiTransformer from '../transformers/midi';
 import { AbortError } from '../utils';
-import { collectSamples, unitsToTicks } from './utils';
+import { collectSamples, ticksToMidiTicks } from './utils';
 
 async function exportMidi(
   projectId: string,
@@ -47,8 +47,8 @@ async function exportMidi(
 
     track.notes.forEach((note) => {
       midiTrack.addNote({
-        ticks: unitsToTicks(note.position, midi.header.ppq),
-        durationTicks: unitsToTicks(note.duration, midi.header.ppq),
+        ticks: ticksToMidiTicks(note.position, midi.header.ppq),
+        durationTicks: ticksToMidiTicks(note.duration, midi.header.ppq),
         velocity: Math.max(0, Math.min(1, note.velocity / 127)),
         midi: note.note + 12,
       });
