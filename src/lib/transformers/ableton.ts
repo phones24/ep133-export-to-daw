@@ -180,7 +180,7 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
     // and remap them
     const newClips: Record<string, AblClip> = {};
     drumTrack.tracks
-      .sort((a, b) =>
+      .toSorted((a, b) =>
         a.padCode.localeCompare(b.padCode, undefined, { numeric: true, sensitivity: 'base' }),
       )
       .forEach((track, idx) => {
