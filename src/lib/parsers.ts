@@ -287,6 +287,10 @@ export function collectScenesAndPatterns(files: TarFile[]) {
   }
 
   Object.entries(scenesIntermediateData).forEach(([sceneIndex, sceneData]) => {
+    if (!sceneMetadata[sceneIndex]) {
+      return;
+    }
+
     const patterns = getPatternsForScene(scenesIntermediateData, sceneMetadata[sceneIndex]);
     if (patterns.length === 0) {
       return;
