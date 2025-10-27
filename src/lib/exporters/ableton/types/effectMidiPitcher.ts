@@ -1,5 +1,6 @@
 import {
   AutomationTarget,
+  LastPresetRef,
   LomIdElement,
   MidiCCOnOffThresholds,
   MidiControllerRange,
@@ -9,13 +10,7 @@ import {
   ValueElement,
 } from './common';
 
-interface Mode {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  AutomationTarget: AutomationTarget;
-}
-
-interface Shaping {
+interface PitchParam {
   LomId: ValueElement;
   Manual: ValueElement;
   MidiControllerRange: MidiControllerRange;
@@ -23,7 +18,7 @@ interface Shaping {
   ModulationTarget: ModulationTarget;
 }
 
-interface Rate {
+interface PitchScaleDegreesParam {
   LomId: ValueElement;
   Manual: ValueElement;
   MidiControllerRange: MidiControllerRange;
@@ -31,7 +26,7 @@ interface Rate {
   ModulationTarget: ModulationTarget;
 }
 
-interface Amount {
+interface LowestParam {
   LomId: ValueElement;
   Manual: ValueElement;
   MidiControllerRange: MidiControllerRange;
@@ -39,7 +34,7 @@ interface Amount {
   ModulationTarget: ModulationTarget;
 }
 
-interface Feedback {
+interface RangeParam {
   LomId: ValueElement;
   Manual: ValueElement;
   MidiControllerRange: MidiControllerRange;
@@ -47,14 +42,20 @@ interface Feedback {
   ModulationTarget: ModulationTarget;
 }
 
-interface InvertFeedback {
+interface RangeModeParam {
+  LomId: ValueElement;
+  Manual: ValueElement;
+  AutomationTarget: AutomationTarget;
+}
+
+interface UseSongScaleParam {
   LomId: ValueElement;
   Manual: ValueElement;
   AutomationTarget: AutomationTarget;
   MidiCCOnOffThresholds: MidiCCOnOffThresholds;
 }
 
-interface VibratoOffset {
+interface StepWidthParam {
   LomId: ValueElement;
   Manual: ValueElement;
   MidiControllerRange: MidiControllerRange;
@@ -62,14 +63,7 @@ interface VibratoOffset {
   ModulationTarget: ModulationTarget;
 }
 
-interface HighpassEnabled {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  AutomationTarget: AutomationTarget;
-  MidiCCOnOffThresholds: MidiCCOnOffThresholds;
-}
-
-interface HighpassFrequency {
+interface StepWidthScaleDegreesParam {
   LomId: ValueElement;
   Manual: ValueElement;
   MidiControllerRange: MidiControllerRange;
@@ -77,39 +71,7 @@ interface HighpassFrequency {
   ModulationTarget: ModulationTarget;
 }
 
-interface Width {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  MidiControllerRange: MidiControllerRange;
-  AutomationTarget: AutomationTarget;
-  ModulationTarget: ModulationTarget;
-}
-
-interface Warmth {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  MidiControllerRange: MidiControllerRange;
-  AutomationTarget: AutomationTarget;
-  ModulationTarget: ModulationTarget;
-}
-
-interface OutputGain {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  MidiControllerRange: MidiControllerRange;
-  AutomationTarget: AutomationTarget;
-  ModulationTarget: ModulationTarget;
-}
-
-interface DryWet {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  MidiControllerRange: MidiControllerRange;
-  AutomationTarget: AutomationTarget;
-  ModulationTarget: ModulationTarget;
-}
-
-export interface ALSChorusContent {
+export interface ALSMidiPitcherContent {
   '@Id': number;
   LomId: ValueElement;
   LomIdView: ValueElement;
@@ -130,21 +92,22 @@ export interface ALSChorusContent {
   Annotation: ValueElement;
   SourceContext: SourceContext;
   OverwriteProtectionNumber: ValueElement;
-  Mode: Mode;
-  Shaping: Shaping;
-  Rate: Rate;
-  Amount: Amount;
-  Feedback: Feedback;
-  InvertFeedback: InvertFeedback;
-  VibratoOffset: VibratoOffset;
-  HighpassEnabled: HighpassEnabled;
-  HighpassFrequency: HighpassFrequency;
-  Width: Width;
-  Warmth: Warmth;
-  OutputGain: OutputGain;
-  DryWet: DryWet;
+  Pitch: PitchParam;
+  PitchScrollPosArranger: ValueElement;
+  PitchScrollPosEnvelope: ValueElement;
+  PitchScaleDegrees: PitchScaleDegreesParam;
+  PitchScaleDegreesScrollPosArranger: ValueElement;
+  PitchScaleDegreesScrollPosEnvelope: ValueElement;
+  Lowest: LowestParam;
+  LowestScrollPosArranger: ValueElement;
+  LowestScrollPosEnvelope: ValueElement;
+  Range: RangeParam;
+  RangeMode: RangeModeParam;
+  UseSongScale: UseSongScaleParam;
+  StepWidth: StepWidthParam;
+  StepWidthScaleDegrees: StepWidthScaleDegreesParam;
 }
 
-export interface ALSChorus {
-  Chorus2: ALSChorusContent;
+export interface ALSMidiPitcher {
+  MidiPitcher: ALSMidiPitcherContent;
 }

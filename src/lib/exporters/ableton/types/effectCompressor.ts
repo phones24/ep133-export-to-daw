@@ -1,5 +1,6 @@
 import {
   AutomationTarget,
+  LastPresetRef,
   LomIdElement,
   MidiCCOnOffThresholds,
   MidiControllerRange,
@@ -9,38 +10,7 @@ import {
   ValueElement,
 } from './common';
 
-interface LegacyFilterType {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  AutomationTarget: AutomationTarget;
-}
-
-interface FilterType {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  AutomationTarget: AutomationTarget;
-}
-
-interface CircuitLpHp {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  AutomationTarget: AutomationTarget;
-}
-
-interface CircuitBpNoMo {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  AutomationTarget: AutomationTarget;
-}
-
-interface Slope {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  AutomationTarget: AutomationTarget;
-  MidiCCOnOffThresholds: MidiCCOnOffThresholds;
-}
-
-interface Cutoff {
+interface Threshold {
   LomId: ValueElement;
   Manual: ValueElement;
   MidiControllerRange: MidiControllerRange;
@@ -48,7 +18,7 @@ interface Cutoff {
   ModulationTarget: ModulationTarget;
 }
 
-interface LegacyQ {
+interface Ratio {
   LomId: ValueElement;
   Manual: ValueElement;
   MidiControllerRange: MidiControllerRange;
@@ -56,31 +26,7 @@ interface LegacyQ {
   ModulationTarget: ModulationTarget;
 }
 
-interface Resonance {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  MidiControllerRange: MidiControllerRange;
-  AutomationTarget: AutomationTarget;
-  ModulationTarget: ModulationTarget;
-}
-
-interface Morph {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  MidiControllerRange: MidiControllerRange;
-  AutomationTarget: AutomationTarget;
-  ModulationTarget: ModulationTarget;
-}
-
-interface Drive {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  MidiControllerRange: MidiControllerRange;
-  AutomationTarget: AutomationTarget;
-  ModulationTarget: ModulationTarget;
-}
-
-interface ModHub {
+interface ExpansionRatio {
   LomId: ValueElement;
   Manual: ValueElement;
   MidiControllerRange: MidiControllerRange;
@@ -104,93 +50,14 @@ interface Release {
   ModulationTarget: ModulationTarget;
 }
 
-interface LfoAmount {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  MidiControllerRange: MidiControllerRange;
-  AutomationTarget: AutomationTarget;
-  ModulationTarget: ModulationTarget;
-}
-
-interface Type {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  AutomationTarget: AutomationTarget;
-}
-
-interface Frequency {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  MidiControllerRange: MidiControllerRange;
-  AutomationTarget: AutomationTarget;
-  ModulationTarget: ModulationTarget;
-}
-
-interface RateType {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  AutomationTarget: AutomationTarget;
-}
-
-interface BeatRate {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  MidiControllerRange: MidiControllerRange;
-  AutomationTarget: AutomationTarget;
-  ModulationTarget: ModulationTarget;
-}
-
-interface StereoMode {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  AutomationTarget: AutomationTarget;
-}
-
-interface Spin {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  MidiControllerRange: MidiControllerRange;
-  AutomationTarget: AutomationTarget;
-  ModulationTarget: ModulationTarget;
-}
-
-interface Phase {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  MidiControllerRange: MidiControllerRange;
-  AutomationTarget: AutomationTarget;
-  ModulationTarget: ModulationTarget;
-}
-
-interface Offset {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  MidiControllerRange: MidiControllerRange;
-  AutomationTarget: AutomationTarget;
-  ModulationTarget: ModulationTarget;
-}
-
-interface IsOn {
+interface AutoReleaseControlOnOff {
   LomId: ValueElement;
   Manual: ValueElement;
   AutomationTarget: AutomationTarget;
   MidiCCOnOffThresholds: MidiCCOnOffThresholds;
 }
 
-interface Quantize {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  AutomationTarget: AutomationTarget;
-  MidiCCOnOffThresholds: MidiCCOnOffThresholds;
-}
-
-interface BeatQuantize {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  AutomationTarget: AutomationTarget;
-}
-
-interface NoiseWidth {
+interface Gain {
   LomId: ValueElement;
   Manual: ValueElement;
   MidiControllerRange: MidiControllerRange;
@@ -198,19 +65,65 @@ interface NoiseWidth {
   ModulationTarget: ModulationTarget;
 }
 
-interface Lfo {
-  Type: Type;
-  Frequency: Frequency;
-  RateType: RateType;
-  BeatRate: BeatRate;
-  StereoMode: StereoMode;
-  Spin: Spin;
-  Phase: Phase;
-  Offset: Offset;
-  IsOn: IsOn;
-  Quantize: Quantize;
-  BeatQuantize: BeatQuantize;
-  NoiseWidth: NoiseWidth;
+interface GainCompensation {
+  LomId: ValueElement;
+  Manual: ValueElement;
+  AutomationTarget: AutomationTarget;
+  MidiCCOnOffThresholds: MidiCCOnOffThresholds;
+}
+
+interface DryWet {
+  LomId: ValueElement;
+  Manual: ValueElement;
+  MidiControllerRange: MidiControllerRange;
+  AutomationTarget: AutomationTarget;
+  ModulationTarget: ModulationTarget;
+}
+
+interface Model {
+  LomId: ValueElement;
+  Manual: ValueElement;
+  AutomationTarget: AutomationTarget;
+}
+
+interface LegacyModel {
+  LomId: ValueElement;
+  Manual: ValueElement;
+  AutomationTarget: AutomationTarget;
+}
+
+interface LogEnvelope {
+  LomId: ValueElement;
+  Manual: ValueElement;
+  AutomationTarget: AutomationTarget;
+  MidiCCOnOffThresholds: MidiCCOnOffThresholds;
+}
+
+interface LegacyEnvFollowerMode {
+  LomId: ValueElement;
+  Manual: ValueElement;
+  AutomationTarget: AutomationTarget;
+}
+
+interface Knee {
+  LomId: ValueElement;
+  Manual: ValueElement;
+  MidiControllerRange: MidiControllerRange;
+  AutomationTarget: AutomationTarget;
+  ModulationTarget: ModulationTarget;
+}
+
+interface LookAhead {
+  LomId: ValueElement;
+  Manual: ValueElement;
+  AutomationTarget: AutomationTarget;
+}
+
+interface SideListen {
+  LomId: ValueElement;
+  Manual: ValueElement;
+  AutomationTarget: AutomationTarget;
+  MidiCCOnOffThresholds: MidiCCOnOffThresholds;
 }
 
 interface MpeSettings {
@@ -239,14 +152,6 @@ interface RoutedInput {
   Volume: Volume;
 }
 
-interface DryWet {
-  LomId: ValueElement;
-  Manual: ValueElement;
-  MidiControllerRange: MidiControllerRange;
-  AutomationTarget: AutomationTarget;
-  ModulationTarget: ModulationTarget;
-}
-
 interface OnOff {
   LomId: ValueElement;
   Manual: ValueElement;
@@ -260,7 +165,37 @@ interface SideChain {
   DryWet: DryWet;
 }
 
-export interface ALSFilterContent {
+interface Mode {
+  LomId: ValueElement;
+  Manual: ValueElement;
+  AutomationTarget: AutomationTarget;
+}
+
+interface Freq {
+  LomId: ValueElement;
+  Manual: ValueElement;
+  MidiControllerRange: MidiControllerRange;
+  AutomationTarget: AutomationTarget;
+  ModulationTarget: ModulationTarget;
+}
+
+interface Q {
+  LomId: ValueElement;
+  Manual: ValueElement;
+  MidiControllerRange: MidiControllerRange;
+  AutomationTarget: AutomationTarget;
+  ModulationTarget: ModulationTarget;
+}
+
+interface SideChainEq {
+  On: On;
+  Mode: Mode;
+  Freq: Freq;
+  Q: Q;
+  Gain: Gain;
+}
+
+export interface ALSCompressorContent {
   '@Id': number;
   LomId: ValueElement;
   LomIdView: ValueElement;
@@ -281,26 +216,34 @@ export interface ALSFilterContent {
   Annotation: ValueElement;
   SourceContext: SourceContext;
   OverwriteProtectionNumber: ValueElement;
-  LegacyMode: ValueElement;
-  LegacyFilterType: LegacyFilterType;
-  FilterType: FilterType;
-  CircuitLpHp: CircuitLpHp;
-  CircuitBpNoMo: CircuitBpNoMo;
-  Slope: Slope;
-  Cutoff: Cutoff;
-  CutoffLimit: ValueElement;
-  LegacyQ: LegacyQ;
-  Resonance: Resonance;
-  Morph: Morph;
-  Drive: Drive;
-  ModHub: ModHub;
+  Threshold: Threshold;
+  Ratio: Ratio;
+  ExpansionRatio: ExpansionRatio;
   Attack: Attack;
   Release: Release;
-  LfoAmount: LfoAmount;
-  Lfo: Lfo;
+  AutoReleaseControlOnOff: AutoReleaseControlOnOff;
+  Gain: Gain;
+  GainCompensation: GainCompensation;
+  DryWet: DryWet;
+  Model: Model;
+  LegacyModel: LegacyModel;
+  LogEnvelope: LogEnvelope;
+  LegacyEnvFollowerMode: LegacyEnvFollowerMode;
+  Knee: Knee;
+  LookAhead: LookAhead;
+  SideListen: SideListen;
   SideChain: SideChain;
+  SideChainEq: SideChainEq;
+  Live8LegacyMode: ValueElement;
+  ViewMode: ValueElement;
+  IsOutputCurveVisible: ValueElement;
+  RmsTimeShort: ValueElement;
+  RmsTimeLong: ValueElement;
+  ReleaseTimeShort: ValueElement;
+  ReleaseTimeLong: ValueElement;
+  CrossfaderSmoothingTime: ValueElement;
 }
 
-export interface ALSFilter {
-  AutoFilter: ALSFilterContent;
+export interface ALSCompressor {
+  Compressor2: ALSCompressorContent;
 }

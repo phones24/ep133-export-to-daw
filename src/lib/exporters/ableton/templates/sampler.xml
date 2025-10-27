@@ -721,7 +721,7 @@
             <CurrentOverlay Value="0" />
             <IsOn>
               <LomId Value="0" />
-              <Manual Value="true" />
+              <Manual Value="false" />
               <AutomationTarget Id="22313">
                 <LockEnvelope Value="0" />
               </AutomationTarget>

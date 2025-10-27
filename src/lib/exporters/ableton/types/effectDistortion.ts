@@ -1,5 +1,6 @@
 import {
   AutomationTarget,
+  LastPresetRef,
   LomIdElement,
   MidiControllerRange,
   ModulationTarget,

@@ -8,7 +8,6 @@ import {
   SampleReport,
 } from '../../../types/types';
 import { AbortError } from '../../utils';
-import { collectSamples } from '../utils';
 import { buildProject } from './builders';
 
 async function exportAbleton(
@@ -36,15 +35,15 @@ async function exportAbleton(
   let sampleReport: SampleReport | undefined;
 
   if (exporterParams.includeArchivedSamples) {
-    const { samples, sampleReport: report } = await collectSamples(
-      data,
-      progressCallback,
-      abortSignal,
-    );
-    samples.forEach((s) => {
-      zippedProject.file(`Project${projectId} Project/Samples/Imported/${s.name}`, s.data);
-    });
-    sampleReport = report;
+    // const { samples, sampleReport: report } = await collectSamples(
+    //   data,
+    //   progressCallback,
+    //   abortSignal,
+    // );
+    // samples.forEach((s) => {
+    //   zippedProject.file(`Project${projectId} Project/Samples/Imported/${s.name}`, s.data);
+    // });
+    // sampleReport = report;
   }
 
   progressCallback({ progress: 90, status: 'Bundle everything...' });

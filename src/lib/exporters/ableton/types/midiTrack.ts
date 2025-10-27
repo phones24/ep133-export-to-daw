@@ -6,7 +6,7 @@ import {
   ModulationTarget,
   ValueElement,
 } from './common';
-import { TrackSendHolder } from './trackSendHolder';
+import type { ALSTrackSendHolder } from './trackSendHolder';
 
 interface ManualElement extends LomIdElement {
   Manual: ValueElement;
@@ -74,7 +74,7 @@ export interface Mixer {
     Value: {};
   };
   MpePitchBendUsesTuning: ValueElement;
-  Sends: TrackSendHolder;
+  Sends: ALSTrackSendHolder;
   Speaker: ManualElement;
   SoloSink: ValueElement;
   PanMode: ValueElement;
@@ -257,7 +257,9 @@ interface DeviceChain {
   MainSequencer: MainSequencer;
   FreezeSequencer: FreezeSequencer;
   DeviceChain: {
-    Devices: {};
+    Devices: {
+      '#': Array<any>;
+    };
     SignalModulations: {};
   };
 }

@@ -9,23 +9,24 @@ import {
 import { EFFECTS } from '../../constants';
 import abletonTransformer, { AblClip, AblScene, AblTrack } from '../../transformers/ableton';
 import { getQuarterNotesPerBar } from '../utils';
-import { ALSDrumBranch } from './templates/drumBranch';
-import { ALSDrumRack } from './templates/drumRack';
-import { ALSChorus } from './templates/effectChorus';
-import { ALSCompressor } from './templates/effectCompressor';
-import { ALSDelay } from './templates/effectDelay';
-import { ALSDistortion } from './templates/effectDistortion';
-import { ALSFilter } from './templates/effectFilter';
-import { ALSReverb } from './templates/effectReverb';
-import { ALSGroupTrack } from './templates/groupTrack';
-import { ALSMidiClip, ALSMidiClipContent } from './templates/midiClip';
-import { ALSMidiTrack } from './templates/midiTrack';
-import { ALSProject } from './templates/project';
-import { ALSReturnTrack } from './templates/returnTrack';
-import { ALSMultiSamplerContent, ALSSampler } from './templates/sampler';
-import { ALSScene, ALSSceneContent } from './templates/scene';
-import { ALSOriginalSimplerContent, ALSSimpler } from './templates/simpler';
-import { ALSTrackSendHolder } from './templates/trackSendHolder';
+import { ALSDrumBranch } from './types/drumBranch';
+import { ALSDrumRack } from './types/drumRack';
+import { ALSChorus } from './types/effectChorus';
+import { ALSCompressor } from './types/effectCompressor';
+import { ALSDelay } from './types/effectDelay';
+import { ALSDistortion } from './types/effectDistortion';
+import { ALSFilter } from './types/effectFilter';
+import { ALSMidiPitcher } from './types/effectMidiPitcher';
+import { ALSReverb } from './types/effectReverb';
+import { ALSGroupTrack } from './types/groupTrack';
+import { ALSMidiClip, ALSMidiClipContent } from './types/midiClip';
+import { ALSMidiTrack } from './types/midiTrack';
+import { ALSProject } from './types/project';
+import { ALSReturnTrack } from './types/returnTrack';
+import { ALSMultiSamplerContent, ALSSampler } from './types/sampler';
+import { ALSScene, ALSSceneContent } from './types/scene';
+import { ALSOriginalSimplerContent, ALSSimpler } from './types/simpler';
+import { ALSTrackSendHolder } from './types/trackSendHolder';
 import {
   fixIds,
   getId,
@@ -40,7 +41,7 @@ let _localGroupId = -1;
 let _localTrackColor = -1;
 let _localGroupTrackColor = -1;
 
-export async function buildMidiClip(
+async function buildMidiClip(
   koClip: AblClip,
   clipIdx: number,
   color: number,
@@ -110,6 +111,7 @@ export async function buildMidiClip(
           return {
             '@Time': note.position / 96,
             '@Duration': dur,
+            // '@Velocity': (note.velocity / 127) * 100, // 127 velocity is too loud in Ableton
             '@Velocity': note.velocity,
             '@OffVelocity': 64,
             '@NoteId': _noteId++,
@@ -125,7 +127,7 @@ export async function buildMidiClip(
   return midiClip;
 }
 
-export async function buildSamplerDevice(koTrack: AblTrack, useSampler = false) {
+async function buildSamplerDevice(koTrack: AblTrack, useSampler = false) {
   const [samplerTemplate, simplerTemplate] = await Promise.all([
     loadTemplate<ALSSampler>('sampler'),
     loadTemplate<ALSSimpler>('simpler'),
@@ -161,7 +163,6 @@ export async function buildSamplerDevice(koTrack: AblTrack, useSampler = false) 
     koEnvRangeToSeconds(koTrack.attack, koTrack.soundLength) * 1000;
   device.VolumeAndPan.Panorama.Manual['@Value'] = koTrack.pan;
   device.Pitch.TransposeKey.Manual['@Value'] =
-    // (koTrack.pitch || 0) + koTrack.samplePitch + (60 - koTrack.rootNote); // root note of the sample should be taken into account
     (koTrack.pitch || 0) + koTrack.samplePitch + (60 - koTrack.rootNote); // root note of the sample should be taken into account
 
   if (koTrack.timeStretch === 'bars') {
@@ -216,7 +217,7 @@ export async function buildSamplerDevice(koTrack: AblTrack, useSampler = false) 
   };
 }
 
-export async function buildDrumRackDevice(koTrack: AblTrack) {
+async function buildDrumRackDevice(koTrack: AblTrack) {
   const [drumRackTemplate, drumBranchTemplate] = await Promise.all([
     loadTemplate<ALSDrumRack>('drumRack'),
     loadTemplate<ALSDrumBranch>('drumBranch'),
@@ -250,7 +251,19 @@ export async function buildDrumRackDevice(koTrack: AblTrack) {
   };
 }
 
-export async function buildTrack(
+async function buildEffectMidiPitcher(koTrack: AblTrack) {
+  const effectMidiPitcherTemplate = await loadTemplate<ALSMidiPitcher>('effectMidiPitcher');
+  const device = structuredClone(effectMidiPitcherTemplate.MidiPitcher);
+  const normalized = koTrack.faderParams[FaderParam.PTC] * 2 - 1;
+
+  device.Pitch.Manual['@Value'] = Math.round(normalized * 5);
+
+  return {
+    MidiPitcher: device,
+  };
+}
+
+async function buildTrack(
   koTrack: AblTrack,
   maxScenes: number,
   trackGroupId: number,
@@ -268,17 +281,28 @@ export async function buildTrack(
   midiTrack.DeviceChain.MainSequencer.ClipTimeable.ArrangerAutomation.Events.MidiClip = [];
   midiTrack.DeviceChain.Mixer.Volume.Manual['@Value'] = koTrack.volume / 2;
   midiTrack.TrackGroupId['@Value'] = trackGroupId;
+  midiTrack.DeviceChain.DeviceChain.Devices['#'] = [];
+
+  if (koTrack.faderParams[FaderParam.PTC] !== -1) {
+    midiTrack.DeviceChain.DeviceChain.Devices['#'].push(await buildEffectMidiPitcher(koTrack));
+  }
 
   if (koTrack.drumRack && exporterParams.includeArchivedSamples) {
-    midiTrack.DeviceChain.DeviceChain.Devices = await buildDrumRackDevice(koTrack);
+    midiTrack.DeviceChain.DeviceChain.Devices['#'].push(await buildDrumRackDevice(koTrack));
   }
 
   if (!koTrack.drumRack && koTrack.sampleName && exporterParams.includeArchivedSamples) {
-    midiTrack.DeviceChain.DeviceChain.Devices = await buildSamplerDevice(
-      koTrack,
-      exporterParams.useSampler,
+    midiTrack.DeviceChain.DeviceChain.Devices['#'].push(
+      await buildSamplerDevice(koTrack, exporterParams.useSampler),
     );
   }
+
+  // make sure id's are sequential in device chain
+  midiTrack.DeviceChain.DeviceChain.Devices['#'].forEach((device, deviceIdx) => {
+    Object.values(device).forEach((devContent: any) => {
+      devContent['@Id'] = deviceIdx;
+    });
+  });
 
   // make sure each tracks has the same empty slots for clips
   // must be equeal to GroupTrackSlot if this track is in a group
@@ -351,7 +375,7 @@ export async function buildTrack(
   return { MidiTrack: midiTrack };
 }
 
-export async function buildGroupTrack(
+async function buildGroupTrack(
   koTrack: AblTrack,
   exporterParams: ExporterParams,
   maxScenes: number,
@@ -387,7 +411,7 @@ export async function buildGroupTrack(
   return { GroupTrack: groupTrack };
 }
 
-export async function buildScenes(scenes: AblScene[], settings: ProjectSettings) {
+async function buildScenes(scenes: AblScene[], settings: ProjectSettings) {
   const sceneTemplate = await loadTemplate<ALSScene>('scene');
   const result: ALSSceneContent[] = [];
 
@@ -404,11 +428,7 @@ export async function buildScenes(scenes: AblScene[], settings: ProjectSettings)
   return result;
 }
 
-export async function buildTracks(
-  tracks: AblTrack[],
-  maxScenes: number,
-  exporterParams: ExporterParams,
-) {
+async function buildTracks(tracks: AblTrack[], maxScenes: number, exporterParams: ExporterParams) {
   const result = [];
   let trackGroupId = -1;
   let currentGroup = '';
@@ -431,7 +451,7 @@ export async function buildTracks(
   return result;
 }
 
-export async function buildReturnTrack(projectData: ProjectRawData, trackId: number = 0) {
+async function buildReturnTrack(projectData: ProjectRawData, trackId: number = 0) {
   const returnTrackTemplate = await loadTemplate<ALSReturnTrack>('returnTrack');
   const returnTrack = structuredClone(returnTrackTemplate.ReturnTrack);
 

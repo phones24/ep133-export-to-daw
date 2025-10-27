@@ -51,6 +51,7 @@ const templateMap: Record<string, () => Promise<any>> = {
   effectDistortion: () => import('./templates/effectDistortion.xml?raw'),
   effectFilter: () => import('./templates/effectFilter.xml?raw'),
   effectCompressor: () => import('./templates/effectCompressor.xml?raw'),
+  effectMidiPitcher: () => import('./templates/effectMidiPitcher.xml?raw'),
 };
 
 export async function loadTemplate<T>(templateName: string): Promise<T> {

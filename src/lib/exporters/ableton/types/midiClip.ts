@@ -2,11 +2,6 @@ interface ValueElement {
   '@Value': any;
 }
 
-interface MidiClipAttrs {
-  '@Id': number;
-  '@Time': number;
-}
-
 interface MidiNoteEvent {
   '@Time': number;
   '@Duration': number;

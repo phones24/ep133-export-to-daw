@@ -43,7 +43,7 @@ function doubleToBytes(num: number): number[] {
 
 function dbToBytes(dbValue: number): number[] {
   // convert dB to linear gain: 10^(dB/20)
-  const linearGain = Math.pow(10, dbValue / 20);
+  const linearGain = 10 ** (dbValue / 20);
 
   return doubleToBytes(linearGain);
 }
