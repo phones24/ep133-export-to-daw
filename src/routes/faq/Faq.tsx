@@ -19,7 +19,7 @@ function Faq() {
         </h2>
         <p className="text-sm font-mono">
           Several reasons. The main one is that the EP133 uses a custom FX processor that is hard to
-          recreate in a DAW one to one. Also, fader parameters are not exported yet, so if you used
+          recreate in a DAW one to one. Also, fader automation is not exported yet, so if you used
           fader automation, the result will differ. Sample stretching algorithms are different as
           well.
           <br />
@@ -32,22 +32,12 @@ function Faq() {
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold mb-2">
-          When fader parameters and automation will be supported?
-        </h2>
-        <p className="text-sm font-mono">
-          Hopefully soon. The fader data is already fetched and recognized. I still need to
-          implement the export logic.
-        </p>
-      </section>
-
-      <section>
         <h2 className="text-xl font-semibold mb-2">Please add support for [my DAW here]</h2>
         <p className="text-sm font-mono">
           I’d love to. Reverse engineering DAW project formats takes a tremendous amount of time and
-          effort. It’s easier for DAWs with text, XML, or JSON formats (like REAPER or Ableton). For
-          proprietary binary formats, it’s much more challenging. If you have a specific DAW in
-          mind, let me know.
+          effort. It’s easier for DAWs that uses textXML, or JSON formats (like REAPER or Ableton).
+          For proprietary binary formats, it’s much more challenging. But if you have a specific DAW
+          in mind, let me know.
           <br />
           <br />
           If your DAW is not supported natively, you can always export to MIDI. Every DAW supports
@@ -60,8 +50,9 @@ function Faq() {
           Can I export audio for individual tracks with this tool?
         </h2>
         <p className="text-sm font-mono">
-          No. If you want something like Overbridge, you need to record tracks manually, one by one,
-          muting the others. The EP133 cannot stream multichannel audio directly to your DAW.
+          No. If you're thinking of something like Overbridge - it is not possible, the device
+          cannot stream multichannel audio directly to your DAW. You need to record tracks manually,
+          one by one, muting the others.
         </p>
       </section>
 

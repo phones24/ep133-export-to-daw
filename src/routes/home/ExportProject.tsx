@@ -28,7 +28,6 @@ function ExportProject() {
     'export_includeArchivedSamples',
     true,
   );
-  const [useSampler, setUseSampler] = usePersistedState('export_useSampler', false);
   const [clips, setClips] = usePersistedState('export_clips', false);
   const [groupTracks, setGroupTracks] = usePersistedState('export_groupTracks', true);
   const [drumRackFirstGroup, setDrumRackFirstGroup] = usePersistedState(
@@ -50,7 +49,6 @@ function ExportProject() {
     sampleReport,
   } = useExportProject(format, {
     includeArchivedSamples,
-    useSampler,
     clips,
     groupTracks,
     drumRackFirstGroup,
@@ -135,14 +133,6 @@ function ExportProject() {
                     title="Include samples"
                     disabled={isPending}
                     helperText="Samples will be exported as separate WAV files and bundled with the project. Sampler instrument will be assigned to each track that has a sample."
-                  />
-                  <CheckBox
-                    checked={useSampler}
-                    onChange={(checked) => setUseSampler(checked)}
-                    title="Use «Sampler» instead of «Simpler»"
-                    disabled={isPending || !includeArchivedSamples}
-                    className="ml-4"
-                    helperText="«Sampler» will be used for samples (could not be available in some Live editions)"
                   />
                   <CheckBox
                     checked={drumRackFirstGroup}

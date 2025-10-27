@@ -16,18 +16,17 @@ import { ALSCompressor } from './types/effectCompressor';
 import { ALSDelay } from './types/effectDelay';
 import { ALSDistortion } from './types/effectDistortion';
 import { ALSFilter } from './types/effectFilter';
-import { ALSMidiPitcher } from './types/effectMidiPitcher';
 import { ALSReverb } from './types/effectReverb';
 import { ALSGroupTrack } from './types/groupTrack';
 import { ALSMidiClip, ALSMidiClipContent } from './types/midiClip';
 import { ALSMidiTrack } from './types/midiTrack';
 import { ALSProject } from './types/project';
 import { ALSReturnTrack } from './types/returnTrack';
-import { ALSMultiSamplerContent, ALSSampler } from './types/sampler';
 import { ALSScene, ALSSceneContent } from './types/scene';
-import { ALSOriginalSimplerContent, ALSSimpler } from './types/simpler';
+import { ALSSimpler } from './types/simpler';
 import { ALSTrackSendHolder } from './types/trackSendHolder';
 import {
+  filterFreqFromNormalized,
   fixIds,
   getId,
   gzipString,
@@ -95,31 +94,43 @@ async function buildMidiClip(
   midiClip.Notes.KeyTracks.KeyTrack = [];
   let _noteId = 0;
 
-  Object.entries(grouppedNotes).forEach(([note, notes], groupIndex) => {
+  Object.entries(grouppedNotes).forEach(([noteValueStr, notes], groupIndex) => {
+    let noteValue = parseInt(noteValueStr, 10);
+
+    if (koClip.faderParams[FaderParam.TUNE] !== -1) {
+      const normalized = (koClip.faderParams[FaderParam.TUNE] - 0.5) * 2; // from 0-1 to -1 to +1
+      noteValue += Math.round(normalized * 12);
+    }
+
     midiClip.Notes.KeyTracks.KeyTrack.push({
       '@Id': groupIndex,
       Notes: {
-        MidiNoteEvent: notes.map((note, noteIndex) => {
-          let dur = note.duration / 96;
+        MidiNoteEvent: notes.map((noteData, noteIndex) => {
+          let dur = noteData.duration / 96;
           const nextNote = notes[noteIndex + 1];
 
           // making sure same notes are not overlapping
-          if (nextNote && note.position / 96 + dur > nextNote.position / 96) {
-            dur = nextNote.position / 96 - note.position / 96;
+          if (nextNote && noteData.position / 96 + dur > nextNote.position / 96) {
+            dur = nextNote.position / 96 - noteData.position / 96;
+          }
+
+          let velocity = noteData.velocity;
+
+          if (koClip.faderParams[FaderParam.VEL] !== -1) {
+            velocity = koClip.faderParams[FaderParam.VEL] * 127;
           }
 
           return {
-            '@Time': note.position / 96,
+            '@Time': noteData.position / 96,
             '@Duration': dur,
-            // '@Velocity': (note.velocity / 127) * 100, // 127 velocity is too loud in Ableton
-            '@Velocity': note.velocity,
+            '@Velocity': velocity,
             '@OffVelocity': 64,
             '@NoteId': _noteId++,
           };
         }),
       },
       MidiKey: {
-        '@Value': note,
+        '@Value': noteValue,
       },
     });
   });
@@ -127,27 +138,25 @@ async function buildMidiClip(
   return midiClip;
 }
 
-async function buildSamplerDevice(koTrack: AblTrack, useSampler = false) {
-  const [samplerTemplate, simplerTemplate] = await Promise.all([
-    loadTemplate<ALSSampler>('sampler'),
-    loadTemplate<ALSSimpler>('simpler'),
-  ]);
-
-  let device: ALSMultiSamplerContent | ALSOriginalSimplerContent;
-
-  if (useSampler) {
-    device = structuredClone(samplerTemplate.MultiSampler);
-  } else {
-    device = structuredClone(simplerTemplate.OriginalSimpler);
-  }
+async function buildSimplerDevice(koTrack: AblTrack) {
+  const simplerTemplate = await loadTemplate<ALSSimpler>('simpler');
+  const device = structuredClone(simplerTemplate.OriginalSimpler);
 
   device.LastPresetRef.Value = {};
-  device.Globals.PlaybackMode['@Value'] = koTrack.playMode === 'oneshot' ? 1 : 0;
+  switch (koTrack.playMode) {
+    case 'legato':
+    case 'oneshot':
+      device.Globals.PlaybackMode['@Value'] = 1;
+      break;
+    case 'key':
+      device.Globals.PlaybackMode['@Value'] = 0;
+      break;
+  }
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleRef.FileRef.RelativePath[
     '@Value'
   ] = `Samples/Imported/${koTrack.sampleName}`;
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.Name['@Value'] = koTrack.name;
-  // device.Player.MultiSampleMap.SampleParts.MultiSamplePart.RootKey['@Value'] = koTrack.rootNote;
+  device.Player.MultiSampleMap.SampleParts.MultiSamplePart.RootKey['@Value'] = koTrack.rootNote;
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleStart['@Value'] = koTrack.trimLeft;
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleEnd['@Value'] = koTrack.trimRight;
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleWarpProperties.TimeSignature.TimeSignatures.RemoteableTimeSignature.Numerator[
@@ -157,13 +166,67 @@ async function buildSamplerDevice(koTrack: AblTrack, useSampler = false) {
     '@Value'
   ] = koTrack.timeSignature.denominator;
 
+  // setting velocity scaling to 20% to match KO behavior
+  device.VolumeAndPan.VolumeVelScale.Manual['@Value'] = 0.2;
+
   device.VolumeAndPan.Envelope.ReleaseTime.Manual['@Value'] =
     koEnvRangeToSeconds(koTrack.release, koTrack.soundLength) * 1000;
   device.VolumeAndPan.Envelope.AttackTime.Manual['@Value'] =
     koEnvRangeToSeconds(koTrack.attack, koTrack.soundLength) * 1000;
   device.VolumeAndPan.Panorama.Manual['@Value'] = koTrack.pan;
-  device.Pitch.TransposeKey.Manual['@Value'] =
-    (koTrack.pitch || 0) + koTrack.samplePitch + (60 - koTrack.rootNote); // root note of the sample should be taken into account
+
+  // overriding attack time if ATK fader param is defined
+  if (koTrack.faderParams[FaderParam.ATK] !== -1) {
+    device.VolumeAndPan.Envelope.AttackTime.Manual['@Value'] =
+      koEnvRangeToSeconds(koTrack.faderParams[FaderParam.ATK] * 255, koTrack.soundLength) * 1000;
+  }
+
+  // overriding release time if REL fader param is defined
+  if (koTrack.faderParams[FaderParam.REL] !== -1) {
+    device.VolumeAndPan.Envelope.ReleaseTime.Manual['@Value'] =
+      koEnvRangeToSeconds(koTrack.faderParams[FaderParam.REL] * 255, koTrack.soundLength) * 1000;
+  }
+
+  let pitch = koTrack.pitch || 0;
+  if (koTrack.samplePitch) {
+    pitch += koTrack.samplePitch;
+  }
+
+  // adding PITCH fader param if defined
+  if (koTrack.faderParams[FaderParam.PTC] !== -1) {
+    const normalized = (koTrack.faderParams[FaderParam.PTC] - 0.5) * 2; // from 0-1 to -1 to +1
+    pitch += Math.round(normalized * 5);
+  }
+
+  device.Pitch.TransposeKey.Manual['@Value'] = pitch;
+
+  // adding vibrato from MOD fader param if defined
+  if (koTrack.faderParams[FaderParam.MOD] !== -1) {
+    device.Lfo.IsOn.Manual['@Value'] = 'true';
+    // KO's MOD wheel on 100% is roughly equal to 5% LFO pitch modulation
+    device.Pitch.PitchLfoAmount.Manual['@Value'] = koTrack.faderParams[FaderParam.MOD] / 20;
+    device.Lfo.Slot.Value.SimplerLfo.RateType.Manual['@Value'] = 1; // tempo synced 1/16
+  }
+
+  if (koTrack.faderParams[FaderParam.LPF] !== -1 && koTrack.faderParams[FaderParam.LPF] !== 1) {
+    device.Filter.IsOn.Manual['@Value'] = 'true';
+    device.Filter.Slot.Value.SimplerFilter.Type.Manual['@Value'] = 0; // Low Pass
+    device.Filter.Slot.Value.SimplerFilter.Slope.Manual['@Value'] = 'true'; // 24db/oct
+    device.Filter.Slot.Value.SimplerFilter.Freq.Manual['@Value'] = filterFreqFromNormalized(
+      koTrack.faderParams[FaderParam.LPF] * 0.9, // lowering max freq to match KO behavior
+    );
+  }
+
+  if (koTrack.faderParams[FaderParam.HPF] !== -1 && koTrack.faderParams[FaderParam.HPF] !== 0) {
+    device.Filter.IsOn.Manual['@Value'] = 'true';
+    device.Filter.Slot.Value.SimplerFilter.Type.Manual['@Value'] = 1; // High Pass
+    device.Filter.Slot.Value.SimplerFilter.Slope.Manual['@Value'] = 'true'; // 24db/oct
+    device.Filter.Slot.Value.SimplerFilter.Freq.Manual['@Value'] = filterFreqFromNormalized(
+      koTrack.faderParams[FaderParam.HPF] * 0.9, // lowering max freq to match KO behavior
+    );
+  }
+
+  // TODO: add bandpass filter
 
   if (koTrack.timeStretch === 'bars') {
     device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleWarpProperties.IsWarped[
@@ -213,7 +276,7 @@ async function buildSamplerDevice(koTrack: AblTrack, useSampler = false) {
   }
 
   return {
-    [useSampler ? 'MultiSampler' : 'OriginalSimpler']: device,
+    OriginalSimpler: device,
   };
 }
 
@@ -241,25 +304,13 @@ async function buildDrumRackDevice(koTrack: AblTrack) {
     drumBranch.BranchInfo.ReceivingNote['@Value'] = note;
     drumBranch.BranchInfo.SendingNote['@Value'] = 60; // not sure if this matters
     drumBranch.BranchInfo.ChokeGroup['@Value'] = subtrack.inChokeGroup ? 1 : 0;
-    drumBranch.DeviceChain.MidiToAudioDeviceChain.Devices = await buildSamplerDevice(subtrack);
+    drumBranch.DeviceChain.MidiToAudioDeviceChain.Devices = await buildSimplerDevice(subtrack);
 
     device.Branches.DrumBranch.push(drumBranch);
   }
 
   return {
     DrumGroupDevice: device,
-  };
-}
-
-async function buildEffectMidiPitcher(koTrack: AblTrack) {
-  const effectMidiPitcherTemplate = await loadTemplate<ALSMidiPitcher>('effectMidiPitcher');
-  const device = structuredClone(effectMidiPitcherTemplate.MidiPitcher);
-  const normalized = koTrack.faderParams[FaderParam.PTC] * 2 - 1;
-
-  device.Pitch.Manual['@Value'] = Math.round(normalized * 5);
-
-  return {
-    MidiPitcher: device,
   };
 }
 
@@ -279,12 +330,21 @@ async function buildTrack(
   midiTrack.Name.UserName['@Value'] = midiTrack.Name.EffectiveName['@Value'];
   midiTrack.Color['@Value'] = 8 + _localTrackColor++; // started with 8th color in the Ableton palette, why not
   midiTrack.DeviceChain.MainSequencer.ClipTimeable.ArrangerAutomation.Events.MidiClip = [];
-  midiTrack.DeviceChain.Mixer.Volume.Manual['@Value'] = koTrack.volume / 2;
   midiTrack.TrackGroupId['@Value'] = trackGroupId;
   midiTrack.DeviceChain.DeviceChain.Devices['#'] = [];
+  midiTrack.DeviceChain.Mixer.Volume.Manual['@Value'] = koTrack.volume;
 
-  if (koTrack.faderParams[FaderParam.PTC] !== -1) {
-    midiTrack.DeviceChain.DeviceChain.Devices['#'].push(await buildEffectMidiPitcher(koTrack));
+  if (koTrack.faderParams[FaderParam.PAN] !== -1) {
+    midiTrack.DeviceChain.Mixer.Pan.Manual['@Value'] =
+      (koTrack.faderParams[FaderParam.PAN] - 0.5) * 2;
+  }
+
+  if (koTrack.faderParams[FaderParam.LVL] !== -1) {
+    // setting volume to the minimum of track volume and fader param
+    midiTrack.DeviceChain.Mixer.Volume.Manual['@Value'] = Math.min(
+      koTrack.volume,
+      koTrack.faderParams[FaderParam.LVL],
+    );
   }
 
   if (koTrack.drumRack && exporterParams.includeArchivedSamples) {
@@ -292,9 +352,7 @@ async function buildTrack(
   }
 
   if (!koTrack.drumRack && koTrack.sampleName && exporterParams.includeArchivedSamples) {
-    midiTrack.DeviceChain.DeviceChain.Devices['#'].push(
-      await buildSamplerDevice(koTrack, exporterParams.useSampler),
-    );
+    midiTrack.DeviceChain.DeviceChain.Devices['#'].push(await buildSimplerDevice(koTrack));
   }
 
   // make sure id's are sequential in device chain
@@ -399,7 +457,7 @@ async function buildGroupTrack(
     });
   }
 
-  if (exporterParams.sendEffects) {
+  if (exporterParams.sendEffects && koTrack.faderParams[FaderParam.FX] !== -1) {
     const trackSendHolderTemplate = await loadTemplate<ALSTrackSendHolder>('trackSendHolder');
     const trackSendHolder = structuredClone(trackSendHolderTemplate.TrackSendHolder);
 

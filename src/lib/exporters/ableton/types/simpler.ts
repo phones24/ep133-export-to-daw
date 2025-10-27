@@ -35,9 +35,9 @@ interface LastPresetRef {
 }
 
 interface WarpMarker {
-  _attrs: { Id: number };
-  SecTime: number;
-  BeatTime: number;
+  '@Id': number;
+  '@SecTime': number;
+  '@BeatTime': number;
 }
 
 interface WarpMarkers {
@@ -290,7 +290,9 @@ interface SimplerFilter {
 interface Filter {
   IsOn: ManualElement;
   Slot: {
-    Value: SimplerFilter;
+    Value: {
+      SimplerFilter: SimplerFilter;
+    };
   };
 }
 

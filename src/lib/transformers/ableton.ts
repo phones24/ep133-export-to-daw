@@ -48,6 +48,7 @@ export type AblClip = {
   sceneIndex: number;
   sceneName: string;
   timeSignature: TimeSignature;
+  faderParams: { [K in FaderParam]: number };
 };
 
 export type AblScene = {
@@ -69,24 +70,21 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
 
     scene.patterns.forEach((pattern) => {
       let track = tracks.find((c) => c.padCode === pattern.pad);
+      const pad = findPad(pattern.pad, pads);
+      if (!pad) {
+        throw new Error(`Could not find pad for ${pattern.pad}, pads: ${JSON.stringify(pads)}`);
+      }
+      const faderParams = data.settings.groupFaderParams[pad.group];
 
       if (!track) {
         const soundId = findSoundIdByPad(pattern.pad, pads) || 0;
         const sound = findSoundByPad(pattern.pad, pads, data.sounds);
-        const pad = findPad(pattern.pad, pads);
-
-        if (!pad) {
-          throw new Error(`Could not find pad for ${pattern.pad}, pads: ${JSON.stringify(pads)}`);
-        }
-
-        const faderParams = data.settings.groupFaderParams[pad.group];
-
         track = {
           ...omit(pad, ['file', 'rawData']),
           soundId,
           padCode: pattern.pad,
           name: sound?.meta?.name || pattern.pad,
-          volume: pad.volume * (2 / 200),
+          volume: pad.volume / 200, // converting from 0-200 to 0.0-1.0
           sampleName: getSampleName(sound?.meta?.name, soundId),
           sampleChannels: sound?.meta?.channels || 0,
           sampleRate: sound?.meta?.samplerate || 0,
@@ -103,7 +101,6 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
       }
 
       let lane = lanes.find((c) => c.padCode === pattern.pad);
-
       if (!lane) {
         lane = {
           padCode: pattern.pad,
@@ -121,6 +118,7 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
         sceneIndex,
         sceneName: scene.name,
         timeSignature: data.scenesSettings.timeSignature,
+        faderParams,
       });
 
       track.lane = lane;
@@ -149,7 +147,7 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
       drumRack: true,
       soundId: 0,
       name: 'Drums',
-      volume: 2,
+      volume: 1, // 1 means 0dB
       attack: 0,
       release: 0,
       trimLeft: 0,

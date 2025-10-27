@@ -44,6 +44,13 @@ function Arrangements({ projectId }: { projectId: string }) {
                         </Bar>
                       ))
                     : null}
+                  {pattern.bars > 0 && sceneData.maxBars % pattern.bars !== 0 ? (
+                    <Bar lengthInBars={pattern.bars} barLength={barLength} index={0}>
+                      {pattern.notes.map((note) => (
+                        <SingleNote key={`${note.note}-${note.position}`} note={note} />
+                      ))}
+                    </Bar>
+                  ) : null}
                 </Track>
               </div>
             </div>

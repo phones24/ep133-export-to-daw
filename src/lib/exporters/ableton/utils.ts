@@ -37,7 +37,6 @@ const templateMap: Record<string, () => Promise<any>> = {
   midiClip: () => import('./templates/midiClip.xml?raw'),
   midiTrack: () => import('./templates/midiTrack.xml?raw'),
   project: () => import('./templates/project.xml?raw'),
-  sampler: () => import('./templates/sampler.xml?raw'),
   simpler: () => import('./templates/simpler.xml?raw'),
   scene: () => import('./templates/scene.xml?raw'),
   groupTrack: () => import('./templates/groupTrack.xml?raw'),
@@ -51,7 +50,6 @@ const templateMap: Record<string, () => Promise<any>> = {
   effectDistortion: () => import('./templates/effectDistortion.xml?raw'),
   effectFilter: () => import('./templates/effectFilter.xml?raw'),
   effectCompressor: () => import('./templates/effectCompressor.xml?raw'),
-  effectMidiPitcher: () => import('./templates/effectMidiPitcher.xml?raw'),
 };
 
 export async function loadTemplate<T>(templateName: string): Promise<T> {
@@ -120,4 +118,11 @@ export async function gzipString(content: string) {
   const compressed = await new Response(cs.readable).arrayBuffer();
 
   return compressed;
+}
+
+export function filterFreqFromNormalized(x: number) {
+  const fMin = 30;
+  const fMax = 22000;
+
+  return fMin * (fMax / fMin) ** x;
 }

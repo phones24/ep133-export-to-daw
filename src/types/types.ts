@@ -178,7 +178,6 @@ export type ExporterParams = {
   includeArchivedSamples?: boolean;
   clips?: boolean; // build clips not arrangements
   noSampler?: boolean; // don't use sampler/simpler at all
-  useSampler?: boolean; // use sampler/simpler
   groupTracks?: boolean; // group tracks by group name
   drumRackFirstGroup?: boolean; // merge tracks for first group
   sendEffects?: boolean; // send effects to return tracks
