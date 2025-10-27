@@ -29,7 +29,7 @@ Check the project blog here: https://ko-fi.com/phones24
   - Minimum version: 11.3.35
   - Supports all sampler features: envelope, trimming points, stretching, playback modes
   - Export as arrangements or session clips
-  - Option to choose Simpler or Sampler instrument
+  - Fader params
   - FX send/return
   - Track grouping: 4 groups, same as on the device
   - First group can be exported as a Drum Rack track
@@ -49,6 +49,7 @@ Check the project blog here: https://ko-fi.com/phones24
 
 ## Latest news
 
+- [27/10/2025] ABLETON: support fader params (but without automation for now)
 - [16/10/2025] Added REAPER's sampler (just envs, root note, volume)
 - [13/10/2025] Added time signature support
 - [10/10/2025] REAPER support

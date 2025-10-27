@@ -26,7 +26,10 @@ let deviceInputPort: MIDIInput | null = null;
 let deviceOutputPort: MIDIOutput | null = null;
 let pendingInitialization = false;
 let deviceInitialized = false;
-const messageHandler = new Map<number, (requestId: number, data: Uint8Array) => void>();
+const messageHandler = new Map<
+  number,
+  (inputPort: MIDIInput, requestId: number, data: Uint8Array) => void
+>();
 const portListeners = new Map<MIDIInput, (event: MIDIMessageEvent) => void>();
 
 async function startEventListener(midiAccess: MIDIAccess) {
@@ -42,8 +45,10 @@ async function startEventListener(midiAccess: MIDIAccess) {
       return;
     }
 
+    const inputPort = event.currentTarget as MIDIInput;
+
     for (const [requestId, handler] of messageHandler.entries()) {
-      handler(requestId, event.data);
+      handler(inputPort, requestId, event.data);
     }
   };
 
@@ -114,11 +119,8 @@ function parseTeenageSysex(bytes: Uint8Array) {
   return msg;
 }
 
-async function sendIdentAndWaitForReponse(
-  output: MIDIOutput,
-  timeoutMs: number = 2_000,
-): Promise<Uint8Array | null> {
-  return new Promise<Uint8Array | null>((resolve) => {
+async function sendIdentAndWaitForReponse(output: MIDIOutput, timeoutMs: number = 2_000) {
+  return new Promise<{ inputPort: MIDIInput | null; data: Uint8Array } | null>((resolve) => {
     const requestId = 0;
 
     const timeoutId = setTimeout(() => {
@@ -127,11 +129,11 @@ async function sendIdentAndWaitForReponse(
       resolve(null);
     }, timeoutMs);
 
-    const handleMidiMessage = (_requestId: number, data: Uint8Array) => {
-      if (_requestId === 0) {
+    const handleMidiMessage = (inputPort: MIDIInput, requestId: number, data: Uint8Array) => {
+      if (requestId === 0) {
         clearTimeout(timeoutId);
-        messageHandler.delete(_requestId);
-        resolve(data);
+        messageHandler.delete(requestId);
+        resolve({ inputPort, data });
       }
     };
 
@@ -159,14 +161,15 @@ export async function discoverDevicePorts(
       if (response) {
         console.debug('Checking response for output port:', output.name);
 
-        parsedResponse = parseMidiIdentityResponse(response);
+        parsedResponse = parseMidiIdentityResponse(response.data);
         if (parsedResponse) {
           console.log('Found TE device on port:', output.name);
 
           setDeviceOutputPort(output);
-          setDeviceInputPort(
-            midiAccess.inputs.values().find((inp) => inp.name?.includes('EP-13')) || null, // handle both EP-133 and EP-1320
-          );
+          setDeviceInputPort(response.inputPort);
+          // setDeviceInputPort(
+          //   midiAccess.inputs.values().find((inp) => inp.name?.includes('EP-13')) || null, // handle both EP-133 and EP-1320
+          // );
 
           break;
         }
@@ -231,8 +234,8 @@ export async function sendSysexToDevice(
 
     const timeoutId = setTimeout(timeoutHandler, timeoutMs);
 
-    const handleMidiMessage = (_requestId: number, data: Uint8Array) => {
-      if (_requestId !== currentRequestId) {
+    const handleMidiMessage = (_inputPort: MIDIInput, requestId: number, data: Uint8Array) => {
+      if (requestId !== currentRequestId) {
         return;
       }
 

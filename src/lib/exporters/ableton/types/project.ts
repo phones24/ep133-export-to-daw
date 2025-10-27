@@ -6,6 +6,9 @@ import {
   ModulationTarget,
   ValueElement,
 } from './common';
+import type { ALSGroupTrack } from './groupTrack';
+import type { ALSMidiTrack } from './midiTrack';
+import type { ALSReturnTrack } from './returnTrack';
 import { ALSSceneContent } from './scene';
 
 interface ManualElement extends LomIdElement {
@@ -319,7 +322,7 @@ interface LiveSet {
   LomId: ValueElement;
   LomIdView: ValueElement;
   Tracks: {
-    '#': ALSTrack[] | ALSGroupTrack[];
+    '#': (ALSMidiTrack | ALSGroupTrack | ALSReturnTrack)[];
   };
   MasterTrack: MasterTrack;
   GroovePool: GroovePool;

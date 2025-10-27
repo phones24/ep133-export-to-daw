@@ -232,6 +232,12 @@
 
 
 ### SETTINGS
+Fader params:
+
+- PITCH: 0 (-5 semitones) to 1 (+5 semitones)
+- TUNE: 0 (-12 semitones) to 1 (+12 semitones)
+
+
 ```
 {
     "0": 0,

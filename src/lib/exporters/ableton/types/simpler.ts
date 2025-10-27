@@ -1,5 +1,4 @@
 import {
-  AbletonDefaultPresetRef,
   AutomationTarget,
   FileRef,
   LomIdElement,
@@ -19,10 +18,8 @@ interface ManualElement extends LomIdElement {
 }
 
 interface BranchSourceContext {
-  '@Id': number;
-  OriginalFileRef: {
-    FileRef: FileRef;
-  };
+  _attrs: { Id: number };
+  OriginalFileRef: {};
   BrowserContentPath: ValueElement;
   LocalFiltersJson: ValueElement;
   PresetRef: PresetRef;
@@ -50,7 +47,7 @@ interface WarpMarkers {
 interface TimeSignature {
   TimeSignatures: {
     RemoteableTimeSignature: {
-      '@Id': number;
+      _attrs: { Id: number };
       Numerator: ValueElement;
       Denominator: ValueElement;
       Time: ValueElement;
@@ -114,10 +111,12 @@ interface ReleaseLoop {
 }
 
 interface MultiSamplePart {
-  '@Id': number;
-  '@InitUpdateAreSlicesFromOnsetsEditableAfterRead': boolean;
-  '@HasImportedSlicePoints': boolean;
-  '@NeedsAnalysisData': boolean;
+  _attrs: {
+    Id: number;
+    InitUpdateAreSlicesFromOnsetsEditableAfterRead: boolean;
+    HasImportedSlicePoints: boolean;
+    NeedsAnalysisData: boolean;
+  };
   LomId: ValueElement;
   Name: ValueElement;
   Selection: ValueElement;
@@ -157,7 +156,13 @@ interface MultiSamplePart {
   SlicingRegions: ValueElement;
   SlicingStyle: ValueElement;
   SampleWarpProperties: SampleWarpProperties;
-  InitialSlicePointsFromOnsets: {};
+  InitialSlicePointsFromOnsets: {
+    SlicePoint: {
+      TimeInSeconds: number;
+      Rank: number;
+      NormalizedEnergy: number;
+    };
+  };
   SlicePoints: {};
   ManualSlicePoints: {};
   BeatSlicePoints: {};
@@ -211,6 +216,27 @@ interface Player {
   UseConstPowCrossfade: ValueElement;
 }
 
+interface SimplerPitchEnvelope {
+  _attrs: { Id: number };
+  AttackTime: ManualElement;
+  AttackLevel: ManualElement;
+  AttackSlope: ManualElement;
+  DecayTime: ManualElement;
+  DecayLevel: ManualElement;
+  DecaySlope: ManualElement;
+  SustainLevel: ManualElement;
+  ReleaseTime: ManualElement;
+  ReleaseLevel: ManualElement;
+  ReleaseSlope: ManualElement;
+  LoopMode: ManualElement;
+  LoopTime: ManualElement;
+  RepeatTime: ManualElement;
+  TimeVelScale: ManualElement;
+  CurrentOverlay: ValueElement;
+  Amount: ManualElement;
+  ScrollPosition: ValueElement;
+}
+
 interface Pitch {
   TransposeKey: ManualElement;
   TransposeFine: ManualElement;
@@ -218,14 +244,14 @@ interface Pitch {
   Envelope: {
     IsOn: ManualElement;
     Slot: {
-      Value: {};
+      Value: SimplerPitchEnvelope;
     };
   };
   ScrollPosition: ValueElement;
 }
 
 interface SimplerFilter {
-  '@Id': number;
+  _attrs: { Id: number };
   LegacyType: ManualElement;
   Type: ManualElement;
   CircuitLpHp: ManualElement;
@@ -264,7 +290,9 @@ interface SimplerFilter {
 interface Filter {
   IsOn: ManualElement;
   Slot: {
-    Value: SimplerFilter;
+    Value: {
+      SimplerFilter: SimplerFilter;
+    };
   };
 }
 
@@ -301,8 +329,8 @@ interface VolumeAndPan {
   };
 }
 
-export interface ALSMultiSamplerContent {
-  '@Id': number;
+export interface ALSOriginalSimplerContent {
+  _attrs: { Id: number };
   LomId: ValueElement;
   LomIdView: ValueElement;
   IsExpanded: ValueElement;
@@ -313,7 +341,7 @@ export interface ALSMultiSamplerContent {
     LomId: ValueElement;
   };
   Pointee: {
-    '@Id': number;
+    _attrs: { Id: number };
   };
   LastSelectedTimeableIndex: ValueElement;
   LastSelectedClipEnvelopeIndex: ValueElement;
@@ -345,7 +373,24 @@ export interface ALSMultiSamplerContent {
   Lfo: {
     IsOn: ManualElement;
     Slot: {
-      Value: {};
+      Value: {
+        SimplerLfo: {
+          _attrs: { Id: number };
+          Type: ManualElement;
+          Frequency: ManualElement;
+          RateType: ManualElement;
+          BeatRate: ManualElement;
+          StereoMode: ManualElement;
+          Spin: ManualElement;
+          Phase: ManualElement;
+          Offset: ManualElement;
+          FrequencyKeyScale: ManualElement;
+          Smooth: ManualElement;
+          Attack: ManualElement;
+          Retrigger: ManualElement;
+          Width: ManualElement;
+        };
+      };
     };
   };
   AuxLfos: {
@@ -495,6 +540,6 @@ export interface ALSMultiSamplerContent {
   };
 }
 
-export interface ALSSampler {
-  MultiSampler: ALSMultiSamplerContent;
+export interface ALSSimpler {
+  OriginalSimpler: ALSOriginalSimplerContent;
 }

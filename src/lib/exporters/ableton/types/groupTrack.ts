@@ -29,6 +29,11 @@ interface Slots {
 
 interface DeviceChain {
   Mixer: Mixer;
+  DeviceChain: {
+    Devices: {
+      '#': Array<any>;
+    };
+  };
 }
 
 export interface ALSGroupTrackContent {
