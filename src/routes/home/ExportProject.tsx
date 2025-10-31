@@ -83,7 +83,7 @@ function ExportProject() {
 
       {open && !!device && (
         <Dialog isOpen onClose={() => setOpen(false)}>
-          <div className="flex flex-col gap-2 min-w-[600px]">
+          <div className="flex flex-col gap-2 min-w-[600px] max-w-[700px]">
             <h3 className="text-lg font-semibold">Export</h3>
             <Select
               onChange={(e: JSX.TargetedEvent<HTMLSelectElement, Event>) =>
