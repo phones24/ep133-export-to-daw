@@ -95,12 +95,7 @@ async function buildMidiClip(
   let _noteId = 0;
 
   Object.entries(grouppedNotes).forEach(([noteValueStr, notes], groupIndex) => {
-    let noteValue = parseInt(noteValueStr, 10);
-
-    if (koClip.faderParams[FaderParam.TUNE] !== -1) {
-      const normalized = (koClip.faderParams[FaderParam.TUNE] - 0.5) * 2; // from 0-1 to -1 to +1
-      noteValue += Math.round(normalized * 12);
-    }
+    const noteValue = parseInt(noteValueStr, 10);
 
     midiClip.Notes.KeyTracks.KeyTrack.push({
       '@Id': groupIndex,
@@ -198,6 +193,11 @@ async function buildSimplerDevice(koTrack: AblTrack) {
     pitch += Math.round(normalized * 5);
   }
 
+  // adding TUNE fader param if defined
+  if (koTrack.faderParams[FaderParam.TUNE] !== -1) {
+    pitch += Math.round(koTrack.faderParams[FaderParam.TUNE] * 23.5 - 12); // the range is slightly less than +/-12 cause that's how KO does it
+  }
+
   device.Pitch.TransposeKey.Manual['@Value'] = pitch;
 
   // adding vibrato from MOD fader param if defined
@@ -220,9 +220,9 @@ async function buildSimplerDevice(koTrack: AblTrack) {
   if (koTrack.faderParams[FaderParam.HPF] !== -1 && koTrack.faderParams[FaderParam.HPF] !== 0) {
     device.Filter.IsOn.Manual['@Value'] = 'true';
     device.Filter.Slot.Value.SimplerFilter.Type.Manual['@Value'] = 1; // High Pass
-    device.Filter.Slot.Value.SimplerFilter.Slope.Manual['@Value'] = 'true'; // 24db/oct
+    device.Filter.Slot.Value.SimplerFilter.Slope.Manual['@Value'] = 'false'; // 12db/oct
     device.Filter.Slot.Value.SimplerFilter.Freq.Manual['@Value'] = filterFreqFromNormalized(
-      koTrack.faderParams[FaderParam.HPF] * 0.9, // lowering max freq to match KO behavior
+      koTrack.faderParams[FaderParam.HPF] * 0.7, // lowering max freq to match KO behavior
     );
   }
 
