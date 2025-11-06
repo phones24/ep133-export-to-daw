@@ -210,12 +210,12 @@ function parsePatterns(data: Uint8Array) {
   };
 }
 
-function getPatternsForScene(scenesIntermediate: IntermediateScenes, sceneMeta: SceneMeta) {
+function getPatternsForScene(scenesIntermediate: IntermediateScenes, scenePatternUsage: SceneMeta) {
   const patterns: Pattern[] = [];
 
   for (const group of ['a', 'b', 'c', 'd'] as const) {
-    const lookupScene = sceneMeta[group];
-    const lookupSceneData = scenesIntermediate[lookupScene];
+    const scene = scenePatternUsage[group];
+    const lookupSceneData = scenesIntermediate[scene];
 
     if (lookupSceneData?.groups[group]) {
       const groupData = lookupSceneData.groups[group];
@@ -236,7 +236,17 @@ function getPatternsForScene(scenesIntermediate: IntermediateScenes, sceneMeta: 
 export function collectScenesAndPatterns(files: TarFile[]) {
   const scenesIntermediateData: IntermediateScenes = {};
   const scenes: Record<string, Scene> = {};
-  const sceneMetadata: Record<string, SceneMeta> = {};
+  const scenePatternUsage: Record<string, SceneMeta> = {};
+
+  // build default scene metadata (in case "scenes" file is missing)
+  for (let i = 1; i <= 99; i++) {
+    scenePatternUsage[i] = {
+      a: i,
+      b: i,
+      c: i,
+      d: i,
+    };
+  }
 
   // build group/pattern lookup table
   const scenesFile = files.find((f) => f.name === 'scenes' && f.type === 'file');
@@ -247,7 +257,7 @@ export function collectScenesAndPatterns(files: TarFile[]) {
         return;
       }
 
-      sceneMetadata[i + 1] = {
+      scenePatternUsage[i + 1] = {
         a: chunk[0],
         b: chunk[1],
         c: chunk[2],
@@ -287,11 +297,11 @@ export function collectScenesAndPatterns(files: TarFile[]) {
   }
 
   Object.entries(scenesIntermediateData).forEach(([sceneIndex, sceneData]) => {
-    if (!sceneMetadata[sceneIndex]) {
+    if (!scenePatternUsage[sceneIndex]) {
       return;
     }
 
-    const patterns = getPatternsForScene(scenesIntermediateData, sceneMetadata[sceneIndex]);
+    const patterns = getPatternsForScene(scenesIntermediateData, scenePatternUsage[sceneIndex]);
     if (patterns.length === 0) {
       return;
     }
@@ -309,7 +319,7 @@ export function collectSettings(files: TarFile[]): ProjectSettings {
   const settings = files.find((f) => f.name === 'settings' && f.type === 'file');
 
   if (!settings || !settings.data) {
-    console.warn('Could not find settings file');
+    console.warn('Could not find "settings" file');
 
     return {
       ...defaultProjectSettings,
@@ -353,7 +363,7 @@ export function collectEffects(files: TarFile[]) {
   const fxFile = files.find((f) => f.name === 'fx_settings' && f.type === 'file');
 
   if (!fxFile || !fxFile.data) {
-    console.warn('Could not find fx file');
+    console.warn('Could not find "fx_settings" file');
 
     return {
       rawData: new Uint8Array(),
@@ -383,7 +393,7 @@ export function collectScenesSettings(files: TarFile[]): ScenesSettings {
   const scenesSettingsFile = files.find((f) => f.name === 'scenes' && f.type === 'file');
 
   if (!scenesSettingsFile || !scenesSettingsFile.data) {
-    console.warn('Could not find scenes settings file');
+    console.warn('Could not find "scenes" file');
     return defaultScenesSettings;
   }
 
