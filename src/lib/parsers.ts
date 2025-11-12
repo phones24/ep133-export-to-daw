@@ -1,3 +1,4 @@
+import JSZip from 'jszip';
 import {
   GroupFaderParam,
   Note,
@@ -404,4 +405,86 @@ export function collectScenesSettings(files: TarFile[]): ScenesSettings {
     ...defaultScenesSettings,
     timeSignature: { numerator, denominator },
   };
+}
+
+export async function loadSoundsFromBackup(
+  unzippedBackup: JSZip,
+  projectFiles: TarFile[],
+): Promise<Sound[]> {
+  const soundIds = new Set<number>();
+  console.log(projectFiles);
+  console.log(projectFiles[3].data);
+  console.log(projectFiles[4].data);
+
+  for (let group = 0; group < 4; group++) {
+    for (let pad = 1; pad <= 12; pad++) {
+      const file = projectFiles.find((f) => f.name === genPadFileName(GROUPS[group].id, pad));
+
+      if (file?.data) {
+        const soundId = (file.data[2] << 8) + file.data[1];
+        if (soundId > 0) {
+          console.log(group, pad, soundId);
+
+          soundIds.add(soundId);
+        }
+      }
+    }
+  }
+
+  const selectedSounds: Sound[] = [];
+
+  console.log(soundIds);
+  console.log(Object.values(unzippedBackup.files));
+
+  for (const soundId of soundIds) {
+    const wavFile = Object.values(unzippedBackup.files).find((file) =>
+      file.name.startsWith(`/sounds/${String(soundId).padStart(3, '0')} `),
+    );
+
+    if (!wavFile) {
+      console.warn(`Sound file for sound ID ${soundId} not found in backup`);
+      continue;
+    }
+
+    const soundFile = unzippedBackup.file(wavFile.name);
+    if (!soundFile) {
+      console.warn(`Sound file for sound ID ${soundId} not found in backup`);
+      continue;
+    }
+
+    const soundData = await soundFile.async('uint8array');
+    const fileName = soundFile.name.split('/').pop()?.split(' ').slice(1).join(' ') || '';
+    const fileNode = {
+      nodeId: soundId,
+      flags: 0,
+      fileSize: soundData.length,
+      fileName,
+      fileType: 'file' as const,
+    };
+
+    selectedSounds.push({
+      id: soundId,
+      fileNode,
+      meta: {
+        channels: 1,
+        samplerate: 44100,
+        format: 's16',
+        crc: 0,
+        name: fileName,
+        'sound.loopstart': 0,
+        'sound.loopend': 0,
+        'sound.amplitude': 1,
+        'sound.playmode': 'oneshot',
+        'sound.pan': 0,
+        'sound.pitch': 0,
+        'sound.rootnote': 0,
+        'time.mode': '',
+        'sound.bpm': 0,
+        'envelope.attack': 0,
+        'envelope.release': 0,
+      },
+    });
+  }
+
+  return selectedSounds;
 }

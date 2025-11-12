@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
-import { droppedProjectFileAtom } from '~/atoms/droppedProjectFile';
+import JSZip from 'jszip';
+import { droppedBackupFileAtom, droppedProjectFileAtom } from '~/atoms/droppedProjectFile';
 import { getProjectFile } from '../lib/midi';
 import {
   collectEffects,
@@ -9,15 +10,17 @@ import {
   collectScenesSettings,
   collectSettings,
   collectSounds,
+  loadSoundsFromBackup,
 } from '../lib/parsers';
 import { untar } from '../lib/untar';
 import { ProjectRawData } from '../types/types';
 import useDevice from './useDevice';
-import { DROPPED_FILE_ID } from './useDroppedProjectFile';
+import { DROPPED_FILE_ID } from './useDroppedFile';
 
 function useProject(id?: number | string) {
   const { device } = useDevice();
   const droppedProjectFile = useAtomValue(droppedProjectFileAtom);
+  const droppedBackupFile = useAtomValue(droppedBackupFileAtom);
 
   const result = useQuery<ProjectRawData | null>({
     queryKey: ['project', id],
@@ -27,8 +30,17 @@ function useProject(id?: number | string) {
       }
 
       let archiveData: Uint8Array | undefined;
+      let unzippedBackup: JSZip | undefined;
 
-      if (id === DROPPED_FILE_ID && droppedProjectFile) {
+      if (droppedBackupFile) {
+        unzippedBackup = await JSZip.loadAsync(droppedBackupFile);
+        const projectFile = unzippedBackup.file(`/projects/P${String(id).padStart(2, '0')}.tar`);
+        if (!projectFile) {
+          throw new Error('No project file in backup');
+        }
+        const projectFileData = await projectFile.async('uint8array');
+        archiveData = projectFileData;
+      } else if (id === DROPPED_FILE_ID && droppedProjectFile) {
         archiveData = droppedProjectFile.data;
       } else {
         const archive = await getProjectFile(Number(id));
@@ -36,7 +48,9 @@ function useProject(id?: number | string) {
       }
 
       const files = await untar(archiveData);
-      const sounds = await collectSounds(files);
+      const sounds = unzippedBackup
+        ? await loadSoundsFromBackup(unzippedBackup, files)
+        : await collectSounds(files);
       const settings = collectSettings(files);
       const pads = collectPads(files, sounds);
       const scenes = collectScenesAndPatterns(files);

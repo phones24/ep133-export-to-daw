@@ -2,16 +2,16 @@ import { useAtom } from 'jotai';
 import type { DropTargetMonitor } from 'react-dnd';
 import { useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
-import { droppedProjectFileAtom } from '~/atoms/droppedProjectFile';
+import { droppedBackupFileAtom, droppedProjectFileAtom } from '~/atoms/droppedProjectFile';
 import { projectIdAtom } from '~/atoms/project';
 import { showToast } from '~/lib/toast';
 
-const MAX_BYTES = 10 * 1024 * 1024;
 export const DROPPED_FILE_ID = '10';
 
-function useDroppedProjectFile() {
+function useDroppedFile() {
   const [, setProjectId] = useAtom(projectIdAtom);
   const [, setDroppedProjectFile] = useAtom(droppedProjectFileAtom);
+  const [, setDroppedBackupFile] = useAtom(droppedBackupFileAtom);
 
   const [{ isOver }, dropRef] = useDrop(
     () => ({
@@ -23,22 +23,23 @@ function useDroppedProjectFile() {
           return;
         }
 
-        if (file.size > MAX_BYTES) {
-          showToast('File too large. Max 10 MB.', 'error');
-          return;
-        }
-
         const lower = file.name.toLowerCase();
-        if (!(lower.endsWith('.tar') || lower.endsWith('.ppak'))) {
-          showToast('Unsupported file. Use a .tar or .ppak.', 'error');
+        if (!(lower.endsWith('.tar') || lower.endsWith('.ppak') || lower.endsWith('.pak'))) {
+          showToast('Unsupported file. Use a .tar or .ppak. or .pak', 'error');
           return;
         }
 
         try {
           const buf = await file.arrayBuffer();
-          setDroppedProjectFile({ name: file.name, data: new Uint8Array(buf) });
-          setProjectId(DROPPED_FILE_ID);
-          showToast(`Added "${file.name}" to projects`, 'info');
+
+          if (lower.endsWith('.tar') || lower.endsWith('.ppak')) {
+            setDroppedProjectFile({ name: file.name, data: new Uint8Array(buf) });
+            setProjectId(DROPPED_FILE_ID);
+            showToast(`Added "${file.name}" to projects`, 'info');
+          } else if (lower.endsWith('.pak')) {
+            setDroppedBackupFile(new Uint8Array(buf));
+            showToast(`Loaded backup file "${file.name}"`, 'info');
+          }
         } catch {
           showToast('Failed to read dropped file', 'error');
         }
@@ -53,4 +54,4 @@ function useDroppedProjectFile() {
   return { dropRef, isOver };
 }
 
-export default useDroppedProjectFile;
+export default useDroppedFile;

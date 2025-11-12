@@ -6,3 +6,4 @@ export type DroppedProjectFile = {
 };
 
 export const droppedProjectFileAtom = atom<DroppedProjectFile | null>(null);
+export const droppedBackupFileAtom = atom<Uint8Array | null>(null);

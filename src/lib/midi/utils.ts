@@ -1,4 +1,4 @@
-import { TE_SYSEX } from './constants';
+import { TE_MIDI_ID_0, TE_MIDI_ID_1, TE_MIDI_ID_2, TE_SYSEX } from './constants';
 import { TEDeviceIdentification, TEDeviceMetadata } from './types';
 
 const requestIds: Map<string, number> = new Map();
@@ -53,9 +53,9 @@ export function parseMidiIdentityResponse(data: Uint8Array): TEDeviceIdentificat
     data.length === 17 &&
     data[0] === 0xf0 && // SysEx start
     data[1] === 0x7e && // Universal SysEx
-    data[5] === 0 && // TE manufacturer ID byte 0
-    data[6] === 32 && // TE manufacturer ID byte 1
-    data[7] === 118 // TE manufacturer ID byte 2
+    data[5] === TE_MIDI_ID_0 && // TE manufacturer ID byte 0
+    data[6] === TE_MIDI_ID_1 && // TE manufacturer ID byte 1
+    data[7] === TE_MIDI_ID_2 // TE manufacturer ID byte 2
   ) {
     const productCode = data[8] ^ (data[9] << 7);
     const assemblyCode = data[10] ^ (data[11] << 7);

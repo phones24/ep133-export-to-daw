@@ -5,7 +5,7 @@ import OfflineInformer from '~/components/OfflineInformer';
 import Toast from '~/components/ui/Toast';
 import { APP_STATES, useAppState } from '~/hooks/useAppState';
 import useDevice from '~/hooks/useDevice';
-import useDroppedProjectFile from '~/hooks/useDroppedProjectFile';
+import useDroppedFile from '~/hooks/useDroppedFile';
 import AppStateDisplay from './AppStateDisplay';
 import FacePlateHeader from './FacePlateHeader';
 import FeedbackDialog from './FeedbackDialog';
@@ -17,7 +17,7 @@ function Home() {
   const [projectId] = useAtom(projectIdAtom);
   const { error } = useDevice();
   const appState = useAppState();
-  const { dropRef } = useDroppedProjectFile();
+  const { dropRef } = useDroppedFile();
 
   return (
     <div className="min-w-[1100px] max-w-[1800px] p-4 h-screen grid grid-rows-[auto_1fr] mx-auto">
@@ -39,7 +39,7 @@ function Home() {
 
         <main
           ref={dropRef as any}
-          className="bg-white h-full border-1 p-4 shadow-[1px_1px_0px_1px_#00000099] overflow-scroll"
+          className="bg-white h-full border p-4 shadow-[1px_1px_0px_1px_#00000099] overflow-scroll"
         >
           {appState.includes(APP_STATES.CAN_DISPLAY_PROJECT) && (
             <Arrangements projectId={projectId} />

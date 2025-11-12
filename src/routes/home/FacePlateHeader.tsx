@@ -4,8 +4,8 @@ function FacePlateHeader() {
   const { device } = useDevice();
 
   return (
-    <div className="flex gap-2 bg-brand-gray px-3 py-2 border-1 border-black shadow-my">
-      <img src="/ep133.png" className="h-[100px] w-auto" alt="ep133" />
+    <div className="flex gap-2 bg-brand-gray px-3 py-2 border border-black shadow-my">
+      <img src="/ep133-on.png" className="h-[100px] w-auto" alt="ep133" />
       <div className="flex flex-col gap-2 relative">
         <h1 className="text-[30px] font-medium leading-6">
           EP-133 K.O. II: <i>Export To DAW</i>
@@ -17,14 +17,14 @@ function FacePlateHeader() {
         <div className="absolute left-0 bottom-0 leading-4">
           {!device && (
             <div className="flex gap-2 items-center">
-              <div className="border-1 border-black bg-gray-300 size-4 rounded-full" />
+              <div className="border border-black bg-gray-300 size-4 rounded-full" />
               No device connected
             </div>
           )}
 
           {!!device && (
             <div className="flex gap-2 items-center font-xs">
-              <div className="border-1 border-black bg-brand size-3 rounded-full" />
+              <div className="border border-black bg-brand size-3 rounded-full" />
               Connected
             </div>
           )}

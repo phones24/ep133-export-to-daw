@@ -1,6 +1,6 @@
 import { useAtomValue } from 'jotai';
 import { droppedProjectFileAtom } from '~/atoms/droppedProjectFile';
-import { DROPPED_FILE_ID } from './useDroppedProjectFile';
+import { DROPPED_FILE_ID } from './useDroppedFile';
 
 export type ProjectOption = {
   value: string;
