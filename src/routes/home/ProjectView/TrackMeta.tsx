@@ -7,7 +7,7 @@ function TrackMeta({ pattern }: { pattern: ViewPattern }) {
     name = `[MIDI ch. ${pattern.midiChannel}]`;
   }
 
-  if (!name && pattern.isSynth) {
+  if (!name && pattern.soundId >= 1000) {
     name = `[SUPERTONE]`;
   }
 

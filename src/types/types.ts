@@ -125,7 +125,6 @@ export type Pad = {
   timeStretchBars: number;
   inChokeGroup: boolean;
   midiChannel: number;
-  isSynth: boolean;
 };
 
 export type ProjectRawData = {

@@ -172,7 +172,6 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
           timeStretchBars: timeStretchBars(file.data[25]),
           inChokeGroup: file.data[22] === 1,
           midiChannel: file.data[3],
-          isSynth: soundId >= 1000,
         });
       }
     }
