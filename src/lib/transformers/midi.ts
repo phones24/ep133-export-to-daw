@@ -65,35 +65,60 @@ function midiTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
     offset += sceneMaxBars;
   });
 
-  if (exporterParams.drumRackFirstGroup) {
-    const groupATracks = midiTracks.filter((t) => t.group === 'a');
-    if (groupATracks.length > 0) {
-      const mergedNotes: Note[] = [];
+  // Helper function to create a drum rack track for a specific group
+  const createDrumRackTrack = (group: 'a' | 'b' | 'c' | 'd'): MidiTrack | null => {
+    const groupTracks = midiTracks.filter((t) => t.group === group);
+    if (groupTracks.length === 0) {
+      return null;
+    }
 
-      groupATracks
-        .toSorted((a, b) =>
-          a.padCode.localeCompare(b.padCode, undefined, { numeric: true, sensitivity: 'base' }),
-        )
-        .forEach((track, idx) => {
-          mergedNotes.push(
-            ...track.notes.map((note) => ({
-              ...note,
-              note: 36 + idx,
-            })),
-          );
-        });
+    const mergedNotes: Note[] = [];
 
-      const drumTrack: MidiTrack = {
-        name: 'Drums',
-        group: 'a',
-        padCode: 'a0',
-        notes: mergedNotes,
-      };
+    groupTracks
+      .toSorted((a, b) =>
+        a.padCode.localeCompare(b.padCode, undefined, { numeric: true, sensitivity: 'base' }),
+      )
+      .forEach((track, idx) => {
+        mergedNotes.push(
+          ...track.notes.map((note) => ({
+            ...note,
+            note: 36 + idx,
+          })),
+        );
+      });
 
-      midiTracks = midiTracks.filter((t) => t.group !== 'a');
-      midiTracks.unshift(drumTrack);
+    const drumTrack: MidiTrack = {
+      name: `Drums ${group.toUpperCase()}`,
+      group,
+      padCode: `${group}0`,
+      notes: mergedNotes,
+    };
+
+    return drumTrack;
+  };
+
+  // Process drum racks for each group that has the option enabled
+  const drumRackTracks: MidiTrack[] = [];
+  const groupsToProcess: Array<{ group: 'a' | 'b' | 'c' | 'd'; enabled: boolean }> = [
+    { group: 'a', enabled: exporterParams.drumRackGroupA || false },
+    { group: 'b', enabled: exporterParams.drumRackGroupB || false },
+    { group: 'c', enabled: exporterParams.drumRackGroupC || false },
+    { group: 'd', enabled: exporterParams.drumRackGroupD || false },
+  ];
+
+  for (const { group, enabled } of groupsToProcess) {
+    if (enabled) {
+      const drumTrack = createDrumRackTrack(group);
+      if (drumTrack) {
+        drumRackTracks.push(drumTrack);
+        // Remove tracks from this group from the main tracks array
+        midiTracks = midiTracks.filter((t) => t.group !== group);
+      }
     }
   }
+
+  // Insert drum rack tracks at the beginning, maintaining group order (A, B, C, D)
+  midiTracks.unshift(...drumRackTracks);
 
   Sentry.setContext('midiData', {
     tracks: midiTracks,

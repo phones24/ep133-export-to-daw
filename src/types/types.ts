@@ -179,7 +179,10 @@ export type ExporterParams = {
   clips?: boolean; // build clips not arrangements
   noSampler?: boolean; // don't use sampler/simpler at all
   groupTracks?: boolean; // group tracks by group name
-  drumRackFirstGroup?: boolean; // merge tracks for first group
+  drumRackGroupA?: boolean; // merge tracks for group A
+  drumRackGroupB?: boolean; // merge tracks for group B
+  drumRackGroupC?: boolean; // merge tracks for group C
+  drumRackGroupD?: boolean; // merge tracks for group D
   sendEffects?: boolean; // send effects to return tracks
 };
 

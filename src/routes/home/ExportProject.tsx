@@ -30,10 +30,10 @@ function ExportProject() {
   );
   const [clips, setClips] = usePersistedState('export_clips', false);
   const [groupTracks, setGroupTracks] = usePersistedState('export_groupTracks', true);
-  const [drumRackFirstGroup, setDrumRackFirstGroup] = usePersistedState(
-    'export_drumRackFirstGroup',
-    false,
-  );
+  const [drumRackGroupA, setDrumRackGroupA] = usePersistedState('export_drumRackGroupA', false);
+  const [drumRackGroupB, setDrumRackGroupB] = usePersistedState('export_drumRackGroupB', false);
+  const [drumRackGroupC, setDrumRackGroupC] = usePersistedState('export_drumRackGroupC', false);
+  const [drumRackGroupD, setDrumRackGroupD] = usePersistedState('export_drumRackGroupD', false);
   const [sendEffects, setSendEffects] = usePersistedState('export_sendEffects', true);
   const appState = useAppState();
   const { device } = useDevice();
@@ -51,7 +51,10 @@ function ExportProject() {
     includeArchivedSamples,
     clips,
     groupTracks,
-    drumRackFirstGroup,
+    drumRackGroupA,
+    drumRackGroupB,
+    drumRackGroupC,
+    drumRackGroupD,
     sendEffects,
   });
   const [_, openFeedbackDialog] = useAtom(feedbackDialogAtom);
@@ -116,9 +119,30 @@ function ExportProject() {
                     disabled={isPending}
                   />
                   <CheckBox
-                    checked={drumRackFirstGroup}
-                    onChange={(checked) => setDrumRackFirstGroup(checked)}
+                    checked={drumRackGroupA}
+                    onChange={(checked) => setDrumRackGroupA(checked)}
                     title="Merge tracks of group A into one track"
+                    disabled={isPending}
+                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
+                  />
+                  <CheckBox
+                    checked={drumRackGroupB}
+                    onChange={(checked) => setDrumRackGroupB(checked)}
+                    title="Merge tracks of group B into one track"
+                    disabled={isPending}
+                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
+                  />
+                  <CheckBox
+                    checked={drumRackGroupC}
+                    onChange={(checked) => setDrumRackGroupC(checked)}
+                    title="Merge tracks of group C into one track"
+                    disabled={isPending}
+                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
+                  />
+                  <CheckBox
+                    checked={drumRackGroupD}
+                    onChange={(checked) => setDrumRackGroupD(checked)}
+                    title="Merge tracks of group D into one track"
                     disabled={isPending}
                     helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
                   />
@@ -135,12 +159,36 @@ function ExportProject() {
                     helperText="Samples will be exported as separate WAV files and bundled with the project. Sampler instrument will be assigned to each track that has a sample."
                   />
                   <CheckBox
-                    checked={drumRackFirstGroup}
-                    onChange={(checked) => setDrumRackFirstGroup(checked)}
+                    checked={drumRackGroupA}
+                    onChange={(checked) => setDrumRackGroupA(checked)}
                     title="Use «Drum Rack» for group A"
                     disabled={isPending || !includeArchivedSamples}
                     className="ml-4"
                     helperText="Tracks in group A will be exported as Drum Rack. Choke groups are supported! Make sure your drum pads are not playing chromatically."
+                  />
+                  <CheckBox
+                    checked={drumRackGroupB}
+                    onChange={(checked) => setDrumRackGroupB(checked)}
+                    title="Use «Drum Rack» for group B"
+                    disabled={isPending || !includeArchivedSamples}
+                    className="ml-4"
+                    helperText="Tracks in group B will be exported as Drum Rack. Choke groups are supported! Make sure your drum pads are not playing chromatically."
+                  />
+                  <CheckBox
+                    checked={drumRackGroupC}
+                    onChange={(checked) => setDrumRackGroupC(checked)}
+                    title="Use «Drum Rack» for group C"
+                    disabled={isPending || !includeArchivedSamples}
+                    className="ml-4"
+                    helperText="Tracks in group C will be exported as Drum Rack. Choke groups are supported! Make sure your drum pads are not playing chromatically."
+                  />
+                  <CheckBox
+                    checked={drumRackGroupD}
+                    onChange={(checked) => setDrumRackGroupD(checked)}
+                    title="Use «Drum Rack» for group D"
+                    disabled={isPending || !includeArchivedSamples}
+                    className="ml-4"
+                    helperText="Tracks in group D will be exported as Drum Rack. Choke groups are supported! Make sure your drum pads are not playing chromatically."
                   />
                   <CheckBox
                     checked={clips}
@@ -194,9 +242,30 @@ function ExportProject() {
                     disabled={isPending}
                   />
                   <CheckBox
-                    checked={drumRackFirstGroup}
-                    onChange={(checked) => setDrumRackFirstGroup(checked)}
+                    checked={drumRackGroupA}
+                    onChange={(checked) => setDrumRackGroupA(checked)}
                     title="Merge tracks of group A into one track"
+                    disabled={isPending}
+                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
+                  />
+                  <CheckBox
+                    checked={drumRackGroupB}
+                    onChange={(checked) => setDrumRackGroupB(checked)}
+                    title="Merge tracks of group B into one track"
+                    disabled={isPending}
+                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
+                  />
+                  <CheckBox
+                    checked={drumRackGroupC}
+                    onChange={(checked) => setDrumRackGroupC(checked)}
+                    title="Merge tracks of group C into one track"
+                    disabled={isPending}
+                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
+                  />
+                  <CheckBox
+                    checked={drumRackGroupD}
+                    onChange={(checked) => setDrumRackGroupD(checked)}
+                    title="Merge tracks of group D into one track"
                     disabled={isPending}
                     helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
                   />
