@@ -126,17 +126,27 @@ function dawProjectTransformer(data: ProjectRawData, exporterParams: ExporterPar
     dawScenes.push(dawScene);
   });
 
-  if (exporterParams.drumRackFirstGroup) {
-    // fake track for drum rack
+  // Helper function to create a drum rack track and lane for a specific group
+  const createDrumRackForGroup = (group: 'a' | 'b' | 'c' | 'd'): {
+    drumTrack: DawTrack;
+    drumLane: DawLane;
+  } | null => {
+    const groupTracks = tracks.filter((t) => t.group === group);
+    const groupLanes = lanes.filter((l) => l.group === group);
+
+    if (groupTracks.length === 0) {
+      return null;
+    }
+
     const drumTrack: DawTrack = {
-      padCode: 'a0',
-      group: 'a',
+      padCode: `${group}0` as PadCode,
+      group,
       sampleName: '',
       sampleChannels: 0,
       sampleRate: 0,
       bpm: data.settings.bpm,
       soundId: 0,
-      name: 'Drums',
+      name: `Drums ${group.toUpperCase()}`,
       volume: 1,
       attack: 0,
       release: 0,
@@ -154,19 +164,15 @@ function dawProjectTransformer(data: ProjectRawData, exporterParams: ExporterPar
       inChokeGroup: false,
     };
 
-    tracks = tracks.filter((t) => t.group !== 'a');
-    tracks.unshift(drumTrack);
-
     const drumLane: DawLane = {
-      padCode: 'a0',
-      group: 'a',
+      padCode: `${group}0` as PadCode,
+      group,
       clips: [],
     };
 
     const newClips: Record<string, DawClip> = {};
 
-    lanes
-      .filter((l) => l.group === 'a')
+    groupLanes
       .toSorted((a, b) => a.padCode.localeCompare(b.padCode))
       .forEach((lane, idx) => {
         lane.clips.forEach((clip) => {
@@ -187,17 +193,50 @@ function dawProjectTransformer(data: ProjectRawData, exporterParams: ExporterPar
 
     drumLane.clips = Object.values(newClips);
 
-    lanes = lanes.filter((l) => l.group !== 'a');
-    lanes.unshift(drumLane);
+    return { drumTrack, drumLane };
+  };
 
-    dawScenes.forEach((scene) => {
-      scene.clipSlot = scene.clipSlot.filter((cs) => cs.track.group !== 'a');
+  // Process drum racks for each group that has the option enabled
+  const drumRackData: Array<{ drumTrack: DawTrack; drumLane: DawLane }> = [];
+  const groupsToProcess: Array<{ group: 'a' | 'b' | 'c' | 'd'; enabled: boolean }> = [
+    { group: 'a', enabled: exporterParams.drumRackGroupA || false },
+    { group: 'b', enabled: exporterParams.drumRackGroupB || false },
+    { group: 'c', enabled: exporterParams.drumRackGroupC || false },
+    { group: 'd', enabled: exporterParams.drumRackGroupD || false },
+  ];
+
+  for (const { group, enabled } of groupsToProcess) {
+    if (enabled) {
+      const drumRack = createDrumRackForGroup(group);
+      if (drumRack) {
+        drumRackData.push(drumRack);
+        // Remove tracks and lanes from this group from the main arrays
+        tracks = tracks.filter((t) => t.group !== group);
+        lanes = lanes.filter((l) => l.group !== group);
+      }
+    }
+  }
+
+  // Insert drum rack tracks and lanes at the beginning, maintaining group order (A, B, C, D)
+  tracks.unshift(...drumRackData.map((d) => d.drumTrack));
+  lanes.unshift(...drumRackData.map((d) => d.drumLane));
+
+  // Update scenes to include drum rack clip slots
+  const groupsConvertedToDrumRack = drumRackData.map((d) => d.drumTrack.group);
+  dawScenes.forEach((scene) => {
+    // Remove clip slots for groups that were converted to drum racks
+    scene.clipSlot = scene.clipSlot.filter(
+      (cs) => !groupsConvertedToDrumRack.includes(cs.track.group),
+    );
+
+    // Add drum rack clip slots at the beginning, maintaining group order
+    for (const { drumTrack, drumLane } of drumRackData) {
       scene.clipSlot.unshift({
         clip: drumLane.clips.filter((c) => c.sceneName === scene.name),
         track: drumTrack,
       });
-    });
-  }
+    }
+  });
 
   Sentry.setContext(`dawprojectData`, {
     tracks,

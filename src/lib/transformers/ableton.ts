@@ -133,11 +133,16 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
     a.padCode.localeCompare(b.padCode, undefined, { numeric: true, sensitivity: 'base' }),
   );
 
-  if (exporterParams.drumRackFirstGroup) {
-    // fake track for drum rack
+  // Helper function to create a drum rack track for a specific group
+  const createDrumRackTrack = (group: 'a' | 'b' | 'c' | 'd'): AblTrack | null => {
+    const groupTracksForDrumRack = tracks.filter((t) => t.group === group);
+    if (groupTracksForDrumRack.length === 0) {
+      return null;
+    }
+
     const drumTrack: AblTrack = {
-      padCode: 'a0',
-      group: 'a',
+      padCode: `${group}0` as PadCode,
+      group,
       sampleName: '',
       sampleChannels: 0,
       sampleRate: 0,
@@ -146,7 +151,7 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
       bpm: data.settings.bpm,
       drumRack: true,
       soundId: 0,
-      name: 'Drums',
+      name: `Drums ${group.toUpperCase()}`,
       volume: 1, // 1 means 0dB
       attack: 0,
       release: 0,
@@ -162,19 +167,13 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
       timeStretchBpm: 0,
       timeStretchBars: 0,
       soundLength: 0,
-      tracks: [],
+      tracks: groupTracksForDrumRack,
       inChokeGroup: false,
-      faderParams: data.settings.groupFaderParams.a,
+      faderParams: data.settings.groupFaderParams[group],
       timeSignature: data.scenesSettings.timeSignature,
     };
 
-    for (const track of tracks) {
-      if (track.group === 'a') {
-        drumTrack.tracks.push(track);
-      }
-    }
-
-    // we need to merge notes from all tracks in group A into one track
+    // we need to merge notes from all tracks in the group into one track
     // and remap them
     const newClips: Record<string, AblClip> = {};
     drumTrack.tracks
@@ -199,14 +198,35 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
       });
 
     drumTrack.lane = {
-      padCode: 'a0',
+      padCode: `${group}0` as PadCode,
       clips: Object.values(newClips),
     };
 
-    tracks = tracks.filter((t) => t.group !== 'a');
+    return drumTrack;
+  };
 
-    tracks.unshift(drumTrack);
+  // Process drum racks for each group that has the option enabled
+  const drumRackTracks: AblTrack[] = [];
+  const groupsToProcess: Array<{ group: 'a' | 'b' | 'c' | 'd'; enabled: boolean }> = [
+    { group: 'a', enabled: exporterParams.drumRackGroupA || false },
+    { group: 'b', enabled: exporterParams.drumRackGroupB || false },
+    { group: 'c', enabled: exporterParams.drumRackGroupC || false },
+    { group: 'd', enabled: exporterParams.drumRackGroupD || false },
+  ];
+
+  for (const { group, enabled } of groupsToProcess) {
+    if (enabled) {
+      const drumTrack = createDrumRackTrack(group);
+      if (drumTrack) {
+        drumRackTracks.push(drumTrack);
+        // Remove tracks from this group from the main tracks array
+        tracks = tracks.filter((t) => t.group !== group);
+      }
+    }
   }
+
+  // Insert drum rack tracks at the beginning, maintaining group order (A, B, C, D)
+  tracks.unshift(...drumRackTracks);
 
   Sentry.setContext(`abletonData`, {
     tracks,
