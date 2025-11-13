@@ -27,7 +27,7 @@ function Button({
   ...props
 }: ButtonProps) {
   const variantClasses = {
-    primary: 'bg-brand-gray hover:bg-[#d0d2d0] active:bg-[#c5c7c5]',
+    primary: 'bg-face hover:bg-[#d0d2d0] active:bg-[#c5c7c5]',
     secondary: 'bg-gray-100 hover:bg-gray-300 active:bg-gray-400',
     tertiary: 'bg-[#c6d1d7] hover:bg-gray-100 active:bg-gray-200',
     outlined: 'bg-transparent hover:bg-black/10 active:bg-black/20 border-1 border-black',

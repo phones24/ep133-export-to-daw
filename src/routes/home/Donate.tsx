@@ -43,7 +43,11 @@ function Donate({ className = '' }: { className?: string }) {
 
   return (
     <>
-      <button type="button" className={clsx(className, 'italic')} onClick={() => setOpen(true)}>
+      <button
+        type="button"
+        className={clsx(className, 'italic animate-pulse-slow')}
+        onClick={() => setOpen(true)}
+      >
         Donate!
       </button>
       <Dialog isOpen={open} onClose={() => setOpen(false)}>

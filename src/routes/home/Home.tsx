@@ -12,6 +12,7 @@ import FeedbackDialog from './FeedbackDialog';
 import Menu from './Menu';
 import ProjectMeta from './ProjectMeta';
 import Arrangements from './ProjectView/Arrangements';
+import RiddimDialog from './RiddimDialog';
 
 function Home() {
   const [projectId] = useAtom(projectIdAtom);
@@ -70,12 +71,13 @@ function Home() {
             <AppStateDisplay title="Error" message={error?.message || 'Unknown error'} />
           )}
         </main>
-        <div className="bg-brand-gray px-3 py-2 border-1 border-black text-xs text-black/70 shadow-[1px_1px_0px_1px_#00000099]">
+        <div className="bg-face px-3 py-2 border border-black text-xs text-black/70 shadow-[1px_1px_0px_1px_#00000099]">
           This project is not affiliated with or officially authorized by Teenage Engineering
         </div>
       </div>
 
       <FeedbackDialog />
+      <RiddimDialog />
       <Toast />
     </div>
   );

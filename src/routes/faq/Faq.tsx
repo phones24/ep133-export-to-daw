@@ -3,7 +3,7 @@ import Button from '~/components/ui/Button';
 
 function Faq() {
   return (
-    <main className="my-4 max-w-[1000px] bg-white h-full border-1 border-black p-4 mx-auto flex flex-col gap-6 shadow-my">
+    <main className="my-4 max-w-[1000px] bg-white h-full border border-black p-4 mx-auto flex flex-col gap-6 shadow-my">
       <Button size="xs" className="mr-auto" to="/">
         <span className="inline-flex items-center gap-2">
           <IconArrowLeft className="w-4 h-4" />
@@ -18,10 +18,10 @@ function Faq() {
           Why the resulting project doesn’t sound the same as on the device?
         </h2>
         <p className="text-sm font-mono">
-          Several reasons. The main one is that the EP133 uses a custom FX processor that is hard to
-          recreate in a DAW one to one. Also, fader automation is not exported yet, so if you used
-          fader automation, the result will differ. Sample stretching algorithms are different as
-          well.
+          Several reasons. The main one is that the EP devices uses a custom FX processor that is
+          hard to recreate in a DAW one to one. Also, fader automation is not exported yet, so if
+          you used fader automation, the result will differ. Sample stretching algorithms are
+          different as well.
           <br />
           <br />
           Initially this project was intended to export notes and samples so you could continue

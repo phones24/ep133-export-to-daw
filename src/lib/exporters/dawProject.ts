@@ -18,7 +18,7 @@ import dawProjectTransformer, {
 import { AbortError } from '../utils';
 import { collectSamples, getNextColor, getQuarterNotesPerBar } from './utils';
 
-const PROJECT_NAME = 'EP-133 K.O. II: Export To DAW';
+const PROJECT_NAME = 'EP-133: Export To DAW';
 
 const XML_CONFIG = {
   indent: '    ',

@@ -1,14 +1,19 @@
+import { useAtomValue } from 'jotai';
+import { deviceSkuAtom } from '~/atoms/deviceSku';
+import { SKU_EP133, SKU_TO_NAME } from '~/lib/constants';
 import useDevice from '../../hooks/useDevice';
 
 function FacePlateHeader() {
   const { device } = useDevice();
+  const deviceSku = useAtomValue(deviceSkuAtom);
+  const theme = SKU_TO_NAME[deviceSku] || SKU_TO_NAME[SKU_EP133];
 
   return (
-    <div className="flex gap-2 bg-brand-gray px-3 py-2 border border-black shadow-my">
-      <img src="/ep133-on.png" className="h-[100px] w-auto" alt="ep133" />
+    <div className="flex gap-2 bg-face px-3 py-2 border border-black shadow-my">
+      <img src={`/${theme.id}-on.png`} className="h-[100px] w-auto" alt={theme.id} />
       <div className="flex flex-col gap-2 relative">
         <h1 className="text-[30px] font-medium leading-6">
-          EP-133 K.O. II: <i>Export To DAW</i>
+          {theme.name}: <i>Export To DAW</i>
         </h1>
         <h2 className="text-xs">
           Export your projects to Ableton Live, DAWproject, REAPER or MIDI

@@ -1,3 +1,13 @@
+export const SKU_EP133 = 'TE032AS001';
+export const SKU_EP1320 = 'TE032AS005';
+export const SKU_EP40 = 'TE032AS006';
+
+export const SKU_TO_NAME: Record<string, { id: string; name: string }> = {
+  [SKU_EP133]: { id: 'ep133', name: 'EP-133' },
+  [SKU_EP1320]: { id: 'ep1320', name: 'EP-1320' },
+  [SKU_EP40]: { id: 'ep40', name: 'EP-40' },
+};
+
 export const GROUPS = [
   {
     name: 'A',

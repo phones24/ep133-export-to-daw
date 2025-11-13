@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react';
 import { render } from 'preact';
-import App from './components/App';
+import App from './App';
 import './styles.css';
 import { registerSW } from 'virtual:pwa-register';
 

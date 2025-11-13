@@ -21,7 +21,7 @@ function Arrangements({ projectId }: { projectId: string }) {
     ) * 4;
 
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 h-full">
       {transformedData.scenes.map((sceneData) => (
         <div className="flex flex-col gap-2">
           <div className="bg-brand p-2 font-semibold text-white">
@@ -57,6 +57,10 @@ function Arrangements({ projectId }: { projectId: string }) {
           ))}
         </div>
       ))}
+
+      {transformedData.scenes.length === 0 && (
+        <div className="w-full h-full flex items-center justify-center">No arrangements found</div>
+      )}
     </div>
   );
 }

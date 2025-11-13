@@ -5,16 +5,31 @@
   --font-mono: "IBM Plex Mono", monospace;
 
   --color-brand: #ef4e27;
-  --color-brand-gray: #dbdddb;
-
+  --color-face: #dbdddb;
+  --color-screen: #000000;
+  --bg-url: url("/bg-ep133.png");
   --shadow-my: 1px 1px 0px 1px #00000077;
 }
 
-@layer base {
-  body {
-    @apply bg-[url(/bg.png)] bg-fixed;
+:root {
+  .ep40 {
+    --color-brand: #ef4e27;
+    --color-face: #e2d8c5;
+    --color-screen: #00503a;
+
+    --bg-url: url("/bg-ep40.png");
   }
 
+  .ep1320 {
+    --color-brand: #b22e20;
+    --color-face: #b3ad8f;
+    --color-screen: #0c3235;
+
+    --bg-url: url("/bg-ep1320.png");
+  }
+}
+
+@layer base {
   a {
     @apply text-blue-500;
   }

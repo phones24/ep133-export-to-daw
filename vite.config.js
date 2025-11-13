@@ -26,7 +26,7 @@ export default defineConfig({
       },
       includeAssets: ['**/*'],
       manifest: {
-        name: 'EP-133 K.O. II: Export To DAW',
+        name: 'EP-133: Export To DAW',
         short_name: 'ep133-to-daw',
         description: 'Export your projects to Ableton Live, DAWproject or MIDI',
         theme_color: '#dbdddb',

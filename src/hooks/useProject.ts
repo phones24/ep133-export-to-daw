@@ -25,13 +25,15 @@ function useProject(id?: number | string) {
   const result = useQuery<ProjectRawData | null>({
     queryKey: ['project', id],
     queryFn: async () => {
-      if (!id) {
+      if (!id || !device) {
         return null;
       }
 
       let archiveData: Uint8Array | undefined;
       let unzippedBackup: JSZip | undefined;
 
+      // yeah, you could drop a backup file or a project file
+      // but this is just for testing purposes anyway
       if (droppedBackupFile) {
         unzippedBackup = await JSZip.loadAsync(droppedBackupFile);
         const projectFile = unzippedBackup.file(`/projects/P${String(id).padStart(2, '0')}.tar`);
@@ -53,7 +55,7 @@ function useProject(id?: number | string) {
         : await collectSounds(files);
       const settings = collectSettings(files);
       const pads = collectPads(files, sounds);
-      const scenes = collectScenesAndPatterns(files);
+      const scenes = collectScenesAndPatterns(files, device.sku);
       const scenesSettings = collectScenesSettings(files);
       const effects = collectEffects(files);
 

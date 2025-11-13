@@ -16,7 +16,7 @@ function Select({
   ...props
 }: SelectProps) {
   const variantClasses = {
-    primary: 'bg-brand-gray hover:bg-[#d0d2d0] active:bg-[#c5c7c5] border-1 border-black',
+    primary: 'bg-gray-100 hover:bg-[#d0d2d0] active:bg-[#c5c7c5] border-1 border-black',
     secondary: 'bg-gray-100 hover:bg-gray-300 active:bg-gray-400 border-1 border-black',
     tertiary: 'bg-[#c6d1d7] hover:bg-gray-100 active:bg-gray-200 border-1 border-black',
     outlined: 'bg-transparent hover:bg-black/10 active:bg-black/20 border-1 border-black',

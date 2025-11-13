@@ -10,7 +10,7 @@ import {
   ScenesSettings,
   Sound,
 } from '../types/types';
-import { GROUPS, PADS } from './constants';
+import { GROUPS, PADS, SKU_EP40 } from './constants';
 import { getFileMetadata, getFileNodeByPath } from './midi/fs';
 import { TESoundMetadata } from './midi/types';
 import { TarFile } from './untar';
@@ -104,7 +104,7 @@ export async function collectSounds(files: TarFile[]) {
 
       if (file?.data) {
         const soundId = (file.data[2] << 8) + file.data[1];
-        if (soundId > 0) {
+        if (soundId > 0 && soundId < 1000) {
           soundIds.add(soundId);
         }
       }
@@ -141,7 +141,6 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
 
     for (let i = 1; i <= 12; i++) {
       const file = files.find((f) => f.name === genPadFileName(group.id, i));
-
       if (file?.data) {
         const soundId = (file.data[2] << 8) + file.data[1];
         const sound = sounds.find((s) => s.id === soundId);
@@ -173,6 +172,7 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
           timeStretchBars: timeStretchBars(file.data[25]),
           inChokeGroup: file.data[22] === 1,
           midiChannel: file.data[3],
+          isSynth: soundId >= 1000,
         });
       }
     }
@@ -181,8 +181,8 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
   return result;
 }
 
-function parsePatterns(data: Uint8Array) {
-  const chunks = chunkArray(data, 8, 4);
+function parsePatterns(data: Uint8Array, startOffset: number = 4) {
+  const chunks = chunkArray(data, 8, startOffset);
   const notes: Record<number, Note[]> = {};
 
   chunks.forEach((chunk) => {
@@ -234,7 +234,7 @@ function getPatternsForScene(scenesIntermediate: IntermediateScenes, scenePatter
   return patterns;
 }
 
-export function collectScenesAndPatterns(files: TarFile[]) {
+export function collectScenesAndPatterns(files: TarFile[], sku: string) {
   const scenesIntermediateData: IntermediateScenes = {};
   const scenes: Record<string, Scene> = {};
   const scenePatternUsage: Record<string, SceneMeta> = {};
@@ -292,7 +292,7 @@ export function collectScenesAndPatterns(files: TarFile[]) {
       ...scenesIntermediateData[sceneIndex],
       groups: {
         ...scenesIntermediateData[sceneIndex].groups,
-        [group]: parsePatterns(file.data),
+        [group]: parsePatterns(file.data, sku === SKU_EP40 ? 6 : 4), // EP-40 has 6-byte header
       },
     };
   }
@@ -412,9 +412,6 @@ export async function loadSoundsFromBackup(
   projectFiles: TarFile[],
 ): Promise<Sound[]> {
   const soundIds = new Set<number>();
-  console.log(projectFiles);
-  console.log(projectFiles[3].data);
-  console.log(projectFiles[4].data);
 
   for (let group = 0; group < 4; group++) {
     for (let pad = 1; pad <= 12; pad++) {
@@ -422,9 +419,7 @@ export async function loadSoundsFromBackup(
 
       if (file?.data) {
         const soundId = (file.data[2] << 8) + file.data[1];
-        if (soundId > 0) {
-          console.log(group, pad, soundId);
-
+        if (soundId > 0 && soundId < 1000) {
           soundIds.add(soundId);
         }
       }
@@ -432,9 +427,6 @@ export async function loadSoundsFromBackup(
   }
 
   const selectedSounds: Sound[] = [];
-
-  console.log(soundIds);
-  console.log(Object.values(unzippedBackup.files));
 
   for (const soundId of soundIds) {
     const wavFile = Object.values(unzippedBackup.files).find((file) =>
@@ -453,7 +445,10 @@ export async function loadSoundsFromBackup(
     }
 
     const soundData = await soundFile.async('uint8array');
-    const fileName = soundFile.name.split('/').pop()?.split(' ').slice(1).join(' ') || '';
+    const fileName = (soundFile.name.split('/').pop()?.split(' ').slice(1).join(' ') || '').replace(
+      '.wav',
+      '',
+    );
     const fileNode = {
       nodeId: soundId,
       flags: 0,

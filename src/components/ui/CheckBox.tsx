@@ -38,7 +38,7 @@ function CheckBox({
           </div>
           <div
             className={clsx(
-              'absolute shadow-lg bottom-full left-1/2 -translate-x-1/2 mb-2 p-3 bg-[#b0babe] text-black border-1 border-black text-sm',
+              'absolute shadow-lg bottom-full left-1/2 -translate-x-1/2 mb-2 p-3 bg-[#b0babe] text-black border border-black text-sm',
               'opacity-0 peer-hover:opacity-100 transition-opacity duration-300 pointer-events-none min-w-[500px] max-w-[600px]',
             )}
           >

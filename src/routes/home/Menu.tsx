@@ -10,7 +10,7 @@ function Menu() {
   const [_, openFeedbackDialog] = useAtom(feedbackDialogAtom);
 
   return (
-    <div className="bg-brand-gray px-3 py-2 border-1 border-black shadow-my">
+    <div className="bg-face px-3 py-2 border border-black shadow-my">
       <Link href="/faq" className={menuItemClassName}>
         FAQ
       </Link>

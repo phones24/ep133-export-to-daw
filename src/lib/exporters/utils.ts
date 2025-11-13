@@ -47,6 +47,10 @@ export async function downloadPcm(
 }
 
 export function getSampleName(name: string | undefined, soundId: number, extension = true) {
+  if (soundId >= 1000) {
+    return '';
+  }
+
   if (soundId === 0 && !name) {
     return '';
   }

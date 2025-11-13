@@ -14,6 +14,7 @@ export type ViewPattern = {
   group: string;
   padNumber: number;
   midiChannel: number;
+  isSynth: boolean;
 };
 
 export type ViewScene = {
@@ -74,6 +75,7 @@ function webViewTransformer(data: ProjectRawData): ViewData {
           padNumber,
           soundName: getSampleName(sound?.meta?.name, soundId, false),
           midiChannel: padObject?.midiChannel || 0,
+          isSynth: padObject?.isSynth,
         });
       }
     });

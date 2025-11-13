@@ -215,7 +215,7 @@ function ExportProject() {
           <div className="mt-4 min-h-[54px]">
             {percentage > 0 && (
               <>
-                <div className="h-[30px] border-1 border-black bg-[#ccc]">
+                <div className="h-[30px] border border-black bg-[#ccc]">
                   <div className="h-full bg-brand" style={{ width: `${percentage}%` }} />
                 </div>
                 <div className="text-sm text-black min-h-5 text-center mt-1">{pendingStatus}</div>
@@ -278,15 +278,23 @@ function ExportProject() {
           </div>
 
           <div className="flex gap-4 mt-5">
-            <Button className="mr-auto" onClick={() => openFeedbackDialog(true)}>
+            <Button
+              variant="secondary"
+              className="mr-auto"
+              onClick={() => openFeedbackDialog(true)}
+            >
               Submit error report
             </Button>
             {isPending ? (
-              <Button onClick={cancelExport}>Cancel</Button>
+              <Button variant="secondary" onClick={cancelExport}>
+                Cancel
+              </Button>
             ) : (
-              <Button onClick={() => setOpen(false)}>Close</Button>
+              <Button variant="secondary" onClick={() => setOpen(false)}>
+                Close
+              </Button>
             )}
-            <Button onClick={startExport} disabled={isPending} variant="secondary">
+            <Button onClick={startExport} disabled={isPending} variant="primary">
               Export
             </Button>
           </div>

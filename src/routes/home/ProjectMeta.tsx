@@ -68,7 +68,7 @@ function ProjectMeta({ projectId }: { projectId?: string }) {
   const { device } = useDevice();
 
   return (
-    <div className="flex bg-[#000] p-2 pl-4  shadow-my">
+    <div className="flex bg-screen p-2 pl-4  shadow-my">
       <div className={clsx('flex gap-4 text-xl', (!data || !device) && 'opacity-70')}>
         <Value
           label="TEMPO"

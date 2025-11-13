@@ -1,8 +1,8 @@
 **This project is not affiliated with or officially authorized by Teenage Engineering**
 
-# EP-133 K.O. II: Export To DAW
+# EP-133: Export To DAW
 
-This tool allows you to export your EP-133 K.O.II (EP-1320) project into a DAW (Digital Audio Workstation).
+This tool allows you to export your EP-133/EP-1320/EP-40 project into a DAW (Digital Audio Workstation).
 
 Try it out on https://ep133-to-daw.cc/
 
@@ -49,6 +49,7 @@ Check the project blog here: https://ko-fi.com/phones24
 
 ## Latest news
 
+- [13/11/2025] EP-40 Riddim is partailly supported + themes
 - [27/10/2025] ABLETON: support fader params (but without automation for now)
 - [16/10/2025] Added REAPER's sampler (just envs, root note, volume)
 - [13/10/2025] Added time signature support
