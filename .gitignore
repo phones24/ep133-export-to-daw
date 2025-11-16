@@ -14,6 +14,8 @@ dev-dist
 .media
 .wrangler
 .proton
+.ruff_cache
+.pytest_cache
 *.local
 
 # Editor directories and files

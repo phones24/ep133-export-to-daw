@@ -1,12 +1,9 @@
-import { useAtomValue } from 'jotai';
-import { deviceSkuAtom } from '~/atoms/deviceSku';
-import { SKU_EP133, SKU_TO_NAME } from '~/lib/constants';
+import useTheme from '~/hooks/useTheme';
 import useDevice from '../../hooks/useDevice';
 
 function FacePlateHeader() {
   const { device } = useDevice();
-  const deviceSku = useAtomValue(deviceSkuAtom);
-  const theme = SKU_TO_NAME[deviceSku] || SKU_TO_NAME[SKU_EP133];
+  const theme = useTheme();
 
   return (
     <div className="flex gap-2 bg-face px-3 py-2 border border-black shadow-my">

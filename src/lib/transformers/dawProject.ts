@@ -127,7 +127,9 @@ function dawProjectTransformer(data: ProjectRawData, exporterParams: ExporterPar
   });
 
   // Helper function to create a drum rack track and lane for a specific group
-  const createDrumRackForGroup = (group: 'a' | 'b' | 'c' | 'd'): {
+  const createDrumRackForGroup = (
+    group: 'a' | 'b' | 'c' | 'd',
+  ): {
     drumTrack: DawTrack;
     drumLane: DawLane;
   } | null => {

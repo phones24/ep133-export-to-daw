@@ -20,7 +20,7 @@ Check the project blog here: https://ko-fi.com/phones24
 
 - Requires only browser with WebMIDI support
 - Works offline (Progressive Web App)
-- Export projects directly from EP-133/EP-1320 to:
+- Export projects directly from EP-133/EP-1320/EP-40 to:
   - Ableton Live 11+ (project with samples)
   - DAWproject (project + archived samples)
   - REAPER (project with samples)
@@ -32,7 +32,7 @@ Check the project blog here: https://ko-fi.com/phones24
   - Fader params
   - FX send/return
   - Track grouping: 4 groups, same as on the device
-  - First group can be exported as a Drum Rack track
+  - Any group can be exported as a Drum Rack track
 - DAWproject (universal DAW format created by Bitwig):
   - Export as arrangements with clips
   - Includes archived samples
@@ -44,7 +44,7 @@ Check the project blog here: https://ko-fi.com/phones24
   - Support track grouping
 - MIDI:
   - Includes archived samples
-  - First group can be exported as a Drum Rack track
+  - Any group can be exported as a Drum Rack track
 
 
 ## Latest news
