@@ -33,6 +33,12 @@ function Home() {
 
             <div className="self-start flex flex-col gap-4">
               <Menu />
+              <div className="bg-face px-3 py-2 border border-black shadow-my">
+                Check out my new project:{' '}
+                <a href="https://tih-generator.cc/" target="_blank" rel="noopener noreferrer">
+                  TIH Generator
+                </a>
+              </div>
             </div>
           </div>
           <ProjectMeta projectId={projectId} />
