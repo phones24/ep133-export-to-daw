@@ -364,7 +364,8 @@ async function buildTrack(
 
   // make sure each tracks has the same empty slots for clips
   // must be equeal to GroupTrackSlot if this track is in a group
-  for (let sc = 0; sc < maxScenes; sc++) {
+  // must be at least 8 slots to avoid Ableton crashes
+  for (let sc = 0; sc < Math.max(8, maxScenes); sc++) {
     midiTrack.DeviceChain.MainSequencer.ClipSlotList.ClipSlot[sc] = {
       '@Id': sc,
       LomId: {
@@ -448,7 +449,8 @@ async function buildGroupTrack(
   groupTrack.Slots.GroupTrackSlot = [];
 
   // adding empty slots for clips (or Ableton will crash)
-  for (let sc = 0; sc < maxScenes; sc++) {
+  // must be at least 8 slots to avoid Ableton crashes
+  for (let sc = 0; sc < Math.max(8, maxScenes); sc++) {
     groupTrack.Slots.GroupTrackSlot.push({
       '@Id': sc,
       LomId: {
