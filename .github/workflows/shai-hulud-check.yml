@@ -1,6 +1,7 @@
 name: Shai-Hulud 2.0 Security Check
 
 on:
+  workflow_dispatch:
   push:
     branches: [main, master]
     paths:
