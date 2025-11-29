@@ -2,6 +2,7 @@ import { useAtom } from 'jotai';
 
 import { projectIdAtom } from '~/atoms/project';
 import OfflineInformer from '~/components/OfflineInformer';
+import UpdateNotifier from '~/components/UpdateNotifier';
 import Toast from '~/components/ui/Toast';
 import { APP_STATES, useAppState } from '~/hooks/useAppState';
 import useDevice from '~/hooks/useDevice';
@@ -23,6 +24,7 @@ function Home() {
   return (
     <div className="min-w-[1100px] max-w-[1800px] p-4 h-screen grid grid-rows-[auto_1fr] mx-auto">
       <div className="mb-2 empty:mb-0">
+        <UpdateNotifier />
         <OfflineInformer />
       </div>
 
