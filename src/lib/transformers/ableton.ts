@@ -70,10 +70,36 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
 
     scene.patterns.forEach((pattern) => {
       let track = tracks.find((c) => c.padCode === pattern.pad);
-      const pad = findPad(pattern.pad, pads);
+      let pad = findPad(pattern.pad, pads);
+
       if (!pad) {
-        throw new Error(`Could not find pad for ${pattern.pad}, pads: ${JSON.stringify(pads)}`);
+        console.warn('Could not find pad data for', pattern.pad);
+
+        pad = {
+          group: pattern.group,
+          volume: 100,
+          attack: 0,
+          release: 0,
+          trimLeft: 0,
+          trimRight: 0,
+          pad: 0,
+          playMode: 'oneshot',
+          pan: 0,
+          pitch: 0,
+          rootNote: 60,
+          timeStretch: 'off',
+          timeStretchBpm: 0,
+          timeStretchBars: 0,
+          soundId: 0,
+          name: '',
+          file: null,
+          rawData: null,
+          soundLength: 0,
+          inChokeGroup: false,
+          midiChannel: 0,
+        };
       }
+
       const faderParams = data.settings.groupFaderParams[pad.group];
 
       if (!track) {

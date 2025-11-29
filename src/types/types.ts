@@ -107,8 +107,8 @@ export type Pad = {
   pad: number;
   name: string;
   group: Group;
-  file: TarFile;
-  rawData: Uint8Array;
+  file: TarFile | null;
+  rawData: Uint8Array | null;
   soundId: number;
   volume: number;
   attack: number;
