@@ -27,9 +27,9 @@ function ToastItem({ toast, onRemove }: { toast: ToastMessage; onRemove: (id: st
     <div ref={toastRef} popover>
       <div
         className={clsx(
-          'flex gap-8 items-center px-4 py-3 shadow-md max-w-[500px] w-full text-black/90 border-1 border-gray-800',
+          'flex gap-8 items-center px-4 py-3 shadow-md max-w-125 w-full text-black/90 border border-gray-800',
           'transform transition-all duration-300 ease-out',
-          toast.severity === 'error' ? 'bg-red-500' : 'bg-[#f0927a]',
+          toast.severity === 'error' ? 'bg-red-500' : 'bg-[#7af07e]',
         )}
       >
         <p className="flex-1">{toast.message}</p>

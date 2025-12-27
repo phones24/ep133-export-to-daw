@@ -22,7 +22,7 @@ function FeedbackDialog() {
 
   return (
     <Dialog isOpen={open} onClose={handleClose}>
-      <div className="flex flex-col gap-4 min-w-[600px]">
+      <div className="flex flex-col gap-4 min-w-150">
         <img src="/riddim.png" alt="Riddim Logo" className="w-20" />
         <p>Hey, looks like you are using EP-40 Riddim!</p>
         <p>

@@ -45,7 +45,7 @@ function FeedbackDialog() {
 
   return (
     <Dialog isOpen={open} onClose={() => setOpen(false)}>
-      <div className="flex flex-col gap-4 min-w-[600px]">
+      <div className="flex flex-col gap-4 min-w-150">
         <h3 className="text-lg font-semibold">Feedback / error report / feature request</h3>
         <p className="text-sm">
           If your project fails to export, or something looks wrong, please submit an error report

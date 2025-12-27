@@ -22,7 +22,7 @@ function Home() {
   const { dropRef } = useDroppedFile();
 
   return (
-    <div className="min-w-[1100px] max-w-[1800px] p-4 h-screen grid grid-rows-[auto_1fr] mx-auto">
+    <div className="min-w-275 max-w-450 p-4 h-screen grid grid-rows-[auto_1fr] mx-auto">
       <div className="mb-2 empty:mb-0">
         <UpdateNotifier />
         <OfflineInformer />
@@ -35,12 +35,6 @@ function Home() {
 
             <div className="self-start flex flex-col gap-4">
               <Menu />
-              <div className="bg-face px-3 py-2 border border-black shadow-my">
-                Check out my new project:{' '}
-                <a href="https://tih-generator.cc/" target="_blank" rel="noopener noreferrer">
-                  TIH Generator
-                </a>
-              </div>
             </div>
           </div>
           <ProjectMeta projectId={projectId} />
@@ -71,7 +65,13 @@ function Home() {
           {appState.includes(APP_STATES.NO_DEVICE_CONNECTED) && (
             <AppStateDisplay
               title="No Device Connected"
-              message="Please connect a device and allow access to MIDI"
+              message={
+                <>
+                  Please connect a device and allow access to MIDI
+                  <br />
+                  or drop a .pak/.ppak/.tar backup file
+                </>
+              }
             />
           )}
 

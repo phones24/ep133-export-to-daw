@@ -51,7 +51,7 @@ function Donate({ className = '' }: { className?: string }) {
         Donate!
       </button>
       <Dialog isOpen={open} onClose={() => setOpen(false)}>
-        <div className="flex flex-col gap-2 min-w-[600px]">
+        <div className="flex flex-col gap-2 min-w-150">
           <h1 className="text-xl font-semibold">Donate</h1>
           <p>If you like this tool, please consider donating to support the development.</p>
           <p>Thank you!</p>

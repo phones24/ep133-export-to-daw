@@ -3,7 +3,7 @@ import Button from '~/components/ui/Button';
 
 function Faq() {
   return (
-    <main className="my-4 max-w-[1000px] bg-white h-full border border-black p-4 mx-auto flex flex-col gap-6 shadow-my">
+    <main className="my-4 max-w-250 bg-white border border-black p-4 mx-auto flex flex-col gap-6 shadow-my">
       <Button size="xs" className="mr-auto" to="/">
         <span className="inline-flex items-center gap-2">
           <IconArrowLeft className="w-4 h-4" />
@@ -35,7 +35,7 @@ function Faq() {
         <h2 className="text-xl font-semibold mb-2">Please add support for [my DAW here]</h2>
         <p className="text-sm font-mono">
           I’d love to. Reverse engineering DAW project formats takes a tremendous amount of time and
-          effort. It’s easier for DAWs that uses textXML, or JSON formats (like REAPER or Ableton).
+          effort. It’s easier for DAWs that uses text, XML or JSON formats (like REAPER or Ableton).
           For proprietary binary formats, it’s much more challenging. But if you have a specific DAW
           in mind, let me know.
           <br />
@@ -87,6 +87,22 @@ function Faq() {
         <p className="text-sm font-mono">
           I can only fix issues if you report them, so please do. I don’t have a QA team to test the
           app thoroughly, so your help is very much appreciated.
+        </p>
+      </section>
+
+      <section>
+        <h2 className="text-xl font-semibold mb-2">
+          Can I use this tool without connecting my device?
+        </h2>
+        <p className="text-sm font-mono">
+          Yes! You can drop a <code>.pak</code> backup file directly onto the page. The backup file
+          contains all your projects and samples, so you can browse and export them without
+          connecting your device. To create a backup file, use the official EP Sample Tool from
+          Teenage Engineering.
+          <br />
+          <br />
+          Note: <code>.tar</code> and <code>.ppak</code> project files still require a device
+          connection because they don't include the sample data.
         </p>
       </section>
 

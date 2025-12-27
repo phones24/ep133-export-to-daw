@@ -1,7 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAtomValue } from 'jotai';
 import JSZip from 'jszip';
-import { droppedBackupFileAtom, droppedProjectFileAtom } from '~/atoms/droppedProjectFile';
+import { deviceSkuAtom } from '~/atoms/deviceSku';
+import {
+  droppedBackupFileAtom,
+  droppedProjectFileAtom,
+  unzippedBackupAtom,
+} from '~/atoms/droppedProjectFile';
 import { getProjectFile } from '../lib/midi';
 import {
   collectEffects,
@@ -12,6 +17,7 @@ import {
   collectSounds,
   loadSoundsFromBackup,
 } from '../lib/parsers';
+import { store } from '../lib/store';
 import { untar } from '../lib/untar';
 import { ProjectRawData } from '../types/types';
 import useDevice from './useDevice';
@@ -19,23 +25,29 @@ import { DROPPED_FILE_ID } from './useDroppedFile';
 
 function useProject(id?: number | string) {
   const { device } = useDevice();
+  const deviceSku = useAtomValue(deviceSkuAtom);
   const droppedProjectFile = useAtomValue(droppedProjectFileAtom);
   const droppedBackupFile = useAtomValue(droppedBackupFileAtom);
 
   const result = useQuery<ProjectRawData | null>({
     queryKey: ['project', id],
     queryFn: async () => {
-      if (!id || !device) {
+      if (!id) {
+        return null;
+      }
+
+      if (!droppedBackupFile && !device) {
         return null;
       }
 
       let archiveData: Uint8Array | undefined;
       let unzippedBackup: JSZip | undefined;
 
-      // yeah, you could drop a backup file or a project file
-      // but this is just for testing purposes anyway
       if (droppedBackupFile) {
-        unzippedBackup = await JSZip.loadAsync(droppedBackupFile);
+        unzippedBackup = store.get(unzippedBackupAtom) ?? undefined;
+        if (!unzippedBackup) {
+          unzippedBackup = await JSZip.loadAsync(droppedBackupFile);
+        }
         const projectFile = unzippedBackup.file(`/projects/P${String(id).padStart(2, '0')}.tar`);
         if (!projectFile) {
           throw new Error('No project file in backup');
@@ -55,7 +67,7 @@ function useProject(id?: number | string) {
         : await collectSounds(files);
       const settings = collectSettings(files);
       const pads = collectPads(files, sounds);
-      const scenes = collectScenesAndPatterns(files, device.sku);
+      const scenes = collectScenesAndPatterns(files, device?.sku || deviceSku);
       const scenesSettings = collectScenesSettings(files);
       const effects = collectEffects(files);
 
@@ -81,7 +93,7 @@ function useProject(id?: number | string) {
       };
     },
     retry: false,
-    enabled: !!id && !!device,
+    enabled: !!id && (!!device || !!droppedBackupFile),
     throwOnError: true,
   });
 

@@ -1,7 +1,9 @@
 import * as Sentry from '@sentry/react';
+import { unzippedBackupAtom } from '~/atoms/droppedProjectFile';
 import { ExportStatus, ProjectRawData, SoundInfo } from '../../types/types';
 import { getFile, getFileNodeByPath } from '../midi/fs';
 import { pcmToWavBlob } from '../pcmToWav';
+import { store } from '../store';
 import { AbortError, audioFormatAsBitDepth, findSoundIdByPad } from '../utils';
 
 let _colorIndex = 0;
@@ -31,10 +33,61 @@ const COLORS = [
   '#79B2B2',
 ];
 
+function extractPcmFromWav(wavData: Uint8Array): Uint8Array {
+  const view = new DataView(wavData.buffer, wavData.byteOffset, wavData.byteLength);
+
+  const riff = String.fromCharCode(wavData[0], wavData[1], wavData[2], wavData[3]);
+  if (riff !== 'RIFF') {
+    throw new Error('Invalid WAV file: missing RIFF header');
+  }
+
+  const wave = String.fromCharCode(wavData[8], wavData[9], wavData[10], wavData[11]);
+  if (wave !== 'WAVE') {
+    throw new Error('Invalid WAV file: missing WAVE format');
+  }
+
+  let offset = 12;
+  while (offset < wavData.length - 8) {
+    const chunkId = String.fromCharCode(
+      wavData[offset],
+      wavData[offset + 1],
+      wavData[offset + 2],
+      wavData[offset + 3],
+    );
+    const chunkSize = view.getUint32(offset + 4, true);
+
+    if (chunkId === 'data') {
+      return wavData.slice(offset + 8, offset + 8 + chunkSize);
+    }
+
+    offset += 8 + chunkSize;
+    if (chunkSize % 2 !== 0) {
+      offset += 1;
+    }
+  }
+
+  throw new Error('Invalid WAV file: data chunk not found');
+}
+
 export async function downloadPcm(
   soundId: number,
   progressCallback?: (bytesRead: number, totalRemaining: number) => void,
 ) {
+  const backupZip = store.get(unzippedBackupAtom);
+
+  if (backupZip) {
+    const wavFile = Object.values(backupZip.files).find((file) =>
+      file.name.startsWith(`/sounds/${String(soundId).padStart(3, '0')} `),
+    );
+
+    if (!wavFile) {
+      throw new Error(`Sound file for sound ID ${soundId} not found in backup`);
+    }
+
+    const wavData = await wavFile.async('uint8array');
+    return extractPcmFromWav(wavData);
+  }
+
   const fileNode = await getFileNodeByPath(`/sounds/${String(soundId).padStart(3, '0')}.pcm`);
 
   if (!fileNode) {

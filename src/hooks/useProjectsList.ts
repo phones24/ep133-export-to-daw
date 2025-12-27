@@ -1,5 +1,6 @@
 import { useAtomValue } from 'jotai';
-import { droppedProjectFileAtom } from '~/atoms/droppedProjectFile';
+import { droppedBackupFileAtom, droppedProjectFileAtom } from '~/atoms/droppedProjectFile';
+import useDevice from './useDevice';
 import { DROPPED_FILE_ID } from './useDroppedFile';
 
 export type ProjectOption = {
@@ -8,12 +9,17 @@ export type ProjectOption = {
 };
 
 function useProjectsList(): ProjectOption[] {
+  const { device } = useDevice();
   const droppedProjectFile = useAtomValue(droppedProjectFileAtom);
+  const droppedBackupFile = useAtomValue(droppedBackupFileAtom);
 
-  const base: ProjectOption[] = Array.from({ length: 9 }, (_, i) => {
-    const n = i + 1;
-    return { value: String(n), label: `Project ${n}` };
-  });
+  const base: ProjectOption[] =
+    device || droppedBackupFile
+      ? Array.from({ length: 9 }, (_, i) => {
+          const n = i + 1;
+          return { value: String(n), label: `Project ${n}` };
+        })
+      : [];
 
   if (droppedProjectFile) {
     base.push({ value: DROPPED_FILE_ID, label: droppedProjectFile.name });

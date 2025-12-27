@@ -20,6 +20,7 @@ Check the project blog here: https://ko-fi.com/phones24
 
 - Requires only browser with WebMIDI support
 - Works offline (Progressive Web App)
+- Offline mode: Drop a `.pak` backup file to browse and export projects without connecting your device
 - Export projects directly from EP-133/EP-1320/EP-40 to:
   - Ableton Live 11+ (project with samples)
   - DAWproject (project + archived samples)
@@ -49,6 +50,7 @@ Check the project blog here: https://ko-fi.com/phones24
 
 ## Latest news
 
+- [27/12/2025] Load projects from backup
 - [13/11/2025] EP-40 Riddim is partailly supported + themes
 - [27/10/2025] ABLETON: support fader params (but without automation for now)
 - [16/10/2025] Added REAPER's sampler (just envs, root note, volume)

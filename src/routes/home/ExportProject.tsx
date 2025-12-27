@@ -9,7 +9,6 @@ import CheckBox from '../../components/ui/CheckBox';
 import Dialog from '../../components/ui/Dialog';
 import Select from '../../components/ui/Select';
 import { APP_STATES, useAppState } from '../../hooks/useAppState';
-import useDevice from '../../hooks/useDevice';
 import useExportProject, { EXPORT_FORMATS } from '../../hooks/useExportProject';
 import usePersistedState from '../../hooks/usePersistedState';
 import { ExportFormatId } from '../../types/types';
@@ -36,7 +35,6 @@ function ExportProject() {
   const [drumRackGroupD, setDrumRackGroupD] = usePersistedState('export_drumRackGroupD', false);
   const [sendEffects, setSendEffects] = usePersistedState('export_sendEffects', true);
   const appState = useAppState();
-  const { device } = useDevice();
   const {
     startExport,
     cancelExport,
@@ -84,9 +82,9 @@ function ExportProject() {
         </Button>
       </div>
 
-      {open && !!device && (
+      {open && (
         <Dialog isOpen onClose={() => setOpen(false)}>
-          <div className="flex flex-col gap-2 min-w-[600px] max-w-[700px]">
+          <div className="flex flex-col gap-2 min-w-150 max-w-175">
             <h3 className="text-lg font-semibold">Export</h3>
             <Select
               onChange={(e: JSX.TargetedEvent<HTMLSelectElement, Event>) =>
@@ -281,10 +279,10 @@ function ExportProject() {
             )}
           </div>
 
-          <div className="mt-4 min-h-[54px]">
+          <div className="mt-4 min-h-13.5">
             {percentage > 0 && (
               <>
-                <div className="h-[30px] border border-black bg-[#ccc]">
+                <div className="h-7.5 border border-black bg-[#ccc]">
                   <div className="h-full bg-brand" style={{ width: `${percentage}%` }} />
                 </div>
                 <div className="text-sm text-black min-h-5 text-center mt-1">{pendingStatus}</div>
@@ -318,7 +316,7 @@ function ExportProject() {
                           <p className="text-red-600">
                             ✗ Missing: {sampleReport.missing.length} samples
                           </p>
-                          <ul className="mt-1 ml-4 max-h-[100px] overflow-y-auto">
+                          <ul className="mt-1 ml-4 max-h-25 overflow-y-auto">
                             {sampleReport.missing.map((missing, index) => (
                               <li key={index} className="text-red-500 text-xs truncate">
                                 {missing.name}: {missing.error}
