@@ -18,6 +18,7 @@ import {
   loadSoundsFromBackup,
 } from '../lib/parsers';
 import { store } from '../lib/store';
+import { showToast } from '../lib/toast';
 import { untar } from '../lib/untar';
 import { ProjectRawData } from '../types/types';
 import useDevice from './useDevice';
@@ -43,58 +44,63 @@ function useProject(id?: number | string) {
       let archiveData: Uint8Array | undefined;
       let unzippedBackup: JSZip | undefined;
 
-      if (droppedBackupFile) {
-        unzippedBackup = store.get(unzippedBackupAtom) ?? undefined;
-        if (!unzippedBackup) {
-          unzippedBackup = await JSZip.loadAsync(droppedBackupFile);
+      try {
+        if (droppedBackupFile) {
+          unzippedBackup = store.get(unzippedBackupAtom) ?? undefined;
+          if (!unzippedBackup) {
+            unzippedBackup = await JSZip.loadAsync(droppedBackupFile);
+          }
+          const projectFile = unzippedBackup.file(`/projects/P${String(id).padStart(2, '0')}.tar`);
+          if (!projectFile) {
+            throw new Error('No project file in backup');
+          }
+          const projectFileData = await projectFile.async('uint8array');
+          archiveData = projectFileData;
+        } else if (id === DROPPED_FILE_ID && droppedProjectFile) {
+          archiveData = droppedProjectFile.data;
+        } else {
+          const archive = await getProjectFile(Number(id));
+          archiveData = archive.data;
         }
-        const projectFile = unzippedBackup.file(`/projects/P${String(id).padStart(2, '0')}.tar`);
-        if (!projectFile) {
-          throw new Error('No project file in backup');
-        }
-        const projectFileData = await projectFile.async('uint8array');
-        archiveData = projectFileData;
-      } else if (id === DROPPED_FILE_ID && droppedProjectFile) {
-        archiveData = droppedProjectFile.data;
-      } else {
-        const archive = await getProjectFile(Number(id));
-        archiveData = archive.data;
+
+        const files = await untar(archiveData);
+        const sounds = unzippedBackup
+          ? await loadSoundsFromBackup(unzippedBackup, files)
+          : await collectSounds(files);
+        const settings = collectSettings(files);
+        const pads = collectPads(files, sounds);
+        const scenes = collectScenesAndPatterns(files, device?.sku || deviceSku);
+        const scenesSettings = collectScenesSettings(files);
+        const effects = collectEffects(files);
+
+        // @ts-expect-error wrong typing?
+        const projectFileBlob = new Blob([archiveData]);
+        const projectFile = new File(
+          [projectFileBlob],
+          `project-${String(id).padStart(2, '0')}.tar`,
+          {
+            type: 'application/x-tar',
+            lastModified: Date.now(),
+          },
+        );
+
+        return {
+          pads,
+          scenes,
+          settings,
+          sounds,
+          effects,
+          projectFile,
+          scenesSettings,
+        };
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Failed to load project';
+        showToast(message, 'error');
+        return null;
       }
-
-      const files = await untar(archiveData);
-      const sounds = unzippedBackup
-        ? await loadSoundsFromBackup(unzippedBackup, files)
-        : await collectSounds(files);
-      const settings = collectSettings(files);
-      const pads = collectPads(files, sounds);
-      const scenes = collectScenesAndPatterns(files, device?.sku || deviceSku);
-      const scenesSettings = collectScenesSettings(files);
-      const effects = collectEffects(files);
-
-      // @ts-expect-error wrong typing?
-      const projectFileBlob = new Blob([archiveData]);
-      const projectFile = new File(
-        [projectFileBlob],
-        `project-${String(id).padStart(2, '0')}.tar`,
-        {
-          type: 'application/x-tar',
-          lastModified: Date.now(),
-        },
-      );
-
-      return {
-        pads,
-        scenes,
-        settings,
-        sounds,
-        effects,
-        projectFile,
-        scenesSettings,
-      };
     },
     retry: false,
     enabled: !!id && (!!device || !!droppedBackupFile),
-    throwOnError: true,
   });
 
   return result;
