@@ -10,6 +10,7 @@ import {
   ExportFormatId,
   ExportResult,
   ExportStatus,
+  ProjectRawData,
   SampleReport,
 } from '../types/types';
 import useProject from './useProject';
@@ -58,6 +59,16 @@ async function getExporterFn(
   }
 }
 
+function filterScenes(data: ProjectRawData, params: ExporterParams): ProjectRawData {
+  if (params.allScenes) {
+    return data;
+  }
+  return {
+    ...data,
+    scenes: data.scenes.filter((scene) => params.selectedScenes?.includes(scene.name)),
+  };
+}
+
 function useExportProject(format: ExportFormatId, exporterParams: ExporterParams) {
   const projectId = useAtomValue(projectIdAtom);
   const { data: projectRawData } = useProject(projectId);
@@ -91,9 +102,11 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
 
       const exportFn = await getExporterFn(format);
 
+      const filteredData = filterScenes(projectRawData, exporterParams);
+
       const result = await exportFn(
         projectId,
-        projectRawData,
+        filteredData,
         (stat: ExportStatus) => {
           setPercentage(stat.progress);
           setPendingStatus(stat.status);

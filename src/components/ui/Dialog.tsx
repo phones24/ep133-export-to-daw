@@ -6,9 +6,16 @@ interface DialogProps {
   onClose: () => void;
   children: any;
   className?: string;
+  containerClassName?: string;
 }
 
-function Dialog({ isOpen, onClose, children, className = '' }: DialogProps) {
+function Dialog({
+  isOpen,
+  onClose,
+  children,
+  className = '',
+  containerClassName = '',
+}: DialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -28,10 +35,13 @@ function Dialog({ isOpen, onClose, children, className = '' }: DialogProps) {
   return (
     <dialog
       ref={dialogRef}
-      className="shadow-lg backdrop:bg-black/40 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-1 border-black outline-none overflow-visible"
+      className={clsx(
+        'shadow-lg backdrop:bg-black/40 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-1 border-black outline-none overflow-visible',
+        className,
+      )}
       onClose={onClose}
     >
-      <div className={clsx('bg-white p-4 rounded-md min-w-[300px] min-h-[100px]', className)}>
+      <div className={clsx('bg-white p-4 rounded-md min-w-75 min-h-25', containerClassName)}>
         {children}
       </div>
     </dialog>

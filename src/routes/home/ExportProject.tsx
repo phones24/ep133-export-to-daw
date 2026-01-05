@@ -5,13 +5,14 @@ import IconArrowDialog from '~/components/icons/arrow-dialog.svg?react';
 import IconFile from '~/components/icons/file.svg?react';
 import { feedbackDialogAtom } from '../../atoms/feedbackDialog';
 import Button from '../../components/ui/Button';
-import CheckBox from '../../components/ui/CheckBox';
 import Dialog from '../../components/ui/Dialog';
 import Select from '../../components/ui/Select';
 import { APP_STATES, useAppState } from '../../hooks/useAppState';
 import useExportProject, { EXPORT_FORMATS } from '../../hooks/useExportProject';
 import usePersistedState from '../../hooks/usePersistedState';
 import { ExportFormatId } from '../../types/types';
+import ExportOptions from './ExportOptions';
+import ExportScenes from './ExportScenes';
 
 const NOTES: Record<ExportFormatId, string> = {
   ableton: `Please note that the exported project won't sound exactly the same as it does on the device.`,
@@ -34,6 +35,8 @@ function ExportProject() {
   const [drumRackGroupC, setDrumRackGroupC] = usePersistedState('export_drumRackGroupC', false);
   const [drumRackGroupD, setDrumRackGroupD] = usePersistedState('export_drumRackGroupD', false);
   const [sendEffects, setSendEffects] = usePersistedState('export_sendEffects', true);
+  const [allScenes, setAllScenes] = useState(true);
+  const [selectedScenes, setSelectedScenes] = useState<string[]>([]);
   const appState = useAppState();
   const {
     startExport,
@@ -54,8 +57,12 @@ function ExportProject() {
     drumRackGroupC,
     drumRackGroupD,
     sendEffects,
+    allScenes,
+    selectedScenes,
   });
   const [_, openFeedbackDialog] = useAtom(feedbackDialogAtom);
+
+  const canExport = allScenes || selectedScenes.length > 0;
 
   useEffect(() => {
     reset();
@@ -83,7 +90,7 @@ function ExportProject() {
       </div>
 
       {open && (
-        <Dialog isOpen onClose={() => setOpen(false)}>
+        <Dialog isOpen onClose={() => setOpen(false)} className="min-w-200">
           <div className="flex flex-col gap-2 min-w-150 max-w-175">
             <h3 className="text-lg font-semibold">Export</h3>
             <Select
@@ -101,174 +108,35 @@ function ExportProject() {
                 </option>
               ))}
             </Select>
-            <div className="flex flex-col gap-2 mt-2">
-              {format === 'dawproject' && (
-                <>
-                  <CheckBox
-                    checked={includeArchivedSamples}
-                    onChange={(checked) => setIncludeArchivedSamples(checked)}
-                    title="Include archived WAV samples"
-                    disabled={isPending}
-                  />
-                  <CheckBox
-                    checked={clips}
-                    onChange={(checked) => setClips(checked)}
-                    title="Export with clips"
-                    disabled={isPending}
-                  />
-                  <CheckBox
-                    checked={drumRackGroupA}
-                    onChange={(checked) => setDrumRackGroupA(checked)}
-                    title="Merge tracks of group A into one track"
-                    disabled={isPending}
-                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
-                  />
-                  <CheckBox
-                    checked={drumRackGroupB}
-                    onChange={(checked) => setDrumRackGroupB(checked)}
-                    title="Merge tracks of group B into one track"
-                    disabled={isPending}
-                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
-                  />
-                  <CheckBox
-                    checked={drumRackGroupC}
-                    onChange={(checked) => setDrumRackGroupC(checked)}
-                    title="Merge tracks of group C into one track"
-                    disabled={isPending}
-                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
-                  />
-                  <CheckBox
-                    checked={drumRackGroupD}
-                    onChange={(checked) => setDrumRackGroupD(checked)}
-                    title="Merge tracks of group D into one track"
-                    disabled={isPending}
-                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
-                  />
-                </>
-              )}
+            <div className="flex gap-14 mt-2">
+              <ExportOptions
+                format={format}
+                includeArchivedSamples={includeArchivedSamples}
+                onIncludeArchivedSamplesChange={setIncludeArchivedSamples}
+                clips={clips}
+                onClipsChange={setClips}
+                groupTracks={groupTracks}
+                onGroupTracksChange={setGroupTracks}
+                drumRackGroupA={drumRackGroupA}
+                onDrumRackGroupAChange={setDrumRackGroupA}
+                drumRackGroupB={drumRackGroupB}
+                onDrumRackGroupBChange={setDrumRackGroupB}
+                drumRackGroupC={drumRackGroupC}
+                onDrumRackGroupCChange={setDrumRackGroupC}
+                drumRackGroupD={drumRackGroupD}
+                onDrumRackGroupDChange={setDrumRackGroupD}
+                sendEffects={sendEffects}
+                onSendEffectsChange={setSendEffects}
+                disabled={isPending}
+              />
 
-              {format === 'ableton' && (
-                <>
-                  <CheckBox
-                    checked={includeArchivedSamples}
-                    onChange={(checked) => setIncludeArchivedSamples(checked)}
-                    title="Include samples"
-                    disabled={isPending}
-                    helperText="Samples will be exported as separate WAV files and bundled with the project. Sampler instrument will be assigned to each track that has a sample."
-                  />
-                  <CheckBox
-                    checked={drumRackGroupA}
-                    onChange={(checked) => setDrumRackGroupA(checked)}
-                    title="Use «Drum Rack» for group A"
-                    disabled={isPending || !includeArchivedSamples}
-                    className="ml-4"
-                    helperText="Tracks in group A will be exported as Drum Rack. Choke groups are supported! Make sure your drum pads are not playing chromatically."
-                  />
-                  <CheckBox
-                    checked={drumRackGroupB}
-                    onChange={(checked) => setDrumRackGroupB(checked)}
-                    title="Use «Drum Rack» for group B"
-                    disabled={isPending || !includeArchivedSamples}
-                    className="ml-4"
-                    helperText="Tracks in group B will be exported as Drum Rack. Choke groups are supported! Make sure your drum pads are not playing chromatically."
-                  />
-                  <CheckBox
-                    checked={drumRackGroupC}
-                    onChange={(checked) => setDrumRackGroupC(checked)}
-                    title="Use «Drum Rack» for group C"
-                    disabled={isPending || !includeArchivedSamples}
-                    className="ml-4"
-                    helperText="Tracks in group C will be exported as Drum Rack. Choke groups are supported! Make sure your drum pads are not playing chromatically."
-                  />
-                  <CheckBox
-                    checked={drumRackGroupD}
-                    onChange={(checked) => setDrumRackGroupD(checked)}
-                    title="Use «Drum Rack» for group D"
-                    disabled={isPending || !includeArchivedSamples}
-                    className="ml-4"
-                    helperText="Tracks in group D will be exported as Drum Rack. Choke groups are supported! Make sure your drum pads are not playing chromatically."
-                  />
-                  <CheckBox
-                    checked={clips}
-                    onChange={(checked) => setClips(checked)}
-                    title="Session clips instead of arrangements"
-                    disabled={isPending}
-                    helperText="Export as session clips for live performance."
-                  />
-                  <CheckBox
-                    checked={groupTracks}
-                    onChange={(checked) => setGroupTracks(checked)}
-                    title="Group tracks"
-                    disabled={isPending}
-                    helperText="Tracks will be grouped by their groups (A, B, C, D) same as on the device."
-                  />
-                  <CheckBox
-                    checked={sendEffects}
-                    onChange={(checked) => setSendEffects(checked)}
-                    title="Send effects"
-                    disabled={isPending}
-                    helperText="Return track with effect will be added. Each individual track will be sending to the return track. If you select «Group tracks», each group will send its audio to the return track."
-                  />
-                </>
-              )}
-
-              {format === 'reaper' && (
-                <>
-                  <CheckBox
-                    checked={includeArchivedSamples}
-                    onChange={(checked) => setIncludeArchivedSamples(checked)}
-                    title="Include samples"
-                    disabled={isPending}
-                    helperText="Samples will be exported as WAV files and bundled with the project in Media/samples folder."
-                  />
-                  <CheckBox
-                    checked={groupTracks}
-                    onChange={(checked) => setGroupTracks(checked)}
-                    title="Group tracks"
-                    disabled={isPending}
-                    helperText="Tracks will be grouped by their groups (A, B, C, D) same as on the device."
-                  />
-                </>
-              )}
-
-              {format === 'midi' && (
-                <>
-                  <CheckBox
-                    checked={includeArchivedSamples}
-                    onChange={(checked) => setIncludeArchivedSamples(checked)}
-                    title="Include archived WAV samples"
-                    disabled={isPending}
-                  />
-                  <CheckBox
-                    checked={drumRackGroupA}
-                    onChange={(checked) => setDrumRackGroupA(checked)}
-                    title="Merge tracks of group A into one track"
-                    disabled={isPending}
-                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
-                  />
-                  <CheckBox
-                    checked={drumRackGroupB}
-                    onChange={(checked) => setDrumRackGroupB(checked)}
-                    title="Merge tracks of group B into one track"
-                    disabled={isPending}
-                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
-                  />
-                  <CheckBox
-                    checked={drumRackGroupC}
-                    onChange={(checked) => setDrumRackGroupC(checked)}
-                    title="Merge tracks of group C into one track"
-                    disabled={isPending}
-                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
-                  />
-                  <CheckBox
-                    checked={drumRackGroupD}
-                    onChange={(checked) => setDrumRackGroupD(checked)}
-                    title="Merge tracks of group D into one track"
-                    disabled={isPending}
-                    helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
-                  />
-                </>
-              )}
+              <ExportScenes
+                allScenes={allScenes}
+                onAllScenesChange={setAllScenes}
+                selectedScenes={selectedScenes}
+                onSelectedScenesChange={setSelectedScenes}
+                disabled={isPending}
+              />
             </div>
 
             {NOTES[format] && (
@@ -361,7 +229,7 @@ function ExportProject() {
                 Close
               </Button>
             )}
-            <Button onClick={startExport} disabled={isPending} variant="primary">
+            <Button onClick={startExport} disabled={isPending || !canExport} variant="primary">
               Export
             </Button>
           </div>

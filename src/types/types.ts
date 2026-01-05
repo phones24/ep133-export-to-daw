@@ -184,6 +184,8 @@ export type ExporterParams = {
   drumRackGroupC?: boolean; // merge tracks for group C
   drumRackGroupD?: boolean; // merge tracks for group D
   sendEffects?: boolean; // send effects to return tracks
+  allScenes?: boolean; // export all scenes
+  selectedScenes?: string[]; // export only selected scenes (when allScenes is false)
 };
 
 export type SoundInfo = {
