@@ -50,6 +50,7 @@ Check the project blog here: https://ko-fi.com/phones24
 
 ## Latest news
 
+- [05/01/2026] Export individual scenes
 - [27/12/2025] Load projects from backup
 - [13/11/2025] EP-40 Riddim is partailly supported + themes
 - [27/10/2025] ABLETON: support fader params (but without automation for now)
