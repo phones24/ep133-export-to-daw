@@ -5,6 +5,7 @@ import { Bar } from './Bar';
 import { SingleNote } from './SingleNote';
 import Track from './Track';
 import TrackMeta from './TrackMeta';
+import SceneName from './SceneName';
 
 function Arrangements({ projectId }: { projectId: string }) {
   const { data } = useProject(projectId);
@@ -24,9 +25,7 @@ function Arrangements({ projectId }: { projectId: string }) {
     <div className="flex gap-4 h-full">
       {transformedData.scenes.map((sceneData) => (
         <div className="flex flex-col gap-2">
-          <div className="bg-brand p-2 font-semibold text-white">
-            <div className="inline sticky left-0">SCENE {sceneData.name}</div>
-          </div>
+          <SceneName projectId={projectId} defaultName={sceneData.name} />
           {sceneData.patterns.map((pattern) => (
             <div className="flex gap-2">
               <TrackMeta pattern={pattern} />

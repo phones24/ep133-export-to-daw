@@ -1,6 +1,7 @@
 import { useAtom } from 'jotai';
 import { JSX } from 'preact';
 import IconReload from '~/components/icons/reload.svg?react';
+import IconResetSettings from '~/components/icons/reset_settings.svg?react';
 import Button from '~/components/ui/Button';
 import Select from '~/components/ui/Select';
 import { projectIdAtom } from '../../atoms/project';
@@ -8,10 +9,12 @@ import { APP_STATES, useAppState } from '../../hooks/useAppState';
 import useProject from '../../hooks/useProject';
 import useProjectsList from '../../hooks/useProjectsList';
 import ExportProject from './ExportProject';
+import useSceneName from '~/hooks/useSceneName.ts';
 
 function ProjectManager() {
   const [projectId, setProjectId] = useAtom(projectIdAtom);
   const { refetch } = useProject(projectId);
+  const { resetSceneNames } = useSceneName(projectId);
   const appState = useAppState();
   const projects = useProjectsList();
 
@@ -42,6 +45,18 @@ function ProjectManager() {
         title="Reload project data from device"
       >
         <IconReload className="w-4 h-4" />
+      </Button>
+      <Button
+        onClick={() => {
+          resetSceneNames();
+          refetch();
+        }}
+        disabled={!appState.includes(APP_STATES.CAN_DISPLAY_PROJECT)}
+        size="sm"
+        variant="secondary"
+        title="Reset custom scene names"
+      >
+        <IconResetSettings className="w-4 h-4" />
       </Button>
       <ExportProject />
     </div>

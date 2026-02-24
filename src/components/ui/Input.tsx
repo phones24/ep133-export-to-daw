@@ -3,7 +3,7 @@ import { JSX } from 'preact';
 import { twMerge } from 'tailwind-merge';
 
 interface BaseInputProps {
-  label: string;
+  label?: string;
   type?: 'text' | 'email' | 'textarea' | 'file';
   error?: string;
   className?: string;
@@ -20,7 +20,7 @@ type InputProps = BaseInputProps &
   (JSX.HTMLAttributes<HTMLInputElement> | JSX.HTMLAttributes<HTMLTextAreaElement>);
 
 function Input({ label, type = 'text', className = '', disabled = false, ...props }: InputProps) {
-  const id = props.id || label.toLowerCase().replace(/\s+/g, '-');
+  const id = props.id || label?.toLowerCase().replace(/\s+/g, '-');
   const inputClasses = twMerge(
     clsx(
       'w-full px-3 py-2 border-1 border-black focus:outline-none focus:ring-0 bg-gray-50',
@@ -31,12 +31,14 @@ function Input({ label, type = 'text', className = '', disabled = false, ...prop
 
   return (
     <div className="flex flex-col gap-1">
-      <label
-        className={clsx('text-sm font-medium text-black', disabled && 'opacity-50')}
-        htmlFor={id}
-      >
-        {label}
-      </label>
+      {label && (
+        <label
+          className={clsx('text-sm font-medium text-black', disabled && 'opacity-50')}
+          htmlFor={id}
+        >
+          {label}
+        </label>
+      )}
       {type === 'textarea' ? (
         <textarea
           className={inputClasses}
