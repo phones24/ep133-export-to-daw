@@ -29,7 +29,9 @@ function CheckBox({
         disabled={disabled}
         className={clsx('w-4 h-4', disabled && 'opacity-50')}
       />
-      <span className={clsx(disabled && 'opacity-50')}>{title}</span>
+      <span className={clsx('overflow-hidden truncate', disabled && 'opacity-50')} title={title}>
+        {title}
+      </span>
 
       {helperText && (
         <div className="relative">

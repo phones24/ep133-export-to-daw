@@ -4,12 +4,13 @@ import Input from '~/components/ui/Input';
 import IconEdit from '~/components/icons/edit.svg?react';
 import IconSave from '~/components/icons/check.svg?react';
 import IconCancel from '~/components/icons/close.svg?react';
+import Button from '~/components/ui/Button.tsx';
 
 function SceneName({ projectId, defaultName }: { projectId: string; defaultName: string }) {
   const { sceneName, setSceneName } = useSceneName(projectId, defaultName);
   const [isRenaming, setIsRenaming] = useState(false);
   const [temporalSceneName, setTemporalSceneName] = useState(sceneName);
-  const inputRef = useRef<any>(null);
+  const inputRef = useRef<HTMLInputElement & { props: { value: string } }>(null);
 
   const handleCancel = () => {
     setTemporalSceneName(sceneName);
@@ -45,34 +46,34 @@ function SceneName({ projectId, defaultName }: { projectId: string; defaultName:
   }, []);
 
   return (
-    <div className="bg-brand p-2 font-semibold text-white inline-flex">
+    <div className="bg-brand p-2 font-semibold text-white inline-flex gap-2">
       {isRenaming ? (
         <>
           <Input
             type="text"
             value={temporalSceneName}
             onChange={handleRename}
-            className="text-black text-sm py-0.5"
+            className="text-black text-sm py-0 h-full"
             ref={inputRef}
           />
-          <button type="button" className="px-2 cursor-pointer" onClick={handleSave} title="Save">
-            <IconSave className="w-5" />
-          </button>
-          <button type="button" className=" cursor-pointer" onClick={handleCancel} title="Cancel">
-            <IconCancel className="w-5" />
-          </button>
+          <Button variant="ghost" size="xs" onClick={handleSave} title="Save">
+            <IconSave className="w-4" />
+          </Button>
+          <Button variant="ghost" size="xs" onClick={handleCancel} title="Cancel">
+            <IconCancel className="w-4" />
+          </Button>
         </>
       ) : (
         <>
-          <div className="inline sticky left-0">{sceneName}</div>
-          <button
-            type="button"
-            className="px-2 cursor-pointer"
-            onClick={() => setIsRenaming(true)}
-            title="Rename"
+          <div
+            className="inline sticky left-0 overflow-hidden truncate max-w-[300px]"
+            title={sceneName}
           >
+            {sceneName}
+          </div>
+          <Button variant="ghost" size="xs" onClick={() => setIsRenaming(true)} title="Rename">
             <IconEdit className="w-4" />
-          </button>
+          </Button>
         </>
       )}
     </div>
