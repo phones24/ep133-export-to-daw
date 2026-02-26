@@ -1,8 +1,11 @@
 import { useAtom } from 'jotai';
 import { JSX } from 'preact';
 import IconReload from '~/components/icons/reload.svg?react';
+import IconResetSettings from '~/components/icons/reset-settings.svg?react';
 import Button from '~/components/ui/Button';
 import Select from '~/components/ui/Select';
+import useCustomSceneNames from '~/hooks/useCustomSceneNames';
+import useSceneName from '~/hooks/useSceneName.ts';
 import { projectIdAtom } from '../../atoms/project';
 import { APP_STATES, useAppState } from '../../hooks/useAppState';
 import useProject from '../../hooks/useProject';
@@ -12,6 +15,8 @@ import ExportProject from './ExportProject';
 function ProjectManager() {
   const [projectId, setProjectId] = useAtom(projectIdAtom);
   const { refetch } = useProject(projectId);
+  const { resetSceneNames } = useSceneName(projectId);
+  const { hasCustomNames } = useCustomSceneNames(projectId);
   const appState = useAppState();
   const projects = useProjectsList();
 
@@ -43,6 +48,17 @@ function ProjectManager() {
       >
         <IconReload className="w-4 h-4" />
       </Button>
+      {hasCustomNames && (
+        <Button
+          onClick={resetSceneNames}
+          disabled={!appState.includes(APP_STATES.CAN_DISPLAY_PROJECT)}
+          size="sm"
+          variant="secondary"
+          title="Reset custom scene names"
+        >
+          <IconResetSettings className="w-4 h-4" />
+        </Button>
+      )}
       <ExportProject />
     </div>
   );

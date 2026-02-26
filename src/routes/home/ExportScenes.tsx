@@ -1,5 +1,6 @@
 import { clsx } from 'clsx';
 import { useAtomValue } from 'jotai';
+import useSceneName from '~/hooks/useSceneName.ts';
 import { projectIdAtom } from '../../atoms/project';
 import CheckBox from '../../components/ui/CheckBox';
 import useProject from '../../hooks/useProject';
@@ -22,6 +23,7 @@ function ExportScenes({
 }: ExportScenesProps) {
   const projectId = useAtomValue(projectIdAtom);
   const { data } = useProject(projectId);
+  const { getSceneName } = useSceneName(projectId);
 
   const scenes: Scene[] = data?.scenes ?? [];
 
@@ -52,7 +54,7 @@ function ExportScenes({
             key={scene.name}
             checked={allScenes || selectedScenes.includes(scene.name)}
             onChange={(checked) => handleSceneToggle(scene.name, checked)}
-            title={`Scene ${scene.name}`}
+            title={getSceneName(scene.name)}
             disabled={disabled || allScenes}
             className="ml-4"
           />
