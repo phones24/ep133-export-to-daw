@@ -2,10 +2,10 @@ import useProject from '~/hooks/useProject';
 import { getQuarterNotesPerBar } from '~/lib/exporters/utils';
 import webViewTransformer from '~/lib/transformers/webView';
 import { Bar } from './Bar';
+import SceneName from './SceneName';
 import { SingleNote } from './SingleNote';
 import Track from './Track';
 import TrackMeta from './TrackMeta';
-import SceneName from './SceneName';
 
 function Arrangements({ projectId }: { projectId: string }) {
   const { data } = useProject(projectId);
@@ -24,10 +24,10 @@ function Arrangements({ projectId }: { projectId: string }) {
   return (
     <div className="flex gap-4 h-full">
       {transformedData.scenes.map((sceneData) => (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 min-w-max" key={sceneData.name}>
           <SceneName projectId={projectId} defaultName={sceneData.name} />
           {sceneData.patterns.map((pattern) => (
-            <div className="flex gap-2">
+            <div className="flex gap-2" key={pattern.group + pattern.padNumber}>
               <TrackMeta pattern={pattern} />
               <div
                 style={{ width: sceneData.maxBars * barLength * 24 }}
