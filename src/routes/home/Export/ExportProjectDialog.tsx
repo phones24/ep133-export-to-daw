@@ -42,7 +42,7 @@ function ExportProjectDialog({
     resolver: zodResolver(exportFormSchema),
     defaultValues: {
       format: EXPORT_FORMATS[0].value,
-      projectName: `project${projectId}`,
+      projectName: `Project${projectId}`,
       includeArchivedSamples: true,
       exportAllSamples: false,
       clips: false,
