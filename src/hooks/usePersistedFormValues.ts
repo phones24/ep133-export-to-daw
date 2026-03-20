@@ -46,12 +46,6 @@ export function usePersistedFormValues<T extends Record<string, any>>(
   useEffect(() => {
     try {
       const toSave = pick(values as T, persistedFields);
-      if (schema) {
-        const result = schema.safeParse({ ...schema.parse({}), ...toSave });
-        if (!result.success) {
-          return;
-        }
-      }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
     } catch (e) {
       console.warn('Failed to persist form values:', e);
