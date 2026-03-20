@@ -114,7 +114,7 @@ function ExportProjectDialog({
             name="projectName"
             disabled={isPending}
             className="w-100"
-            placeholder={`project${projectId}`}
+            placeholder="Enter project name"
             transform={sanitizeFileName}
           />
           <div className="flex gap-14 mt-2">
