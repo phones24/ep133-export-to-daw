@@ -122,7 +122,7 @@ function buildReaperProject(
 
   const rprContent = generateReaperProject(
     {
-      projectName: `Project ${projectId}`,
+      projectName: exporterParams.projectName || `Project ${projectId}`,
       tempo: data.settings?.bpm ?? 120,
       timeSignature: data.scenesSettings.timeSignature,
       tracks,
@@ -143,7 +143,7 @@ async function exportReaper(
   let sampleReport: SampleReport | undefined;
   const files: ExportResultFile[] = [];
   const zippedProject = new JSZip();
-  const projectName = `Project${projectId}`;
+  const projectName = exporterParams.projectName || `Project${projectId}`;
 
   progressCallback({ progress: 1, status: 'Preparing REAPER export...' });
 
@@ -160,6 +160,7 @@ async function exportReaper(
       data,
       progressCallback,
       abortSignal,
+      exporterParams.exportAllSamples,
     );
     samples.forEach((s) => {
       zippedProject.file(`${projectName}/Media/samples/${s.name}`, s.data);

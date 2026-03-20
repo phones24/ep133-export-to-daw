@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import { JSX } from 'preact';
+import { useId } from 'preact/hooks';
 import IconInfo from '../icons/info.svg?react';
 
 function CheckBox({
@@ -17,7 +18,7 @@ function CheckBox({
   disabled: boolean;
   className?: string;
 }) {
-  const _id = `checkbox-${Math.random()}`;
+  const _id = useId();
 
   return (
     <label className={clsx('flex items-center gap-2 text-sm', className)} htmlFor={_id}>

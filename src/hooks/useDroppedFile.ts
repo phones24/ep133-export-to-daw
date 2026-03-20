@@ -32,7 +32,13 @@ function useDroppedFile() {
         }
 
         const fileNameLower = file.name.toLowerCase();
-        if (!(fileNameLower.endsWith('.tar') || fileNameLower.endsWith('.ppak') || fileNameLower.endsWith('.pak'))) {
+        if (
+          !(
+            fileNameLower.endsWith('.tar') ||
+            fileNameLower.endsWith('.ppak') ||
+            fileNameLower.endsWith('.pak')
+          )
+        ) {
           showToast('Unsupported file. Use a .tar or .ppak. or .pak', 'error');
           return;
         }

@@ -65,7 +65,7 @@ async function exportMidi(
     size: number;
   }> = [
     {
-      name: `project${projectId}.mid`,
+      name: `${exporterParams.projectName || `project${projectId}`}.mid`,
       url: URL.createObjectURL(midiBlob),
       type: 'project',
       size: midiBlob.size,
@@ -80,6 +80,7 @@ async function exportMidi(
       data,
       progressCallback,
       abortSignal,
+      exporterParams.exportAllSamples,
     );
 
     samples.forEach((s) => {
@@ -91,7 +92,7 @@ async function exportMidi(
     const sampleFile = await zipSamples.generateAsync({ type: 'blob', compression: 'DEFLATE' });
 
     files.push({
-      name: `project${projectId}_samples.zip`,
+      name: `${exporterParams.projectName || `project${projectId}`}_samples.zip`,
       url: URL.createObjectURL(sampleFile),
       type: 'archive',
       size: sampleFile.size,

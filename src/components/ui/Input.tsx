@@ -14,6 +14,7 @@ interface BaseInputProps {
   required?: boolean;
   multiple?: boolean;
   accept?: string;
+  placeholder?: string;
   rows?: number;
 }
 
@@ -25,7 +26,7 @@ const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(
     const id = props.id || label?.toLowerCase().replace(/\s+/g, '-');
     const inputClasses = twMerge(
       clsx(
-        'w-full px-3 py-2 border-1 border-black focus:outline-none focus:ring-0 bg-gray-50',
+        'w-full px-3 py-2 border-1 border-black focus:outline-none focus:ring-0 bg-gray-50 placeholder:text-gray-400',
         disabled && 'opacity-50',
         className,
       ),

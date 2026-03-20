@@ -19,7 +19,7 @@ async function exportAbleton(
   abortSignal: AbortSignal,
 ): Promise<ExportResult> {
   const files: ExportResultFile[] = [];
-  const projectName = `Project${projectId}`;
+  const projectName = exporterParams.projectName || `Project${projectId}`;
   const zippedProject = new JSZip();
 
   progressCallback({ progress: 1, status: 'Building project...' });
@@ -40,9 +40,10 @@ async function exportAbleton(
       data,
       progressCallback,
       abortSignal,
+      exporterParams.exportAllSamples,
     );
     samples.forEach((s) => {
-      zippedProject.file(`Project${projectId} Project/Samples/Imported/${s.name}`, s.data);
+      zippedProject.file(`${projectName} Project/Samples/Imported/${s.name}`, s.data);
     });
     sampleReport = report;
   }

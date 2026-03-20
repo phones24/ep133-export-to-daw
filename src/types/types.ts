@@ -175,7 +175,9 @@ export type ExportFormat = {
 };
 
 export type ExporterParams = {
+  projectName?: string; // custom project name for exported files
   includeArchivedSamples?: boolean;
+  exportAllSamples?: boolean; // export all samples assigned to pads even if not used
   clips?: boolean; // build clips not arrangements
   noSampler?: boolean; // don't use sampler/simpler at all
   groupTracks?: boolean; // group tracks by group name

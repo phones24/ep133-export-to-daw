@@ -10,7 +10,7 @@ import { projectIdAtom } from '../../atoms/project';
 import { APP_STATES, useAppState } from '../../hooks/useAppState';
 import useProject from '../../hooks/useProject';
 import useProjectsList from '../../hooks/useProjectsList';
-import ExportProject from './ExportProject';
+import ExportProject from './Export/ExportProject';
 
 function ProjectManager() {
   const [projectId, setProjectId] = useAtom(projectIdAtom);

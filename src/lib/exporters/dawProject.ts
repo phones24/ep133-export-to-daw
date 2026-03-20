@@ -178,7 +178,11 @@ function buildNote(note: Note, index: number, notes: Note[]) {
   const nextNote = notes[index + 1];
 
   // making sure same notes are not overlapping
-  if (nextNote && nextNote.note === note.note && dur > nextNote.position / 96) {
+  if (
+    nextNote &&
+    nextNote.note === note.note &&
+    note.position / 96 + dur > nextNote.position / 96
+  ) {
     dur = nextNote.position / 96 - note.position / 96;
   }
 
@@ -428,7 +432,7 @@ async function exportDawProject(
     size: number;
   }> = [
     {
-      name: `project${projectId}.dawproject`,
+      name: `${exporterParams.projectName || `project${projectId}`}.dawproject`,
       url: URL.createObjectURL(projectFile),
       type: 'project',
       size: projectFile.size,
@@ -443,6 +447,7 @@ async function exportDawProject(
       data,
       progressCallback,
       abortSignal,
+      exporterParams.exportAllSamples,
     );
 
     samples.forEach((s) => {
@@ -457,7 +462,7 @@ async function exportDawProject(
     });
 
     files.push({
-      name: `project${projectId}_samples.zip`,
+      name: `${exporterParams.projectName || `project${projectId}`}_samples.zip`,
       url: URL.createObjectURL(sampleFile),
       type: 'archive',
       size: sampleFile.size,
