@@ -21,7 +21,7 @@ function ExportOptions({ disabled = false }: { disabled?: boolean }) {
             name="exportAllSamples"
             title="Export all samples"
             disabled={disabled || !includeArchivedSamples}
-            helperText="Export all samples assigned to pads even if they are not used"
+            helperText="Export all samples and create tracks for all pads with assigned samples, even if they are not used in patterns"
           />
           <CheckboxField name="clips" title="Export with clips" disabled={disabled} />
           <CheckboxField
@@ -91,7 +91,7 @@ function ExportOptions({ disabled = false }: { disabled?: boolean }) {
             name="exportAllSamples"
             title="Export all samples"
             disabled={disabled || !includeArchivedSamples}
-            helperText="Export all samples assigned to pads even if they are not used"
+            helperText="Export all samples and create tracks for all pads with assigned samples, even if they are not used in patterns"
           />
           <CheckboxField
             name="clips"
@@ -126,7 +126,7 @@ function ExportOptions({ disabled = false }: { disabled?: boolean }) {
             name="exportAllSamples"
             title="Export all samples"
             disabled={disabled || !includeArchivedSamples}
-            helperText="Export all samples assigned to pads even if they are not used"
+            helperText="Export all samples and create tracks for all pads with assigned samples, even if they are not used in patterns"
           />
           <CheckboxField
             name="groupTracks"
@@ -148,7 +148,7 @@ function ExportOptions({ disabled = false }: { disabled?: boolean }) {
             name="exportAllSamples"
             title="Export all samples"
             disabled={disabled || !includeArchivedSamples}
-            helperText="Export all samples assigned to pads even if they are not used"
+            helperText="Export all samples and create tracks for all pads with assigned samples, even if they are not used in patterns"
           />
           <CheckboxField
             name="drumRackGroupA"

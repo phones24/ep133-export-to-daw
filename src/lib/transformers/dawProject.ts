@@ -126,6 +126,39 @@ function dawProjectTransformer(data: ProjectRawData, exporterParams: ExporterPar
     dawScenes.push(dawScene);
   });
 
+  if (exporterParams.exportAllSamples) {
+    for (const group in pads) {
+      pads[group].forEach((pad, index) => {
+        if (pad.soundId <= 0) {
+          return;
+        }
+
+        const padCode = `${group}${index}` as PadCode;
+        if (tracks.some((t) => t.padCode === padCode)) {
+          return;
+        }
+
+        const sound = data.sounds.find((s) => s.id === pad.soundId);
+
+        tracks.push({
+          ...omit(pad, ['file', 'rawData']),
+          soundId: pad.soundId,
+          padCode,
+          name: sound?.meta?.name || padCode,
+          volume: pad.volume * (2 / 200),
+          sampleName: getSampleName(sound?.meta?.name, pad.soundId),
+          sampleChannels: sound?.meta?.channels || 0,
+          sampleRate: sound?.meta?.samplerate || 0,
+          bpm: data.settings.bpm,
+        });
+      });
+    }
+
+    tracks.sort((a, b) =>
+      a.padCode.localeCompare(b.padCode, undefined, { numeric: true, sensitivity: 'base' }),
+    );
+  }
+
   // Helper function to create a drum rack track and lane for a specific group
   const createDrumRackForGroup = (
     group: 'a' | 'b' | 'c' | 'd',

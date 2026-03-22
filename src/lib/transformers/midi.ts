@@ -65,6 +65,34 @@ function midiTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
     offset += sceneMaxBars;
   });
 
+  if (exporterParams.exportAllSamples) {
+    for (const group in pads) {
+      pads[group].forEach((pad, index) => {
+        if (pad.soundId <= 0) {
+          return;
+        }
+
+        const padCode = `${group}${index}`;
+        if (midiTracks.some((t) => t.padCode === padCode)) {
+          return;
+        }
+
+        const sound = data.sounds.find((s) => s.id === pad.soundId);
+
+        midiTracks.push({
+          name: sound?.meta?.name || padCode,
+          padCode,
+          group,
+          notes: [],
+        });
+      });
+    }
+
+    midiTracks.sort((a, b) =>
+      a.padCode.localeCompare(b.padCode, undefined, { numeric: true, sensitivity: 'base' }),
+    );
+  }
+
   // Helper function to create a drum rack track for a specific group
   const createDrumRackTrack = (group: 'a' | 'b' | 'c' | 'd'): MidiTrack | null => {
     const groupTracks = midiTracks.filter((t) => t.group === group);

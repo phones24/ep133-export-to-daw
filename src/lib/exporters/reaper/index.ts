@@ -67,7 +67,7 @@ function buildReaperProject(
   projectId: string,
   exporterParams: ExporterParams,
 ) {
-  const transformedData = reaperTransform(data);
+  const transformedData = reaperTransform(data, exporterParams);
 
   if (import.meta.env.DEV) {
     console.log(transformedData);

@@ -56,6 +56,15 @@ function webViewTransformer(data: ProjectRawData): ViewData {
     }
   });
 
+  // also add pads that have samples assigned (even without patterns)
+  for (const group in pads) {
+    pads[group].forEach((pad, index) => {
+      if (pad.soundId > 0) {
+        usedPads.add(`${group}${index}`);
+      }
+    });
+  }
+
   newScenes.forEach((scene, idx) => {
     // make sure each scene have the same tracks/pads
     usedPads.forEach((pad) => {

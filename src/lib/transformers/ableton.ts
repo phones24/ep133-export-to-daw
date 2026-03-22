@@ -159,6 +159,46 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
     a.padCode.localeCompare(b.padCode, undefined, { numeric: true, sensitivity: 'base' }),
   );
 
+  if (exporterParams.exportAllSamples) {
+    for (const group in pads) {
+      pads[group].forEach((pad, index) => {
+        if (pad.soundId <= 0) {
+          return;
+        }
+
+        const padCode = `${group}${index}` as PadCode;
+        if (tracks.some((t) => t.padCode === padCode)) {
+          return;
+        }
+
+        const sound = data.sounds.find((s) => s.id === pad.soundId);
+        const faderParams = data.settings.groupFaderParams[pad.group];
+
+        tracks.push({
+          ...omit(pad, ['file', 'rawData']),
+          soundId: pad.soundId,
+          padCode,
+          name: sound?.meta?.name || padCode,
+          volume: pad.volume / 200,
+          sampleName: getSampleName(sound?.meta?.name, pad.soundId),
+          sampleChannels: sound?.meta?.channels || 0,
+          sampleRate: sound?.meta?.samplerate || 0,
+          sampleRootNote: sound?.meta?.['sound.rootnote'] ?? 60,
+          samplePitch: sound?.meta?.['sound.pitch'] ?? 0,
+          bpm: data.settings.bpm,
+          drumRack: false,
+          tracks: [],
+          faderParams,
+          timeSignature: data.scenesSettings.timeSignature,
+        });
+      });
+    }
+
+    tracks.sort((a, b) =>
+      a.padCode.localeCompare(b.padCode, undefined, { numeric: true, sensitivity: 'base' }),
+    );
+  }
+
   // Helper function to create a drum rack track for a specific group
   const createDrumRackTrack = (group: 'a' | 'b' | 'c' | 'd'): AblTrack | null => {
     const groupTracksForDrumRack = tracks.filter((t) => t.group === group);
@@ -199,26 +239,33 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
       timeSignature: data.scenesSettings.timeSignature,
     };
 
-    // we need to merge notes from all tracks in the group into one track
-    // and remap them
+    // We need to merge notes from all tracks in the group into one track
     const newClips: Record<string, AblClip> = {};
+
     drumTrack.tracks
       .toSorted((a, b) =>
         a.padCode.localeCompare(b.padCode, undefined, { numeric: true, sensitivity: 'base' }),
       )
-      .forEach((track, idx) => {
+      .forEach((track) => {
+        const padNumber = parseInt(track.padCode.slice(1), 10);
+        // EP133 is 3x4 (top→bottom), Ableton Drum Rack is 4x4 (bottom→top)
+        // flip vertically: row 3 → row 0, row 0 → row 3
+        const row = 3 - Math.floor(padNumber / 3);
+        const col = padNumber % 3;
+        const drumPad = 36 + row * 4 + col;
+
         track.lane?.clips.forEach((clip) => {
           if (!newClips[clip.sceneName]) {
             newClips[clip.sceneName] = structuredClone(clip);
-            newClips[clip.sceneName].notes = []; // resetting notes, they will be added below with new mapping
+            newClips[clip.sceneName].notes = [];
           }
 
           newClips[clip.sceneName].notes = [
             ...newClips[clip.sceneName].notes,
             ...clip.notes.map((n) => ({
               ...n,
-              note: 36 + idx,
-            })), // remaping notes starting from C1 (36)
+              note: drumPad,
+            })),
           ];
         });
       });

@@ -1,6 +1,13 @@
 import * as Sentry from '@sentry/react';
 import { omit } from 'lodash';
-import { Note, Pad, PadCode, ProjectRawData, TimeSignature } from '../../types/types';
+import {
+  ExporterParams,
+  Note,
+  Pad,
+  PadCode,
+  ProjectRawData,
+  TimeSignature,
+} from '../../types/types';
 import { getSampleName } from '../exporters/utils';
 import { findPad, findSoundByPad, findSoundIdByPad } from '../utils';
 
@@ -28,7 +35,7 @@ export type RprTrackItem = {
   sceneName: string;
 };
 
-export function reaperTransform(data: ProjectRawData) {
+export function reaperTransform(data: ProjectRawData, exporterParams: ExporterParams) {
   const { pads, scenes } = data;
   const tracks: RprTrack[] = [];
   let offset = 0;
@@ -76,6 +83,41 @@ export function reaperTransform(data: ProjectRawData) {
 
     offset += sceneBars;
   });
+
+  if (exporterParams.exportAllSamples) {
+    for (const group in pads) {
+      pads[group].forEach((pad, index) => {
+        if (pad.soundId <= 0) {
+          return;
+        }
+
+        const padCode = `${group}${index}` as PadCode;
+        if (tracks.some((t) => t.padCode === padCode)) {
+          return;
+        }
+
+        const sound = data.sounds.find((s) => s.id === pad.soundId);
+
+        tracks.push({
+          ...omit(pad, ['file', 'rawData']),
+          soundId: pad.soundId,
+          padCode,
+          name: sound?.meta?.name || padCode,
+          volume: pad.volume * (2 / 200),
+          sampleName: getSampleName(sound?.meta?.name, pad.soundId),
+          sampleChannels: sound?.meta?.channels || 0,
+          sampleRate: sound?.meta?.samplerate || 0,
+          bpm: data.settings.bpm,
+          timeSignature: data.scenesSettings.timeSignature,
+          items: [],
+        });
+      });
+    }
+
+    tracks.sort((a, b) =>
+      a.padCode.localeCompare(b.padCode, undefined, { numeric: true, sensitivity: 'base' }),
+    );
+  }
 
   Sentry.setContext('reaperData', {
     tracks,

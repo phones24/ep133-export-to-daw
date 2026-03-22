@@ -295,8 +295,15 @@ async function buildDrumRackDevice(koTrack: AblTrack) {
       continue;
     }
 
+    const padNumber = parseInt(subtrack.padCode.slice(1), 10);
+    // EP133 is 3x4 (top→bottom), Ableton Drum Rack is 4x4 (bottom→top)
+    // flip vertically: row 3 → row 0, row 0 → row 3
+    const row = 3 - Math.floor(padNumber / 3);
+    const col = padNumber % 3;
+    const drumPad = row * 4 + col;
+
     const drumBranch = structuredClone(drumBranchTemplate.DrumBranch);
-    const note = 92 - idx; // 92 is the number of slot for C1 in the drum rack and it goes down
+    const note = 92 - drumPad; // 92 is the number of slot for C1 in the drum rack and it goes down
 
     drumBranch['@Id'] = idx;
     drumBranch.Name.EffectiveName['@Value'] = subtrack.name;
