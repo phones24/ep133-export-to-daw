@@ -252,7 +252,7 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
         // flip vertically: row 3 → row 0, row 0 → row 3
         const row = 3 - Math.floor(padNumber / 3);
         const col = padNumber % 3;
-        const drumPad = 36 + row * 4 + col;
+        const drumPad = 36 + row * 4 + col; // remaping notes starting from C1 (36)
 
         track.lane?.clips.forEach((clip) => {
           if (!newClips[clip.sceneName]) {
