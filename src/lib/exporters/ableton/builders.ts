@@ -39,6 +39,7 @@ let _localId = -1;
 let _localGroupId = -1;
 let _localTrackColor = -1;
 let _localGroupTrackColor = -1;
+const MIN_CLIP_LAUNCHER_SCENES = 8;
 
 async function buildMidiClip(
   koClip: AblClip,
@@ -372,7 +373,7 @@ async function buildTrack(
   // make sure each tracks has the same empty slots for clips
   // must be equeal to GroupTrackSlot if this track is in a group
   // must be at least 8 slots to avoid Ableton crashes
-  for (let sc = 0; sc < Math.max(8, maxScenes); sc++) {
+  for (let sc = 0; sc < Math.max(MIN_CLIP_LAUNCHER_SCENES, maxScenes); sc++) {
     midiTrack.DeviceChain.MainSequencer.ClipSlotList.ClipSlot[sc] = {
       '@Id': sc,
       LomId: {
@@ -457,7 +458,7 @@ async function buildGroupTrack(
 
   // adding empty slots for clips (or Ableton will crash)
   // must be at least 8 slots to avoid Ableton crashes
-  for (let sc = 0; sc < Math.max(8, maxScenes); sc++) {
+  for (let sc = 0; sc < Math.max(MIN_CLIP_LAUNCHER_SCENES, maxScenes); sc++) {
     groupTrack.Slots.GroupTrackSlot.push({
       '@Id': sc,
       LomId: {
@@ -478,19 +479,21 @@ async function buildGroupTrack(
   return { GroupTrack: groupTrack };
 }
 
-async function buildScenes(scenes: AblScene[], settings: ProjectSettings) {
+async function buildScenes(scenes: AblScene[], settings: ProjectSettings, maxScenes: number) {
   const sceneTemplate = await loadTemplate<ALSScene>('scene');
   const result: ALSSceneContent[] = [];
+  const sceneCount = Math.max(MIN_CLIP_LAUNCHER_SCENES, maxScenes);
 
-  scenes.forEach((scene) => {
+  for (let index = 0; index < sceneCount; index++) {
+    const scene = scenes[index];
     const sceneContent = structuredClone(sceneTemplate.Scene);
 
     sceneContent['@Id'] = _localId++;
-    sceneContent.Name['@Value'] = scene.name;
+    sceneContent.Name['@Value'] = scene?.name || '';
     sceneContent.Tempo['@Value'] = settings.bpm;
 
     result.push(sceneContent);
-  });
+  }
 
   return result;
 }
@@ -651,6 +654,7 @@ export async function buildProject(projectData: ProjectRawData, exporterParams: 
     project.Ableton.LiveSet.Scenes.Scene = await buildScenes(
       transformedData.scenes,
       projectData.settings,
+      transformedData.scenes.length,
     );
   }
 
