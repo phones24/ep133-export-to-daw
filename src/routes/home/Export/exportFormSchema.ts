@@ -12,7 +12,7 @@ export const exportFormSchema = z.object({
   format: z.enum(FORMAT_IDS),
   projectName: z.string(),
   includeArchivedSamples: z.boolean(),
-  exportAllSamples: z.boolean(),
+  exportAllPadsWithSamples: z.boolean(),
   clips: z.boolean(),
   groupTracks: z.boolean(),
   drumRackGroupA: z.boolean(),
@@ -29,7 +29,7 @@ export type ExportFormValues = z.infer<typeof exportFormSchema>;
 export const PERSISTED_FIELDS: (keyof ExportFormValues)[] = [
   'format',
   'includeArchivedSamples',
-  'exportAllSamples',
+  'exportAllPadsWithSamples',
   'clips',
   'groupTracks',
   'drumRackGroupA',

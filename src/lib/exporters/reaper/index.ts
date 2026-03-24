@@ -160,7 +160,7 @@ async function exportReaper(
       data,
       progressCallback,
       abortSignal,
-      exporterParams.exportAllSamples,
+      exporterParams.exportAllPadsWithSamples,
     );
     samples.forEach((s) => {
       zippedProject.file(`${projectName}/Media/samples/${s.name}`, s.data);

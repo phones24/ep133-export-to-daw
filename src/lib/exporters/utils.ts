@@ -114,7 +114,7 @@ export function getSampleName(name: string | undefined, soundId: number, extensi
   return extension ? `${n}.wav` : n;
 }
 
-function getSoundsInfoFromProject(data: ProjectRawData, exportAllSamples = false) {
+function getSoundsInfoFromProject(data: ProjectRawData, exportAllPadsWithSamples = false) {
   const snds: SoundInfo[] = [];
   const existingSounds = new Set<number>();
   const usedSoundIds = new Set<number>();
@@ -136,7 +136,7 @@ function getSoundsInfoFromProject(data: ProjectRawData, exportAllSamples = false
         continue;
       }
 
-      if (!exportAllSamples && !usedSoundIds.has(pad.soundId)) {
+      if (!exportAllPadsWithSamples && !usedSoundIds.has(pad.soundId)) {
         continue;
       }
 
@@ -161,9 +161,9 @@ export async function collectSamples(
   data: ProjectRawData,
   progressCallback: ({ progress, status }: ExportStatus) => void,
   abortSignal: AbortSignal,
-  exportAllSamples = false,
+  exportAllPadsWithSamples = false,
 ) {
-  const projectSounds = getSoundsInfoFromProject(data, exportAllSamples);
+  const projectSounds = getSoundsInfoFromProject(data, exportAllPadsWithSamples);
 
   const samples: { name: string; data: Blob }[] = [];
   const downloaded: string[] = [];

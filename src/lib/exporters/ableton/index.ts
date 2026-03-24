@@ -40,7 +40,7 @@ async function exportAbleton(
       data,
       progressCallback,
       abortSignal,
-      exporterParams.exportAllSamples,
+      exporterParams.exportAllPadsWithSamples,
     );
     samples.forEach((s) => {
       zippedProject.file(`${projectName} Project/Samples/Imported/${s.name}`, s.data);

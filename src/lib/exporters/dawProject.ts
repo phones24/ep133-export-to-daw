@@ -447,7 +447,7 @@ async function exportDawProject(
       data,
       progressCallback,
       abortSignal,
-      exporterParams.exportAllSamples,
+      exporterParams.exportAllPadsWithSamples,
     );
 
     samples.forEach((s) => {

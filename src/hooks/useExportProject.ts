@@ -69,7 +69,7 @@ function filterScenes(data: ProjectRawData, params: ExporterParams): ProjectRawD
   };
 }
 
-function useExportProject(format: ExportFormatId, exporterParams: ExporterParams) {
+function useExportProject() {
   const projectId = useAtomValue(projectIdAtom);
   const { data: projectRawData } = useProject(projectId);
   const [isPending, setIsPending] = useState(false);
@@ -80,7 +80,9 @@ function useExportProject(format: ExportFormatId, exporterParams: ExporterParams
   const [sampleReport, setSampleReport] = useState<SampleReport | null>(null);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
 
-  const startExport = async () => {
+  const startExport = async (params: ExporterParams & { format: ExportFormatId }) => {
+    const { format, ...exporterParams } = params;
+
     trackEvent('export_start', {
       format,
     });

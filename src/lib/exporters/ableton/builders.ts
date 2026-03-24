@@ -39,6 +39,7 @@ let _localId = -1;
 let _localGroupId = -1;
 let _localTrackColor = -1;
 let _localGroupTrackColor = -1;
+
 const MIN_CLIP_LAUNCHER_SCENES = 8;
 
 async function buildMidiClip(

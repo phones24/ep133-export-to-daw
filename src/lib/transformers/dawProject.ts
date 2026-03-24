@@ -126,7 +126,7 @@ function dawProjectTransformer(data: ProjectRawData, exporterParams: ExporterPar
     dawScenes.push(dawScene);
   });
 
-  if (exporterParams.exportAllSamples) {
+  if (exporterParams.exportAllPadsWithSamples) {
     for (const group in pads) {
       pads[group].forEach((pad, index) => {
         if (pad.soundId <= 0) {

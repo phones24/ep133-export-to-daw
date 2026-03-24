@@ -159,7 +159,7 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
     a.padCode.localeCompare(b.padCode, undefined, { numeric: true, sensitivity: 'base' }),
   );
 
-  if (exporterParams.exportAllSamples) {
+  if (exporterParams.exportAllPadsWithSamples) {
     for (const group in pads) {
       pads[group].forEach((pad, index) => {
         if (pad.soundId <= 0) {

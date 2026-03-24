@@ -84,7 +84,7 @@ export function reaperTransform(data: ProjectRawData, exporterParams: ExporterPa
     offset += sceneBars;
   });
 
-  if (exporterParams.exportAllSamples) {
+  if (exporterParams.exportAllPadsWithSamples) {
     for (const group in pads) {
       pads[group].forEach((pad, index) => {
         if (pad.soundId <= 0) {

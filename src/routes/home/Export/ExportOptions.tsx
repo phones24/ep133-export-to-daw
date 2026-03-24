@@ -18,10 +18,10 @@ function ExportOptions({ disabled = false }: { disabled?: boolean }) {
             disabled={disabled}
           />
           <CheckboxField
-            name="exportAllSamples"
-            title="Export all samples"
+            name="exportAllPadsWithSamples"
+            title="Export all pads with assigned samples"
             disabled={disabled || !includeArchivedSamples}
-            helperText="Export all samples and create tracks for all pads with assigned samples, even if they are not used in patterns"
+            helperText="Export all pads with assigned samples even if they are not used in patterns"
           />
           <CheckboxField name="clips" title="Export with clips" disabled={disabled} />
           <CheckboxField
@@ -88,8 +88,8 @@ function ExportOptions({ disabled = false }: { disabled?: boolean }) {
             helperText="Tracks in group D will be exported as Drum Rack. Choke groups are supported! Make sure your drum pads are not playing chromatically."
           />
           <CheckboxField
-            name="exportAllSamples"
-            title="Export all samples"
+            name="exportAllPadsWithSamples"
+            title="Export all pads with assigned samples"
             disabled={disabled || !includeArchivedSamples}
             helperText="Export all samples and create tracks for all pads with assigned samples, even if they are not used in patterns"
           />
@@ -123,10 +123,10 @@ function ExportOptions({ disabled = false }: { disabled?: boolean }) {
             helperText="Samples will be exported as WAV files and bundled with the project in Media/samples folder."
           />
           <CheckboxField
-            name="exportAllSamples"
-            title="Export all samples"
+            name="exportAllPadsWithSamples"
+            title="Export all pads with assigned samples"
             disabled={disabled || !includeArchivedSamples}
-            helperText="Export all samples and create tracks for all pads with assigned samples, even if they are not used in patterns"
+            helperText="Export all pads with assigned samples even if they are not used in patterns"
           />
           <CheckboxField
             name="groupTracks"
@@ -145,10 +145,10 @@ function ExportOptions({ disabled = false }: { disabled?: boolean }) {
             disabled={disabled}
           />
           <CheckboxField
-            name="exportAllSamples"
-            title="Export all samples"
+            name="exportAllPadsWithSamples"
+            title="Export all pads with assigned samples"
             disabled={disabled || !includeArchivedSamples}
-            helperText="Export all samples and create tracks for all pads with assigned samples, even if they are not used in patterns"
+            helperText="Export all pads with assigned samples even if they are not used in patterns"
           />
           <CheckboxField
             name="drumRackGroupA"

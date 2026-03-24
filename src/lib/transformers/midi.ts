@@ -65,7 +65,7 @@ function midiTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
     offset += sceneMaxBars;
   });
 
-  if (exporterParams.exportAllSamples) {
+  if (exporterParams.exportAllPadsWithSamples) {
     for (const group in pads) {
       pads[group].forEach((pad, index) => {
         if (pad.soundId <= 0) {

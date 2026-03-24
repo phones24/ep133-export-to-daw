@@ -44,7 +44,7 @@ function ExportProjectDialog({
       format: EXPORT_FORMATS[0].value,
       projectName: `Project${projectId}`,
       includeArchivedSamples: true,
-      exportAllSamples: false,
+      exportAllPadsWithSamples: false,
       clips: false,
       groupTracks: true,
       drumRackGroupA: false,
@@ -64,6 +64,7 @@ function ExportProjectDialog({
   const allScenes = useWatch({ control: form.control, name: 'allScenes' });
   const selectedScenes = useWatch({ control: form.control, name: 'selectedScenes' });
   const trimmedName = (projectName ?? '').trim();
+  const canExport = (allScenes || (selectedScenes?.length ?? 0) > 0) && trimmedName.length > 0;
 
   const {
     startExport,
@@ -75,23 +76,15 @@ function ExportProjectDialog({
     result,
     error,
     sampleReport,
-  } = useExportProject(format, {
-    projectName: trimmedName,
-    includeArchivedSamples: form.getValues('includeArchivedSamples'),
-    exportAllSamples: form.getValues('exportAllSamples'),
-    clips: form.getValues('clips'),
-    groupTracks: form.getValues('groupTracks'),
-    drumRackGroupA: form.getValues('drumRackGroupA'),
-    drumRackGroupB: form.getValues('drumRackGroupB'),
-    drumRackGroupC: form.getValues('drumRackGroupC'),
-    drumRackGroupD: form.getValues('drumRackGroupD'),
-    sendEffects: form.getValues('sendEffects'),
-    allScenes: form.getValues('allScenes'),
-    selectedScenes: form.getValues('selectedScenes'),
-  });
+  } = useExportProject();
   const [_, openFeedbackDialog] = useAtom(feedbackDialogAtom);
 
-  const canExport = (allScenes || (selectedScenes?.length ?? 0) > 0) && trimmedName.length > 0;
+  const handleExport = form.handleSubmit(async (values) => {
+    await startExport({
+      ...values,
+      projectName: values.projectName.trim(),
+    });
+  });
 
   useEffect(() => {
     reset();
@@ -208,7 +201,7 @@ function ExportProjectDialog({
               Close
             </Button>
           )}
-          <Button onClick={startExport} disabled={isPending || !canExport} variant="primary">
+          <Button onClick={handleExport} disabled={isPending || !canExport} variant="primary">
             Export
           </Button>
         </div>

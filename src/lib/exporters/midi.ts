@@ -80,7 +80,7 @@ async function exportMidi(
       data,
       progressCallback,
       abortSignal,
-      exporterParams.exportAllSamples,
+      exporterParams.exportAllPadsWithSamples,
     );
 
     samples.forEach((s) => {
