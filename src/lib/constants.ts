@@ -29,6 +29,21 @@ export const GROUPS = [
 
 export const PADS = ['9', '8', '7', '6', '5', '4', '3', '2', '1', '.', '0', 'E'];
 
+export const PAD_DISPLAY_FROM_INDEX: Record<number, string> = {
+  0: '7',
+  1: '8',
+  2: '9',
+  3: '4',
+  4: '5',
+  5: '6',
+  6: '1',
+  7: '2',
+  8: '3',
+  9: '.',
+  10: '0',
+  11: 'E',
+};
+
 export const EFFECTS = {
   0: 'None',
   1: 'Delay',

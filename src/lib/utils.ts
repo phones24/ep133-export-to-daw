@@ -1,4 +1,5 @@
 import { Pad, Sound } from '../types/types';
+import { PAD_DISPLAY_FROM_INDEX } from './constants';
 
 export function findPad(pad: string, pads: Record<string, Pad[]>) {
   const group = pad[0];
@@ -58,4 +59,9 @@ export class AbortError extends Error {
     super('The operation was aborted.');
     this.name = 'AbortError';
   }
+}
+
+export function getPadDisplayName(group: string, index: number): string {
+  const padChar = PAD_DISPLAY_FROM_INDEX[index] ?? '?';
+  return `${group.toUpperCase()} ${padChar}`;
 }
