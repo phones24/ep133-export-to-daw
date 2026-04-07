@@ -471,7 +471,7 @@ export async function loadSoundsFromBackup(
         'sound.playmode': 'oneshot',
         'sound.pan': 0,
         'sound.pitch': 0,
-        'sound.rootnote': 0,
+        'sound.rootnote': 60,
         'time.mode': '',
         'sound.bpm': 0,
         'envelope.attack': 0,
