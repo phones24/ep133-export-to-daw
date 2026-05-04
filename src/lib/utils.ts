@@ -65,3 +65,34 @@ export function getPadDisplayName(group: string, index: number): string {
   const padChar = PAD_DISPLAY_FROM_INDEX[index] ?? '?';
   return `${group.toUpperCase()} ${padChar}`;
 }
+
+export function hasMultipleNoteVariations(
+  group: string,
+  scenes: { patterns: { pad: string; notes: { note: number }[] }[] }[],
+) {
+  const trackNotes: Record<string, Set<number>> = {};
+
+  for (const scene of scenes) {
+    for (const pattern of scene.patterns) {
+      if (!pattern.pad.startsWith(group)) {
+        continue;
+      }
+
+      if (!trackNotes[pattern.pad]) {
+        trackNotes[pattern.pad] = new Set();
+      }
+
+      for (const note of pattern.notes) {
+        trackNotes[pattern.pad].add(note.note);
+      }
+    }
+  }
+
+  for (const padCode in trackNotes) {
+    if (trackNotes[padCode].size > 1) {
+      return true;
+    }
+  }
+
+  return false;
+}

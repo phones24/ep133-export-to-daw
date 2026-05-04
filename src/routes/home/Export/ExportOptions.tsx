@@ -1,11 +1,47 @@
+import { useAtomValue } from 'jotai';
+import { useMemo } from 'preact/hooks';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { projectIdAtom } from '~/atoms/project';
 import CheckboxField from '~/components/form/CheckboxField';
+import useProject from '~/hooks/useProject';
+import { hasMultipleNoteVariations } from '~/lib/utils';
 import { ExportFormValues } from './exportFormSchema';
 
 function ExportOptions({ disabled = false }: { disabled?: boolean }) {
   const { control } = useFormContext<ExportFormValues>();
   const format = useWatch({ control, name: 'format' });
   const includeArchivedSamples = useWatch({ control, name: 'includeArchivedSamples' });
+  const drumRackGroupA = useWatch({ control, name: 'drumRackGroupA' });
+  const drumRackGroupB = useWatch({ control, name: 'drumRackGroupB' });
+  const drumRackGroupC = useWatch({ control, name: 'drumRackGroupC' });
+  const drumRackGroupD = useWatch({ control, name: 'drumRackGroupD' });
+
+  const projectId = useAtomValue(projectIdAtom);
+  const { data: projectData } = useProject(projectId);
+
+  const notesVariationWarnings = useMemo(() => {
+    if (format === 'reaper') {
+      return [];
+    }
+
+    const result: string[] = [];
+    const scenes = projectData?.scenes ?? [];
+
+    if (drumRackGroupA && hasMultipleNoteVariations('a', scenes)) {
+      result.push('Group A');
+    }
+    if (drumRackGroupB && hasMultipleNoteVariations('b', scenes)) {
+      result.push('Group B');
+    }
+    if (drumRackGroupC && hasMultipleNoteVariations('c', scenes)) {
+      result.push('Group C');
+    }
+    if (drumRackGroupD && hasMultipleNoteVariations('d', scenes)) {
+      result.push('Group D');
+    }
+
+    return result;
+  }, [format, drumRackGroupA, drumRackGroupB, drumRackGroupC, drumRackGroupD, projectData]);
 
   return (
     <div className="flex flex-col gap-2 min-w-1/2">
@@ -175,6 +211,14 @@ function ExportOptions({ disabled = false }: { disabled?: boolean }) {
             helperText="Useful for drum kits. Make sure your drum pads are not playing chromatically."
           />
         </>
+      )}
+
+      {notesVariationWarnings.length > 0 && (
+        <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-3 py-2 rounded text-sm mt-4">
+          <strong>Warning:</strong> The following groups contain tracks with multiple note
+          variations. Merging them into a single track or Drum Rack will flatten all notes to a
+          single pitch: {notesVariationWarnings.join(', ')}
+        </div>
       )}
     </div>
   );

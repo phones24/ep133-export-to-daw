@@ -22,7 +22,7 @@ function OfflineInformer({ className }: { className?: string }) {
   return (
     <div
       className={clsx(
-        'bg-yellow-200 text-yellow-800 px-4 py-1 text-center text-sm border-b border-yellow-300',
+        'bg-yellow-100 text-yellow-800 px-4 py-1 text-center text-sm border-b border-yellow-300',
         className,
       )}
     >
