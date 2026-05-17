@@ -41,17 +41,10 @@ function SceneName({ projectId, defaultName }: { projectId: string; defaultName:
     }
 
     if (e.key === 'Enter') {
+      e.preventDefault();
       handleSave();
     }
   };
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyboard);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyboard);
-    };
-  }, []);
 
   useEffect(() => {
     if (isRenaming && inputRef.current) {
@@ -71,6 +64,7 @@ function SceneName({ projectId, defaultName }: { projectId: string; defaultName:
               onChange={handleRename}
               className="text-black text-sm py-0 h-full"
               ref={inputRef}
+              onKeyDown={handleKeyboard}
             />
             <Button variant="ghost" size="xs" onClick={handleSave} title="Save">
               <IconSave className="w-4" />
