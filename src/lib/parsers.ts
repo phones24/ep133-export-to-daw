@@ -11,6 +11,7 @@ import {
   Sound,
 } from '../types/types';
 import { GROUPS, PADS, SKU_EP40 } from './constants';
+import { parseWavMetadata } from './exporters/utils';
 import { getFileMetadata, getFileNodeByPath } from './midi/fs';
 import { TESoundMetadata } from './midi/types';
 import { TarFile } from './untar';
@@ -456,13 +457,21 @@ export async function loadSoundsFromBackup(
       fileType: 'file' as const,
     };
 
+    let wavMeta: ReturnType<typeof parseWavMetadata>;
+    try {
+      wavMeta = parseWavMetadata(soundData);
+    } catch (err) {
+      console.warn(`Failed to parse WAV metadata for sound ${soundId}:`, err);
+      wavMeta = { channels: 1, samplerate: 44100, format: 's16' as const, rootNote: 60 };
+    }
+
     selectedSounds.push({
       id: soundId,
       fileNode,
       meta: {
-        channels: 1,
-        samplerate: 44100,
-        format: 's16',
+        channels: wavMeta.channels,
+        samplerate: wavMeta.samplerate,
+        format: wavMeta.format,
         crc: 0,
         name: fileName,
         'sound.loopstart': 0,
@@ -471,7 +480,7 @@ export async function loadSoundsFromBackup(
         'sound.playmode': 'oneshot',
         'sound.pan': 0,
         'sound.pitch': 0,
-        'sound.rootnote': 60,
+        'sound.rootnote': wavMeta.rootNote,
         'time.mode': '',
         'sound.bpm': 0,
         'envelope.attack': 0,

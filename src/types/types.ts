@@ -188,6 +188,7 @@ export type ExporterParams = {
   sendEffects?: boolean; // send effects to return tracks
   allScenes?: boolean; // export all scenes
   selectedScenes?: string[]; // export only selected scenes (when allScenes is false)
+  customSceneNames?: Record<string, string>;
 };
 
 export type SoundInfo = {

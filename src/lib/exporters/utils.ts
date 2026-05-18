@@ -69,6 +69,69 @@ function extractPcmFromWav(wavData: Uint8Array): Uint8Array {
   throw new Error('Invalid WAV file: data chunk not found');
 }
 
+export function parseWavMetadata(wavData: Uint8Array) {
+  const view = new DataView(wavData.buffer, wavData.byteOffset, wavData.byteLength);
+
+  const riff = String.fromCharCode(wavData[0], wavData[1], wavData[2], wavData[3]);
+  if (riff !== 'RIFF') {
+    throw new Error('Invalid WAV file: missing RIFF header');
+  }
+
+  const wave = String.fromCharCode(wavData[8], wavData[9], wavData[10], wavData[11]);
+  if (wave !== 'WAVE') {
+    throw new Error('Invalid WAV file: missing WAVE format');
+  }
+
+  let offset = 12;
+  let channels = 1;
+  let samplerate = 44100;
+  let bitsPerSample = 16;
+  let audioFormat = 1;
+  let rootNote = 60;
+
+  while (offset < wavData.length - 8) {
+    const chunkId = String.fromCharCode(
+      wavData[offset],
+      wavData[offset + 1],
+      wavData[offset + 2],
+      wavData[offset + 3],
+    );
+    const chunkSize = view.getUint32(offset + 4, true);
+
+    if (chunkId === 'fmt ') {
+      audioFormat = view.getUint16(offset + 8, true);
+      channels = view.getUint16(offset + 10, true);
+      samplerate = view.getUint32(offset + 12, true);
+      bitsPerSample = view.getUint16(offset + 22, true);
+    }
+
+    if (chunkId === 'smpl') {
+      rootNote = view.getUint32(offset + 20, true);
+    }
+
+    offset += 8 + chunkSize;
+    if (chunkSize % 2 !== 0) {
+      offset += 1;
+    }
+  }
+
+  let format: 's16' | 's24' | 'float';
+  if (audioFormat === 3 && bitsPerSample === 32) {
+    format = 'float';
+  } else if (bitsPerSample === 24) {
+    format = 's24';
+  } else {
+    format = 's16';
+  }
+
+  return {
+    channels,
+    samplerate,
+    format,
+    rootNote,
+  };
+}
+
 export async function downloadPcm(
   soundId: number,
   progressCallback?: (bytesRead: number, totalRemaining: number) => void,

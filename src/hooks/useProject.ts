@@ -3,6 +3,7 @@ import { useAtomValue } from 'jotai';
 import JSZip from 'jszip';
 import { deviceSkuAtom } from '~/atoms/deviceSku';
 import {
+  backupSkuAtom,
   droppedBackupFileAtom,
   droppedProjectFileAtom,
   unzippedBackupAtom,
@@ -29,6 +30,7 @@ function useProject(id?: number | string) {
   const deviceSku = useAtomValue(deviceSkuAtom);
   const droppedProjectFile = useAtomValue(droppedProjectFileAtom);
   const droppedBackupFile = useAtomValue(droppedBackupFileAtom);
+  const backupSku = useAtomValue(backupSkuAtom);
 
   const result = useQuery<ProjectRawData | null>({
     queryKey: ['project', id],
@@ -69,7 +71,7 @@ function useProject(id?: number | string) {
           : await collectSounds(files);
         const settings = collectSettings(files);
         const pads = collectPads(files, sounds);
-        const scenes = collectScenesAndPatterns(files, device?.sku || deviceSku);
+        const scenes = collectScenesAndPatterns(files, device?.sku || backupSku || deviceSku);
         const scenesSettings = collectScenesSettings(files);
         const effects = collectEffects(files);
 

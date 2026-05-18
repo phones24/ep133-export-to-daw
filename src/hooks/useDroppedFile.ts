@@ -4,6 +4,8 @@ import type { DropTargetMonitor } from 'react-dnd';
 import { useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import {
+  backupProjectIdsAtom,
+  backupSkuAtom,
   droppedBackupFileAtom,
   droppedProjectFileAtom,
   unzippedBackupAtom,
@@ -20,6 +22,8 @@ function useDroppedFile() {
   const [, setProjectId] = useAtom(projectIdAtom);
   const [, setDroppedProjectFile] = useAtom(droppedProjectFileAtom);
   const [, setDroppedBackupFile] = useAtom(droppedBackupFileAtom);
+  const [, setBackupSku] = useAtom(backupSkuAtom);
+  const [, setBackupProjectIds] = useAtom(backupProjectIdsAtom);
 
   const [{ isOver }, dropRef] = useDrop(
     () => ({
@@ -43,32 +47,62 @@ function useDroppedFile() {
           return;
         }
 
-        if (!device && (fileNameLower.endsWith('.tar') || fileNameLower.endsWith('.ppak'))) {
+        if (!device && fileNameLower.endsWith('.tar')) {
           showToast(
-            'Connect a device to load .tar/.ppak files, or use a .pak backup file',
+            'Connect a device to load .tar files, or use a .pak/.ppak backup file',
             'error',
           );
           return;
         }
 
-        if (device && fileNameLower.endsWith('.pak')) {
-          showToast('Disconnect the device to use a .pak backup file', 'error');
+        if (device && (fileNameLower.endsWith('.pak') || fileNameLower.endsWith('.ppak'))) {
+          showToast('Disconnect the device to use a .pak/.ppak backup file', 'error');
           return;
         }
 
         try {
           const buf = await file.arrayBuffer();
 
-          if (fileNameLower.endsWith('.tar') || fileNameLower.endsWith('.ppak')) {
+          if (fileNameLower.endsWith('.tar')) {
             setDroppedProjectFile({ name: file.name, data: new Uint8Array(buf) });
+            setDroppedBackupFile(null);
+            store.set(unzippedBackupAtom, null);
+            setBackupSku(null);
+            setBackupProjectIds([]);
             setProjectId(DROPPED_FILE_ID);
             showToast(`Added "${file.name}" to projects`, 'info');
-          } else if (fileNameLower.endsWith('.pak')) {
+          } else if (fileNameLower.endsWith('.pak') || fileNameLower.endsWith('.ppak')) {
             const backupData = new Uint8Array(buf);
             setDroppedBackupFile(backupData);
+            setDroppedProjectFile(null);
 
             const unzipped = await JSZip.loadAsync(backupData);
             store.set(unzippedBackupAtom, unzipped);
+
+            // Read backup metadata
+            const metaFile = unzipped.file('meta.json');
+            if (metaFile) {
+              try {
+                const metaText = await metaFile.async('text');
+                const meta = JSON.parse(metaText);
+                const sku = meta.device_sku || meta.base_sku || null;
+                setBackupSku(sku);
+              } catch {
+                setBackupSku(null);
+              }
+            } else {
+              setBackupSku(null);
+            }
+
+            // Scan for available projects
+            const projectIds: number[] = [];
+            for (const zipFile of Object.values(unzipped.files)) {
+              const match = zipFile.name.match(/\/projects\/P(\d{2})\.tar$/);
+              if (match) {
+                projectIds.push(Number(match[1]));
+              }
+            }
+            setBackupProjectIds(projectIds.sort((a, b) => a - b));
 
             showToast(`Loaded backup file "${file.name}"`, 'info');
           }
@@ -80,7 +114,7 @@ function useDroppedFile() {
         isOver: monitor.isOver(),
       }),
     }),
-    [device, setDroppedProjectFile, setProjectId],
+    [device, setDroppedProjectFile, setProjectId, setBackupSku, setBackupProjectIds],
   );
 
   return { dropRef, isOver };

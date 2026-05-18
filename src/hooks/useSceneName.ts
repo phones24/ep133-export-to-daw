@@ -10,6 +10,35 @@ export function getDefaultSceneName(name: string) {
   return `SCENE ${name}`;
 }
 
+export function getCustomSceneNames(
+  projectId: string,
+  sceneNames: string[],
+): Record<string, string> {
+  const projectPrefix = `p${projectId}`;
+  const result: Record<string, string> = {};
+
+  for (const sceneName of sceneNames) {
+    const defaultName = getDefaultSceneName(sceneName);
+    const key = projectPrefix + getSceneNameKey(sceneName);
+    try {
+      const storedValue = localStorage.getItem(key);
+      if (storedValue) {
+        const parsed = JSON.parse(storedValue);
+        if (parsed) {
+          result[sceneName] = parsed;
+          continue;
+        }
+      }
+    } catch {
+      // ignore
+    }
+
+    result[sceneName] = defaultName;
+  }
+
+  return result;
+}
+
 function useSceneName(projectId: string, originalName: string = '') {
   const projectPrefix = `p${projectId}`;
   const key = projectPrefix + getSceneNameKey(originalName);

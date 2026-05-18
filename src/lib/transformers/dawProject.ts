@@ -54,6 +54,7 @@ export type DawScene = {
 
 function dawProjectTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
   const { pads, scenes } = data;
+  const customSceneNames = exporterParams.customSceneNames || {};
   const dawScenes: DawScene[] = [];
   let lanes: DawLane[] = [];
   let tracks: DawTrack[] = [];
@@ -62,7 +63,7 @@ function dawProjectTransformer(data: ProjectRawData, exporterParams: ExporterPar
   scenes.forEach((scene, sceneIndex) => {
     const sceneBars = Math.max(...scene.patterns.map((p) => p.bars));
     const dawScene: DawScene = {
-      name: scene.name,
+      name: customSceneNames[scene.name] || scene.name,
       clipSlot: [],
     };
 
@@ -111,7 +112,7 @@ function dawProjectTransformer(data: ProjectRawData, exporterParams: ExporterPar
         bars: pattern.bars,
         sceneBars,
         sceneIndex,
-        sceneName: scene.name,
+        sceneName: customSceneNames[scene.name] || scene.name,
         sceneTimeSignature: data.scenesSettings.timeSignature,
       });
 

@@ -69,7 +69,7 @@ function Home() {
                 <>
                   Please connect a device and allow access to MIDI
                   <br />
-                  or drop a .pak backup file
+                  or drop a .pak/.ppak backup file
                 </>
               }
             />

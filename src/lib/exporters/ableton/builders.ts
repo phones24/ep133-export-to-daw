@@ -69,7 +69,7 @@ async function buildMidiClip(
   midiClip.Loop.HiddenLoopStart['@Value'] = 0;
   midiClip.Loop.HiddenLoopEnd['@Value'] = koClip.bars * beats;
   midiClip.Color['@Value'] = color;
-  midiClip.Name['@Value'] = `Scene ${koClip.sceneName}`;
+  midiClip.Name['@Value'] = koClip.sceneName;
   midiClip.TimeSignature.TimeSignatures.RemoteableTimeSignature.Numerator['@Value'] =
     koClip.timeSignature.numerator;
   midiClip.TimeSignature.TimeSignatures.RemoteableTimeSignature.Denominator['@Value'] =

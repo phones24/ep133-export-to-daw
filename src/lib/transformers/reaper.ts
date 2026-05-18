@@ -37,6 +37,7 @@ export type RprTrackItem = {
 
 export function reaperTransform(data: ProjectRawData, exporterParams: ExporterParams) {
   const { pads, scenes } = data;
+  const customSceneNames = exporterParams.customSceneNames || {};
   const tracks: RprTrack[] = [];
   let offset = 0;
 
@@ -77,7 +78,7 @@ export function reaperTransform(data: ProjectRawData, exporterParams: ExporterPa
         bars: pattern.bars,
         sceneBars,
         sceneIndex,
-        sceneName: scene.name,
+        sceneName: customSceneNames[scene.name] || scene.name,
       });
     });
 

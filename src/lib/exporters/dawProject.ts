@@ -297,7 +297,7 @@ function buildScene(scene: DawScene) {
   return {
     _name: 'Scene',
     _attrs: {
-      name: `Scene ${scene.name}`,
+      name: scene.name,
       id: `__SCENE_${scene.name}__`,
     },
     _content: {

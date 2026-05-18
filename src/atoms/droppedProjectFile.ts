@@ -9,3 +9,5 @@ export type DroppedProjectFile = {
 export const droppedProjectFileAtom = atom<DroppedProjectFile | null>(null);
 export const droppedBackupFileAtom = atom<Uint8Array | null>(null);
 export const unzippedBackupAtom = atom<JSZip | null>(null);
+export const backupSkuAtom = atom<string | null>(null);
+export const backupProjectIdsAtom = atom<number[]>([]);

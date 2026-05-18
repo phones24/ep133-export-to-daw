@@ -57,6 +57,7 @@ export type AblScene = {
 
 function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams) {
   const { pads, scenes } = data;
+  const customSceneNames = exporterParams.customSceneNames || {};
   const lanes: AblLane[] = [];
   const ablScenes: AblScene[] = [];
   let tracks: AblTrack[] = [];
@@ -65,7 +66,7 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
   scenes.forEach((scene, sceneIndex) => {
     const sceneBars = Math.max(...scene.patterns.map((p) => p.bars));
     const ablScene: AblScene = {
-      name: scene.name,
+      name: customSceneNames[scene.name] || scene.name,
     };
 
     scene.patterns.forEach((pattern) => {
@@ -142,7 +143,7 @@ function abletonTransformer(data: ProjectRawData, exporterParams: ExporterParams
         bars: pattern.bars,
         sceneBars,
         sceneIndex,
-        sceneName: scene.name,
+        sceneName: customSceneNames[scene.name] || scene.name,
         timeSignature: data.scenesSettings.timeSignature,
         faderParams,
       });

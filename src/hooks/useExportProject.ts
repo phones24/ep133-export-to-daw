@@ -14,6 +14,7 @@ import {
   SampleReport,
 } from '../types/types';
 import useProject from './useProject';
+import { getCustomSceneNames } from './useSceneName';
 
 export const EXPORT_FORMATS: ExportFormat[] = [
   {
@@ -106,6 +107,11 @@ function useExportProject() {
 
       const filteredData = filterScenes(projectRawData, exporterParams);
 
+      const customSceneNames = getCustomSceneNames(
+        projectId,
+        filteredData.scenes.map((s) => s.name),
+      );
+
       const result = await exportFn(
         projectId,
         filteredData,
@@ -113,7 +119,7 @@ function useExportProject() {
           setPercentage(stat.progress);
           setPendingStatus(stat.status);
         },
-        exporterParams,
+        { ...exporterParams, customSceneNames },
         controller.signal,
       );
 

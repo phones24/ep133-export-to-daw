@@ -51,7 +51,7 @@ function buildTrack(track: RprTrack): ReaperTrack {
           60) /
         track.bpm,
       lengthInBars: item.bars,
-      name: `Scene ${item.sceneName}`,
+      name: item.sceneName,
       events: item.notes.map((n) => ({
         note: n.note,
         position: n.position,
