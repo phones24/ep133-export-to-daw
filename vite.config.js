@@ -76,7 +76,7 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         manualChunks: (id) => {
           if (id.includes('xmlbuilder2')) {

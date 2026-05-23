@@ -33,6 +33,7 @@ import {
   koEnvRangeToSeconds,
   loadTemplate,
   TIME_SIGNATURES,
+  toNativePath,
 } from './utils';
 
 let _localId = -1;
@@ -151,7 +152,7 @@ async function buildSimplerDevice(koTrack: AblTrack) {
   }
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleRef.FileRef.RelativePath[
     '@Value'
-  ] = `Samples/Imported/${koTrack.sampleName}`;
+  ] = toNativePath(`Samples/Imported/${koTrack.sampleName}`);
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.Name['@Value'] = koTrack.name;
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.RootKey['@Value'] = koTrack.rootNote;
   device.Player.MultiSampleMap.SampleParts.MultiSamplePart.SampleStart['@Value'] = koTrack.trimLeft;

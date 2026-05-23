@@ -25,7 +25,6 @@
         <FileRef>
           <RelativePathType Value="0" />
           <RelativePath Value="" />
-          <Path Value="" />
           <Type Value="1" />
           <LivePackName Value="" />
           <LivePackId Value="" />
@@ -52,7 +51,6 @@
             <FileRef>
               <RelativePathType Value="0" />
               <RelativePath Value="" />
-              <Path Value="" />
               <Type Value="1" />
               <LivePackName Value="" />
               <LivePackId Value="" />
@@ -121,7 +119,6 @@
             <FileRef>
               <RelativePathType Value="1" />
               <RelativePath Value="" />
-              <Path Value="" />
               <Type Value="1" />
               <LivePackName Value="" />
               <LivePackId Value="" />

@@ -126,3 +126,13 @@ export function filterFreqFromNormalized(x: number) {
 
   return fMin * (fMax / fMin) ** x;
 }
+
+export function toNativePath(posixPath: string): string {
+  const isWindows = navigator.userAgent.includes('indows');
+  const pathSep = isWindows ? '\\' : '/';
+  if (pathSep === '/') {
+    return posixPath;
+  }
+
+  return posixPath.split('/').join(pathSep);
+}
