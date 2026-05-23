@@ -17,6 +17,7 @@ dev-dist
 .ruff_cache
 .pytest_cache
 *.local
+tsconfig.node.tsbuildinfo
 
 # Editor directories and files
 .vscode/*
@@ -35,3 +36,4 @@ raw.js
 
 # Sentry Config File
 .env.sentry-build-plugin
+
