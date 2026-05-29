@@ -8,6 +8,7 @@ import { APP_STATES, useAppState } from '~/hooks/useAppState';
 import useDevice from '~/hooks/useDevice';
 import useDroppedFile from '~/hooks/useDroppedFile';
 import AppStateDisplay from './AppStateDisplay';
+import EPToolkitDialog from './EPToolkitDialog';
 import FacePlateHeader from './FacePlateHeader';
 import FeedbackDialog from './FeedbackDialog';
 import Menu from './Menu';
@@ -33,8 +34,26 @@ function Home() {
           <div className="flex justify-between">
             <FacePlateHeader />
 
-            <div className="self-start flex flex-col gap-4">
+            <div className="self-start flex flex-col gap-2">
               <Menu />
+              <a
+                href="https://eptoolkit.ep133-to-daw.cc/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-creme bg-grid border border-black shadow-[1px_1px_0px_1px_#00000099] flex items-center gap-2 h-15 px-3"
+              >
+                <div className="flex flex-col justify-center min-w-0">
+                  <span className="text-2xl font-bold leading-tight text-brand">EP Toolkit</span>
+                  <span className="text-xs text-black/60 leading-tight">
+                    Standalone app: export, samples, backups
+                  </span>
+                </div>
+                <img
+                  src="/eptoolkit/eptoolkit-logo.png"
+                  alt="EP Toolkit"
+                  className="size-10 shrink-0 ml-auto"
+                />
+              </a>
             </div>
           </div>
           <ProjectMeta projectId={projectId} />
@@ -85,6 +104,7 @@ function Home() {
       </div>
 
       <FeedbackDialog />
+      <EPToolkitDialog />
       <RiddimDialog />
       <Toast />
     </div>

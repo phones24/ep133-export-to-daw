@@ -7,6 +7,8 @@
   --color-brand: #ef4e27;
   --color-face: #dbdddb;
   --color-screen: #000000;
+  --color-creme: #f5f0e6;
+  --color-border: rgba(0, 0, 0, 0.05);
   --bg-url: url("/bg-ep133.png");
   --shadow-my: 1px 1px 0px 1px #00000077;
 }
@@ -61,4 +63,11 @@
   margin: 0;
   background: transparent;
   z-index: 100;
+}
+
+.bg-grid {
+  background-image:
+    linear-gradient(to right, var(--color-border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
+  background-size: 40px 40px;
 }

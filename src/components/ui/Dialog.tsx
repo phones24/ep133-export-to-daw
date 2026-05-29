@@ -36,7 +36,7 @@ function Dialog({
     <dialog
       ref={dialogRef}
       className={clsx(
-        'shadow-lg backdrop:bg-black/40 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border-1 border-black outline-none overflow-visible',
+        'shadow-lg backdrop:bg-black/40 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border border-black outline-none overflow-visible',
         className,
       )}
       onClose={onClose}
