@@ -92,8 +92,8 @@ function ExportProjectDialog({
 
   return (
     <FormProvider {...form}>
-      <Dialog isOpen={open} onClose={() => onOpenChange(false)} className="min-w-200">
-        <div className="flex flex-col gap-2 min-w-150 max-w-175">
+      <Dialog isOpen={open} onClose={() => onOpenChange(false)} className="min-w-200 max-w-175">
+        <div className="flex flex-col gap-2 min-w-150">
           <h3 className="text-lg font-semibold">Export</h3>
           <SelectField name="format" disabled={isPending} className="mr-auto mb-4">
             {EXPORT_FORMATS.map((f) => (
@@ -120,6 +120,25 @@ function ExportProjectDialog({
               <h3 className="text-lg font-semibold">Notes</h3>
               <div className="text-sm whitespace-pre-line">{NOTES[format]}</div>
             </div>
+          )}
+
+          {!result && !percentage && (
+            <a
+              href="https://eptoolkit.ep133-to-daw.cc/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-creme w-full bg-grid border border-black gap-2 p-2 text-black flex mt-4 justify-center items-center"
+            >
+              <p>
+                Want fader automation support? Get <strong>EP Toolkit</strong>: desktop app for
+                exporting, sample management, backups and more.{' '}
+              </p>
+              <img
+                src="/eptoolkit/eptoolkit-logo.png"
+                alt="EP Toolkit"
+                className="size-10 shrink-0 ml-auto"
+              />
+            </a>
           )}
         </div>
 
