@@ -41,7 +41,7 @@ function Dialog({
       )}
       onClose={onClose}
     >
-      <div className={clsx('bg-white p-4 rounded-md min-w-75 min-h-25', containerClassName)}>
+      <div className={clsx('bg-white p-4 rounded-md min-w-75 min-h-25 max-h-[95vh] overflow-y-auto', containerClassName)}>
         {children}
       </div>
     </dialog>
