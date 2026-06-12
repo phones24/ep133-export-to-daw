@@ -5,25 +5,6 @@ export type Group = 'a' | 'b' | 'c' | 'd';
 export type PadNumber = `${number}`;
 export type PadCode = `${Group}${PadNumber}`;
 
-export type SoundMetadata = {
-  channels: number;
-  samplerate: number;
-  format: 's16' | 's24' | 'float';
-  crc: number;
-  'sound.loopstart': number;
-  'sound.loopend': number;
-  name: string;
-  'sound.amplitude': number;
-  'sound.playmode': 'oneshot' | 'loop';
-  'sound.pan': number;
-  'sound.pitch': number;
-  'sound.rootnote': number;
-  'time.mode': string;
-  'sound.bpm': number;
-  'envelope.attack': number;
-  'envelope.release': number;
-};
-
 export type Sound = {
   id: number;
   fileNode: TEFileNode;

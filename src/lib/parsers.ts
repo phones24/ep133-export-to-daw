@@ -167,7 +167,7 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
           playMode: file.data[23] === 0 ? 'oneshot' : file.data[23] === 1 ? 'key' : 'legato',
           soundLength: sound ? calculateSoundLength(sound) : 0,
           pitch: Math.max(-12, Math.min(12, parseFloat(`${pitch}.${pitchDecimal}`))),
-          rootNote: sound?.meta?.['sound.rootnote'] ?? 60,
+          rootNote: file.data[24],
           timeStretch: file.data[21] === 1 ? 'bpm' : file.data[21] === 2 ? 'bars' : 'off',
           timeStretchBpm: Number(bytesToFloat32(file.data.slice(12, 16)).toFixed(2)),
           timeStretchBars: timeStretchBars(file.data[25]),
@@ -462,8 +462,16 @@ export async function loadSoundsFromBackup(
       wavMeta = parseWavMetadata(soundData);
     } catch (err) {
       console.warn(`Failed to parse WAV metadata for sound ${soundId}:`, err);
-      wavMeta = { channels: 1, samplerate: 44100, format: 's16' as const, rootNote: 60 };
+      wavMeta = {
+        channels: 1,
+        samplerate: 44100,
+        format: 's16' as const,
+        rootNote: 60,
+        teMeta: null,
+      };
     }
+
+    const te = wavMeta.teMeta;
 
     selectedSounds.push({
       id: soundId,
@@ -474,17 +482,17 @@ export async function loadSoundsFromBackup(
         format: wavMeta.format,
         crc: 0,
         name: fileName,
-        'sound.loopstart': 0,
-        'sound.loopend': 0,
-        'sound.amplitude': 1,
-        'sound.playmode': 'oneshot',
-        'sound.pan': 0,
-        'sound.pitch': 0,
+        'sound.loopstart': (te?.['sound.loopstart'] as number) ?? 0,
+        'sound.loopend': (te?.['sound.loopend'] as number) ?? 0,
+        'sound.amplitude': (te?.['sound.amplitude'] as number) ?? 1,
+        'sound.playmode': (te?.['sound.playmode'] as TESoundMetadata['sound.playmode']) ?? 'oneshot',
+        'sound.pan': (te?.['sound.pan'] as number) ?? 0,
+        'sound.pitch': (te?.['sound.pitch'] as number) ?? 0,
         'sound.rootnote': wavMeta.rootNote,
-        'time.mode': '',
+        'time.mode': (te?.['time.mode'] as string) ?? '',
         'sound.bpm': 0,
-        'envelope.attack': 0,
-        'envelope.release': 0,
+        'envelope.attack': (te?.['envelope.attack'] as number) ?? 0,
+        'envelope.release': (te?.['envelope.release'] as number) ?? 0,
       },
     });
   }

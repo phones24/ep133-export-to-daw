@@ -60,7 +60,7 @@ export type TESoundMetadata = {
   'sound.loopstart': number;
   'sound.loopend': number;
   'sound.amplitude': number;
-  'sound.playmode': 'oneshot' | 'loop';
+  'sound.playmode': 'oneshot' | 'loop' | 'key' | 'legato';
   'sound.pan': number;
   'sound.pitch': number;
   'sound.rootnote': number;

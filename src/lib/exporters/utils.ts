@@ -88,6 +88,7 @@ export function parseWavMetadata(wavData: Uint8Array) {
   let bitsPerSample = 16;
   let audioFormat = 1;
   let rootNote = 60;
+  let teMeta: Record<string, unknown> | null = null;
 
   while (offset < wavData.length - 8) {
     const chunkId = String.fromCharCode(
@@ -109,6 +110,46 @@ export function parseWavMetadata(wavData: Uint8Array) {
       rootNote = view.getUint32(offset + 20, true);
     }
 
+    if (chunkId === 'LIST') {
+      const listData = wavData.subarray(offset + 8, offset + 8 + chunkSize);
+      const listType = String.fromCharCode(listData[0], listData[1], listData[2], listData[3]);
+      if (listType === 'INFO') {
+        let subOffset = 4;
+        while (subOffset < listData.length - 8) {
+          const subId = String.fromCharCode(
+            listData[subOffset],
+            listData[subOffset + 1],
+            listData[subOffset + 2],
+            listData[subOffset + 3],
+          );
+          const subSize = new DataView(
+            listData.buffer,
+            listData.byteOffset + subOffset + 4,
+            4,
+          ).getUint32(0, true);
+
+          if (subId === 'TNGE') {
+            const raw = listData.subarray(subOffset + 8, subOffset + 8 + subSize);
+            const jsonStr = new TextDecoder('ascii')
+              .decode(raw)
+              .replace(/\0/g, '')
+              .trim();
+            try {
+              teMeta = JSON.parse(jsonStr);
+            } catch {
+              console.warn('Failed to parse TNGE metadata JSON:', jsonStr);
+            }
+            break;
+          }
+
+          subOffset += 8 + subSize;
+          if (subSize % 2 !== 0) {
+            subOffset += 1;
+          }
+        }
+      }
+    }
+
     offset += 8 + chunkSize;
     if (chunkSize % 2 !== 0) {
       offset += 1;
@@ -128,7 +169,8 @@ export function parseWavMetadata(wavData: Uint8Array) {
     channels,
     samplerate,
     format,
-    rootNote,
+    rootNote: (teMeta?.['sound.rootnote'] as number) ?? rootNote,
+    teMeta,
   };
 }
 
