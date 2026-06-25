@@ -278,6 +278,10 @@ async function buildSimplerDevice(koTrack: AblTrack) {
       ];
   }
 
+  if (koTrack.timeStretch === 'rev') {
+    device.Player.Reverse.Manual['@Value'] = 'true';
+  }
+
   return {
     OriginalSimpler: device,
   };

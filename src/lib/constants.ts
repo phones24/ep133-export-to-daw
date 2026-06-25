@@ -63,3 +63,21 @@ export const EFFECTS_SHORT = {
   5: 'FLT',
   6: 'CMP',
 };
+
+export const SCALES_SHORT: Record<number, string> = {
+  0: '2T',
+  1: 'MAJ',
+  2: 'MIN',
+  3: 'DOR',
+  4: 'PHR',
+  5: 'LYD',
+  6: 'MIX',
+  7: 'LOC',
+  8: 'MA.P',
+  9: 'MI.P',
+  10: 'BLU',
+  11: 'H.MI',
+  12: 'M.MI',
+};
+
+export const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];

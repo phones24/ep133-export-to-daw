@@ -44,6 +44,8 @@ export type GroupFaderParam = {
 
 export type ProjectSettings = {
   bpm: number;
+  scale: number;
+  rootNote: number;
   groupFaderParams: GroupFaderParam;
   faderAssignment: Record<string, FaderParam>;
   rawData: Uint8Array;
@@ -101,7 +103,7 @@ export type Pad = {
   pan: number;
   pitch: number;
   rootNote: number;
-  timeStretch: 'off' | 'bpm' | 'bars';
+  timeStretch: 'off' | 'bpm' | 'bars' | 'rev';
   timeStretchBpm: number;
   timeStretchBars: number;
   inChokeGroup: boolean;

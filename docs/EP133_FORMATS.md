@@ -25,7 +25,7 @@
 18  0,    // PAN (left: 240-255, center: 0, right: 1-16)
 19  0,    // ATACK (0-255), when in KEY/LEG mode
 20  255,  // RELEASE (0-255), when in KEY/LEG mode
-21  0,    // TIME STRETCH: 0 - OFF, 1 - BPM, 2 - BARS
+21  0,    // TIME STRETCH: 0 - OFF, 1 - BPM, 2 - BARS, 3 - REV
 22  0,    // CHOKE GROUP: 0 - true, 1 - false
 23  0,    // PLAY MODE: ONE - 0, KEY - 1, LEG - 2,
 24  60,   // PAD ID ?
@@ -461,7 +461,9 @@ Fader params:
     "218": 0,       // FADER ASSIGN C
     "219": 5,       // FADER ASSIGN D
     "220": 0,
-    "221": 4
+    "221": 4,
+    "222": 12,      // SCALE: 0 - 2T, 1 - maj, 2 - min, 3 - dor, 4 - phr, 5 - lyd, 6 - mix, 7 - loc, 8 - ma.p, 9 - mi.p, 10 - BLU, 11 - H.MI, 12 - M.MI
+    "223": 0        // ROOT NOTE (pitch class: 0 - C, 1 - C#, ... 11 - B)
 }
 
 ```

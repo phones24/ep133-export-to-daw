@@ -1,8 +1,9 @@
 import clsx from 'clsx';
 import { ReactNode } from 'preact/compat';
+import IconMusic from '~/components/icons/music.svg?react';
 import useDevice from '../../hooks/useDevice';
 import useProject from '../../hooks/useProject';
-import { EFFECTS_SHORT } from '../../lib/constants';
+import { EFFECTS_SHORT, NOTE_NAMES, SCALES_SHORT } from '../../lib/constants';
 import ProjectManager from './ProjectManager';
 
 function Knob({ className }: { className?: string }) {
@@ -106,6 +107,17 @@ function ProjectMeta({ projectId }: { projectId?: string }) {
             <Knob className="size-5 ml-2" />
             {data?.effects.param2 !== undefined ? valueToPercent(data?.effects.param2) : 'N/A'}
           </div>
+        </div>
+
+        <div className="text-white px-3 w-fit min-h-0 flex gap-1 items-center">
+          <div className="inline-flex items-center">
+            <IconMusic className="size-5" />:
+          </div>
+          <span className="font-bold">
+            {data?.settings.scale !== undefined && data?.settings.rootNote !== undefined
+              ? `${SCALES_SHORT[data.settings.scale] ?? 'N/A'}/${NOTE_NAMES[data.settings.rootNote] ?? ''}`
+              : 'N/A'}
+          </span>
         </div>
       </div>
       <div className="ml-auto">

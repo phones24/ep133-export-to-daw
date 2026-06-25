@@ -10,7 +10,7 @@ import {
   ScenesSettings,
   Sound,
 } from '../types/types';
-import { GROUPS, PADS, SKU_EP40 } from './constants';
+import { GROUPS, NOTE_NAMES, PADS, SKU_EP40 } from './constants';
 import { parseWavMetadata } from './exporters/utils';
 import { getFileMetadata, getFileNodeByPath } from './midi/fs';
 import { TESoundMetadata } from './midi/types';
@@ -34,6 +34,8 @@ type IntermediateScenes = Record<
 
 const defaultProjectSettings = {
   bpm: 120,
+  scale: 0,
+  rootNote: 0,
   groupFaderParams: {
     a: { 0: -1, 1: -1, 2: -1, 3: -1, 4: -1, 5: -1, 6: -1, 7: -1, 8: -1, 9: -1, 10: -1, 11: -1 },
     b: { 0: -1, 1: -1, 2: -1, 3: -1, 4: -1, 5: -1, 6: -1, 7: -1, 8: -1, 9: -1, 10: -1, 11: -1 },
@@ -48,11 +50,23 @@ const defaultScenesSettings = {
 };
 
 export function noteNumberToName(noteNumber: number): string {
-  const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
   const noteIndex = noteNumber % 12;
   const octave = Math.floor(noteNumber / 12) - 1;
 
-  return `${noteNames[noteIndex]}${octave}`;
+  return `${NOTE_NAMES[noteIndex]}${octave}`;
+}
+
+function timeStretch(data: number): Pad['timeStretch'] {
+  switch (data) {
+    case 1:
+      return 'bpm';
+    case 2:
+      return 'bars';
+    case 3:
+      return 'rev';
+    default:
+      return 'off';
+  }
 }
 
 function timeStretchBars(data: number) {
@@ -168,7 +182,7 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
           soundLength: sound ? calculateSoundLength(sound) : 0,
           pitch: Math.max(-12, Math.min(12, parseFloat(`${pitch}.${pitchDecimal}`))),
           rootNote: file.data[24],
-          timeStretch: file.data[21] === 1 ? 'bpm' : file.data[21] === 2 ? 'bars' : 'off',
+          timeStretch: timeStretch(file.data[21]),
           timeStretchBpm: Number(bytesToFloat32(file.data.slice(12, 16)).toFixed(2)),
           timeStretchBars: timeStretchBars(file.data[25]),
           inChokeGroup: file.data[22] === 1,
@@ -349,6 +363,8 @@ export function collectSettings(files: TarFile[]): ProjectSettings {
 
   return {
     bpm: Number(bytesToFloat32(settings.data.slice(4, 8)).toFixed(2)),
+    scale: settings.data?.[222] ?? 0,
+    rootNote: settings.data?.[223] ?? 0,
     groupFaderParams: faderParamsData,
     faderAssignment: {
       a: settings.data[216],
@@ -485,7 +501,8 @@ export async function loadSoundsFromBackup(
         'sound.loopstart': (te?.['sound.loopstart'] as number) ?? 0,
         'sound.loopend': (te?.['sound.loopend'] as number) ?? 0,
         'sound.amplitude': (te?.['sound.amplitude'] as number) ?? 1,
-        'sound.playmode': (te?.['sound.playmode'] as TESoundMetadata['sound.playmode']) ?? 'oneshot',
+        'sound.playmode':
+          (te?.['sound.playmode'] as TESoundMetadata['sound.playmode']) ?? 'oneshot',
         'sound.pan': (te?.['sound.pan'] as number) ?? 0,
         'sound.pitch': (te?.['sound.pitch'] as number) ?? 0,
         'sound.rootnote': wavMeta.rootNote,
