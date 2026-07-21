@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "typecheck": "tsc --noEmit",
+    "test": "tsc --noEmit -p tsconfig.test.json && tsx --test tests/xm.test.ts",
     "lint": "biome check --write src",
     "format": "biome format --write src"
   },

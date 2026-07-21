@@ -130,10 +130,7 @@ export function parseWavMetadata(wavData: Uint8Array) {
 
           if (subId === 'TNGE') {
             const raw = listData.subarray(subOffset + 8, subOffset + 8 + subSize);
-            const jsonStr = new TextDecoder('ascii')
-              .decode(raw)
-              .replace(/\0/g, '')
-              .trim();
+            const jsonStr = new TextDecoder('ascii').decode(raw).replace(/\0/g, '').trim();
             try {
               teMeta = JSON.parse(jsonStr);
             } catch {
@@ -165,11 +162,20 @@ export function parseWavMetadata(wavData: Uint8Array) {
     format = 's16';
   }
 
+  const metadataRootNote = teMeta?.['sound.rootnote'];
+  const resolvedRootNote =
+    typeof metadataRootNote === 'number' &&
+    Number.isFinite(metadataRootNote) &&
+    metadataRootNote >= 1 &&
+    metadataRootNote <= 127
+      ? metadataRootNote
+      : rootNote;
+
   return {
     channels,
     samplerate,
     format,
-    rootNote: (teMeta?.['sound.rootnote'] as number) ?? rootNote,
+    rootNote: resolvedRootNote,
     teMeta,
   };
 }

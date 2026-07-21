@@ -1,5 +1,6 @@
 import JSZip from 'jszip';
 import {
+  FaderParam,
   GroupFaderParam,
   Note,
   Pad,
@@ -101,6 +102,12 @@ function genPadFileName(group: string, pad: number) {
   return `pads/${group}/p${String(pad).padStart(2, '0')}`;
 }
 
+export function decodePadPitch(coarseByte: number, fineByte: number) {
+  const coarse = coarseByte > 127 ? coarseByte - 256 : coarseByte;
+  const fine = fineByte > 127 ? fineByte - 256 : fineByte;
+  return Math.max(-12, Math.min(12, coarse + fine / 100));
+}
+
 function chunkArray(arr: Uint8Array, size: number, offset = 0) {
   const result = [];
 
@@ -159,8 +166,6 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
       if (file?.data) {
         const soundId = (file.data[2] << 8) + file.data[1];
         const sound = sounds.find((s) => s.id === soundId);
-        const pitch = file.data[17] <= 12 ? file.data[17] : -(256 - file.data[17]); // pitch from -12 to +12
-        const pitchDecimal = file.data[26];
         const pan = (file.data[18] >= 240 ? -(256 - file.data[18]) : file.data[18]) / 16; // normalized pan
         const trimLeft = (file.data[6] << 16) + (file.data[5] << 8) + file.data[4];
         const trimRight = trimLeft + (file.data[10] << 16) + (file.data[9] << 8) + file.data[8];
@@ -180,7 +185,7 @@ export function collectPads(files: TarFile[], sounds: Sound[]) {
           trimRight,
           playMode: file.data[23] === 0 ? 'oneshot' : file.data[23] === 1 ? 'key' : 'legato',
           soundLength: sound ? calculateSoundLength(sound) : 0,
-          pitch: Math.max(-12, Math.min(12, parseFloat(`${pitch}.${pitchDecimal}`))),
+          pitch: decodePadPitch(file.data[17], file.data[26]),
           rootNote: file.data[24],
           timeStretch: timeStretch(file.data[21]),
           timeStretchBpm: Number(bytesToFloat32(file.data.slice(12, 16)).toFixed(2)),
@@ -347,16 +352,15 @@ export function collectSettings(files: TarFile[]): ProjectSettings {
   for (const groupNum of [0, 1, 2, 3]) {
     const groupId = GROUPS[groupNum].id;
     for (let paramNum = 0; paramNum <= 11; paramNum++) {
+      const value = bytesToFloat32(
+        settings.data.slice(24 + groupNum * 48 + paramNum * 4, 28 + groupNum * 48 + paramNum * 4),
+      );
       faderParamsData[groupId] = {
         ...faderParamsData[groupId],
-        [paramNum]: Number(
-          bytesToFloat32(
-            settings.data.slice(
-              24 + groupNum * 48 + paramNum * 4,
-              28 + groupNum * 48 + paramNum * 4,
-            ),
-          ).toFixed(2),
-        ),
+        [paramNum]:
+          paramNum === FaderParam.PTC || paramNum === FaderParam.TUNE
+            ? value
+            : Number(value.toFixed(2)),
       };
     }
   }

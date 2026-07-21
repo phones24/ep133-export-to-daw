@@ -28,7 +28,7 @@ export default defineConfig({
       manifest: {
         name: 'EP-133: Export To DAW',
         short_name: 'ep133-to-daw',
-        description: 'Export your projects to Ableton Live, DAWproject or MIDI',
+        description: 'Export your projects to Ableton Live, DAWproject, REAPER, MIDI or XM',
         theme_color: '#dbdddb',
         scope: '/',
         start_url: '/',

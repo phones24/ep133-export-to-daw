@@ -132,7 +132,7 @@ export type ExportResult = {
   sampleReport?: SampleReport;
 };
 
-export type ExportFormatId = 'ableton' | 'dawproject' | 'midi' | 'reaper';
+export type ExportFormatId = 'ableton' | 'dawproject' | 'midi' | 'reaper' | 'xm';
 
 export type ExportStatus = {
   status: string;
@@ -145,16 +145,18 @@ export type SampleReport = {
   missing: { name: string; error: string }[];
 };
 
+export type Exporter = (
+  projectId: string,
+  data: ProjectRawData,
+  progressCallback: ({ progress, status }: ExportStatus) => void,
+  exporterParams: ExporterParams,
+  abortSignal: AbortSignal,
+) => Promise<ExportResult>;
+
 export type ExportFormat = {
   name: string;
   value: ExportFormatId;
-  exportFn?: (
-    projectId: string,
-    data: ProjectRawData,
-    sounds: Sound[],
-    progressCallback: ({ progress, status }: ExportStatus) => void,
-    exporterParams: ExporterParams,
-  ) => Promise<ExportResult>;
+  exportFn?: Exporter;
 };
 
 export type ExporterParams = {

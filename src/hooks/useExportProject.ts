@@ -5,6 +5,7 @@ import { projectIdAtom } from '../atoms/project';
 import { trackEvent } from '../lib/ga';
 import { AbortError } from '../lib/utils';
 import {
+  Exporter,
   ExporterParams,
   ExportFormat,
   ExportFormatId,
@@ -33,19 +34,13 @@ export const EXPORT_FORMATS: ExportFormat[] = [
     name: 'REAPER',
     value: 'reaper',
   },
+  {
+    name: 'FastTracker 2 (.xm)',
+    value: 'xm',
+  },
 ];
 
-async function getExporterFn(
-  format: ExportFormatId,
-): Promise<
-  (
-    projectId: string,
-    data: any,
-    progressCallback: any,
-    exporterParams: ExporterParams,
-    abortSignal: AbortSignal,
-  ) => Promise<any>
-> {
+async function getExporterFn(format: ExportFormatId): Promise<Exporter> {
   switch (format) {
     case 'ableton':
       return (await import('../lib/exporters/ableton')).default;
@@ -55,6 +50,8 @@ async function getExporterFn(
       return (await import('../lib/exporters/midi')).default;
     case 'reaper':
       return (await import('../lib/exporters/reaper')).default;
+    case 'xm':
+      return (await import('../lib/exporters/xm')).default;
     default:
       throw new Error(`Unknown export format: ${format}`);
   }

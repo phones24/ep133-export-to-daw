@@ -6,6 +6,7 @@ const FORMAT_IDS: [ExportFormatId, ...ExportFormatId[]] = [
   'dawproject',
   'midi',
   'reaper',
+  'xm',
 ];
 
 export const exportFormSchema = z.object({

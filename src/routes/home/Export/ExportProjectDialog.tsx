@@ -27,6 +27,7 @@ const NOTES: Record<ExportFormatId, string> = {
   dawproject: `Unfortunately, the DAWproject format does not currently support the "Sampler" instrument, so you will need to manually assign the samples in your DAW.`,
   midi: `The simplest format supported by any DAW. But you have to assign the samples manually.`,
   reaper: `Only basic sampler features are supported`,
+  xm: `Samples are embedded as mono 16-bit FastTracker 2 instruments. Timing is quantized to XM ticks. Time-stretching, filters and send effects are not supported.`,
 };
 
 function ExportProjectDialog({

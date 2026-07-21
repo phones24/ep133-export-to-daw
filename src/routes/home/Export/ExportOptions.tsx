@@ -213,6 +213,15 @@ function ExportOptions({ disabled = false }: { disabled?: boolean }) {
         </>
       )}
 
+      {format === 'xm' && (
+        <CheckboxField
+          name="exportAllPadsWithSamples"
+          title="Include all pads with assigned samples"
+          disabled={disabled}
+          helperText="XM samples are embedded in the module. This also adds unused pads as editable instruments."
+        />
+      )}
+
       {notesVariationWarnings.length > 0 && (
         <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-3 py-2 rounded text-sm mt-4">
           <strong>Warning:</strong> The following groups contain tracks with multiple note

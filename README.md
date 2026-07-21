@@ -24,6 +24,7 @@ Check the project blog here: https://ko-fi.com/phones24
   - DAWproject (project + archived samples)
   - REAPER (project with samples)
   - MIDI (MIDI file + archived samples)
+  - FastTracker 2 (XM module with embedded samples)
 - Ableton Live:
   - Minimum version: 11.3.35
   - Supports all sampler features: envelope, trimming points, stretching, playback modes
@@ -44,6 +45,10 @@ Check the project blog here: https://ko-fi.com/phones24
 - MIDI:
   - Includes archived samples
   - Any group can be exported as a Drum Rack track
+- FastTracker 2:
+  - Exports selected scenes as a strict XM 1.04 module
+  - Embeds mono 16-bit instruments with trim, reverse, pitch, volume, pan, loops and envelopes
+  - Supports up to 32 dynamically allocated tracker channels
 - Offline mode: Drop a `.pak` or `.ppak` backup file to browse and export projects without connecting your device
 - Works offline (Progressive Web App)
 
