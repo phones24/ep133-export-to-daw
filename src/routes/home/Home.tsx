@@ -98,8 +98,19 @@ function Home() {
             <AppStateDisplay title="Error" message={error?.message || 'Unknown error'} />
           )}
         </main>
-        <div className="bg-face px-3 py-2 border border-black text-xs text-black/70 shadow-[1px_1px_0px_1px_#00000099]">
-          This project is not affiliated with or officially authorized by Teenage Engineering
+        <div className="bg-face px-3 py-2 border border-black text-xs text-black/70 shadow-[1px_1px_0px_1px_#00000099] flex items-center justify-between">
+          <span>
+            This project is not affiliated with or officially authorized by Teenage Engineering
+          </span>
+          <a
+            href="https://randomware-audio.cc/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-black text-sm"
+          >
+            <img src="/ra-logo.svg" alt="" className="size-5" />
+            Randomware Audio
+          </a>
         </div>
       </div>
 
