@@ -36,12 +36,17 @@ function Dialog({
     <dialog
       ref={dialogRef}
       className={clsx(
-        'shadow-lg backdrop:bg-black/40 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border border-black outline-none overflow-visible',
+        'shadow-lg backdrop:bg-black/40 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 border border-black outline-none overflow-visible max-sm:min-w-0 max-sm:max-w-[calc(100vw-2rem)]',
         className,
       )}
       onClose={onClose}
     >
-      <div className={clsx('bg-white p-4 rounded-md min-w-75 min-h-25 max-h-[95vh] overflow-y-auto', containerClassName)}>
+      <div
+        className={clsx(
+          'bg-white p-4 rounded-md min-w-75 min-h-25 max-h-[95vh] overflow-y-auto max-sm:min-w-0 max-sm:max-h-[calc(100dvh-2rem)]',
+          containerClassName,
+        )}
+      >
         {children}
       </div>
     </dialog>

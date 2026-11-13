@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ep133-to-daw.cc/sitemap.xml

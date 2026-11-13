@@ -24,7 +24,11 @@ function ToastItem({ toast, onRemove }: { toast: ToastMessage; onRemove: (id: st
   }, [toast.id, onRemove]);
 
   return (
-    <div ref={toastRef} popover>
+    <div
+      ref={toastRef}
+      popover
+      className="fixed inset-auto left-8 bottom-8 m-0 bg-transparent z-100"
+    >
       <div
         className={clsx(
           'flex gap-8 items-center px-4 py-3 shadow-md max-w-125 w-full text-black/90 border border-gray-800',

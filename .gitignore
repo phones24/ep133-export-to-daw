@@ -15,7 +15,6 @@ dev-dist
 .wrangler
 .proton
 .ruff_cache
-.pytest_cache
 *.local
 tsconfig.node.tsbuildinfo
 
@@ -36,4 +35,3 @@ raw.js
 
 # Sentry Config File
 .env.sentry-build-plugin
-

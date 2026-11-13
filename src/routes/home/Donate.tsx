@@ -45,7 +45,7 @@ function Donate({ className = '' }: { className?: string }) {
     <>
       <button
         type="button"
-        className={clsx(className, 'italic animate-pulse-slow')}
+        className={clsx(className, 'italic animate-[pulse-slow_2s_ease-in-out_infinite]')}
         onClick={() => setOpen(true)}
       >
         Donate!

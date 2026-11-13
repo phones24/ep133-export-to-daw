@@ -20,4 +20,6 @@ registerSW({
   },
 });
 
-render(<App />, document.getElementById('app') || document.body);
+const container = document.getElementById('app') || document.body;
+container.replaceChildren();
+render(<App />, container);

@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "types": ["node", "preact", "vite/client"]
-  },
-  "include": ["src", "tests"],
-  "references": []
-}

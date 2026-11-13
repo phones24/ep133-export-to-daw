@@ -7,6 +7,7 @@ import Toast from '~/components/ui/Toast';
 import { APP_STATES, useAppState } from '~/hooks/useAppState';
 import useDevice from '~/hooks/useDevice';
 import useDroppedFile from '~/hooks/useDroppedFile';
+import { usePageMeta } from '~/hooks/usePageMeta';
 import AppStateDisplay from './AppStateDisplay';
 import EPToolkitDialog from './EPToolkitDialog';
 import FacePlateHeader from './FacePlateHeader';
@@ -17,30 +18,36 @@ import Arrangements from './ProjectView/Arrangements';
 import RiddimDialog from './RiddimDialog';
 
 function Home() {
+  usePageMeta({
+    title: 'EP-133: Export to DAW (Ableton, REAPER, MIDI) | Free Tool',
+    description:
+      'Export Teenage Engineering EP-133, EP-1320 or EP-40 projects to Ableton Live, DAWproject, REAPER or MIDI in your browser. No install; works with WebMIDI.',
+    path: '/',
+  });
   const [projectId] = useAtom(projectIdAtom);
   const { error } = useDevice();
   const appState = useAppState();
   const { dropRef } = useDroppedFile();
 
   return (
-    <div className="min-w-275 max-w-450 p-4 h-screen grid grid-rows-[auto_1fr] mx-auto">
+    <div className="min-w-0 max-w-450 p-4 h-dvh grid grid-rows-[auto_minmax(0,1fr)] mx-auto max-[1100px]:h-auto max-[1100px]:min-h-dvh">
       <div className="mb-2 empty:mb-0">
         <UpdateNotifier />
         <OfflineInformer />
       </div>
 
-      <div className="grid grid-rows-[auto_1fr_auto] gap-2 max-h-full min-h-0">
+      <div className="grid grid-rows-[auto_minmax(0,1fr)_auto] gap-2 max-h-full min-h-0 min-w-0 max-[1100px]:max-h-none max-[1100px]:grid-rows-[auto_minmax(18rem,1fr)_auto]">
         <header className="flex flex-col gap-2">
-          <div className="flex justify-between">
+          <div className="flex justify-between gap-4 min-w-0 max-[1100px]:flex-col">
             <FacePlateHeader />
 
-            <div className="self-start flex flex-col gap-2">
+            <div className="self-start flex flex-col gap-2 max-[1100px]:self-stretch max-[1100px]:grid max-[1100px]:grid-cols-2 max-[1100px]:items-start max-sm:grid-cols-1">
               <Menu />
               <a
                 href="https://eptoolkit.ep133-to-daw.cc/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-creme bg-grid border border-black shadow-[1px_1px_0px_1px_#00000099] flex items-center gap-2 h-15 px-3"
+                className="bg-creme bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] [background-size:40px_40px] border border-black shadow-[1px_1px_0px_1px_#00000099] flex items-center gap-2 h-15 px-3"
               >
                 <div className="flex flex-col justify-center min-w-0">
                   <span className="text-2xl font-bold leading-tight text-brand">EP Toolkit</span>
@@ -61,7 +68,7 @@ function Home() {
 
         <main
           ref={dropRef as any}
-          className="bg-white h-full border p-4 shadow-[1px_1px_0px_1px_#00000099] overflow-scroll"
+          className="bg-white h-full min-h-0 min-w-0 border p-4 shadow-[1px_1px_0px_1px_#00000099] overflow-auto max-[1100px]:max-h-[70dvh]"
         >
           {appState.includes(APP_STATES.CAN_DISPLAY_PROJECT) && (
             <Arrangements projectId={projectId} />
@@ -98,7 +105,7 @@ function Home() {
             <AppStateDisplay title="Error" message={error?.message || 'Unknown error'} />
           )}
         </main>
-        <div className="bg-face px-3 py-2 border border-black text-xs text-black/70 shadow-[1px_1px_0px_1px_#00000099] flex items-center justify-between">
+        <div className="bg-face px-3 py-2 border border-black text-xs text-black/70 shadow-[1px_1px_0px_1px_#00000099] flex flex-wrap gap-2 items-center justify-between">
           <span>
             This project is not affiliated with or officially authorized by Teenage Engineering
           </span>
@@ -106,7 +113,7 @@ function Home() {
             href="https://randomware-audio.cc/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-black text-sm"
+            className="flex shrink-0 items-center gap-2 text-black text-sm"
           >
             <img src="/ra-logo.svg" alt="" className="size-5" />
             Randomware Audio

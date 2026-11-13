@@ -6,9 +6,23 @@ import { defineConfig } from 'vite';
 import { ViteMinifyPlugin } from 'vite-plugin-minify';
 import { VitePWA } from 'vite-plugin-pwa';
 import svgr from 'vite-plugin-svgr';
+import { pageStructuredData, serializeStructuredData } from './src/lib/pageStructuredData.ts';
 
 export default defineConfig({
   plugins: [
+    {
+      name: 'page-structured-data',
+      transformIndexHtml() {
+        return [
+          {
+            tag: 'script',
+            attrs: { id: 'page-structured-data', type: 'application/ld+json' },
+            children: serializeStructuredData(pageStructuredData['/']),
+            injectTo: 'head',
+          },
+        ];
+      },
+    },
     tailwindcss(),
     preact(),
     svgr(),
@@ -92,7 +106,6 @@ export default defineConfig({
       '~': path.resolve('./src'),
 
       react: 'preact/compat',
-      'react-dom/test-utils': 'preact/test-utils',
       'react-dom': 'preact/compat',
       'react/jsx-runtime': 'preact/jsx-runtime',
     },

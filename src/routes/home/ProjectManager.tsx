@@ -21,7 +21,7 @@ function ProjectManager() {
   const projects = useProjectsList();
 
   return (
-    <div className="flex gap-2 items-center">
+    <div className="flex flex-wrap gap-2 items-center min-w-0">
       <Select
         onChange={(e: JSX.TargetedEvent<HTMLSelectElement, Event>) =>
           setProjectId((e.target as HTMLSelectElement).value)
@@ -30,6 +30,7 @@ function ProjectManager() {
         name="project"
         size="sm"
         variant="secondary"
+        className="max-w-full"
         disabled={!appState.includes(APP_STATES.CAN_SELECT_PROJECT)}
       >
         <option value="">Select project</option>

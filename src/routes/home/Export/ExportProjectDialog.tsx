@@ -128,7 +128,7 @@ function ExportProjectDialog({
               href="https://eptoolkit.ep133-to-daw.cc/"
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-creme w-full bg-grid border border-black gap-2 p-2 text-black flex mt-4 justify-center items-center"
+              className="bg-creme w-full bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] [background-size:40px_40px] border border-black gap-2 p-2 text-black flex mt-4 justify-center items-center"
             >
               <p>
                 Want fader automation support? Get <strong>EP Toolkit</strong>: desktop app for

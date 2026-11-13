@@ -1,4 +1,0 @@
-- ableton: fader params
-- ableton: fader tracks
-- ableton: legato in sampler
-- ableton: add default compressor on the output

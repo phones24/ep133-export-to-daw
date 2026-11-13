@@ -69,8 +69,13 @@ function ProjectMeta({ projectId }: { projectId?: string }) {
   const { device } = useDevice();
 
   return (
-    <div className="flex bg-screen p-2 pl-4  shadow-my">
-      <div className={clsx('flex gap-4 text-xl', (!data || !device) && 'opacity-70')}>
+    <div className="flex flex-wrap gap-2 min-w-0 bg-screen p-2 pl-4 shadow-my">
+      <div
+        className={clsx(
+          'flex flex-wrap gap-4 text-xl min-w-0 max-sm:gap-2 max-sm:text-sm',
+          (!data || !device) && 'opacity-70',
+        )}
+      >
         <Value
           label="TEMPO"
           value={
@@ -120,7 +125,7 @@ function ProjectMeta({ projectId }: { projectId?: string }) {
           </span>
         </div>
       </div>
-      <div className="ml-auto">
+      <div className="ml-auto min-w-0 max-w-full">
         <ProjectManager />
       </div>
     </div>
