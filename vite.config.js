@@ -8,6 +8,8 @@ import { VitePWA } from 'vite-plugin-pwa';
 import svgr from 'vite-plugin-svgr';
 import { pageStructuredData, serializeStructuredData } from './src/lib/pageStructuredData.ts';
 
+const cloudflareConfigFiles = ['**/_redirects', '**/_headers', '**/_routes.json'];
+
 export default defineConfig({
   plugins: [
     {
@@ -34,11 +36,12 @@ export default defineConfig({
       // },
       workbox: {
         globPatterns: ['**/*'],
+        globIgnores: ['**/node_modules/**/*', ...cloudflareConfigFiles],
         clientsClaim: true,
         skipWaiting: true,
         maximumFileSizeToCacheInBytes: 1024 * 1024 * 10,
       },
-      includeAssets: ['**/*'],
+      includeAssets: ['**/*', ...cloudflareConfigFiles.map((pattern) => `!${pattern}`)],
       manifest: {
         name: 'EP-133: Export To DAW',
         short_name: 'ep133-to-daw',

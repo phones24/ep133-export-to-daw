@@ -36,7 +36,9 @@ function EPToolkitDialog() {
   const screenshot = SCREENSHOTS[screenshotIndex];
 
   useEffect(() => {
-    if (Number(localStorage.getItem(DIALOG_STORAGE_KEY)) !== DIALOG_VERSION) {
+    const storedVersion = Number(localStorage.getItem(DIALOG_STORAGE_KEY));
+
+    if (!Number.isFinite(storedVersion) || storedVersion !== DIALOG_VERSION) {
       setOpen(true);
     }
   }, []);
