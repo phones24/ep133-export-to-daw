@@ -2,10 +2,11 @@ import { useState } from 'preact/hooks';
 import IconArrowDialog from '~/components/icons/arrow-dialog.svg?react';
 import Button from '~/components/ui/Button';
 import { APP_STATES, useAppState } from '~/hooks/useAppState';
+import EPToolkitDialog, { shouldShowEPToolkitDialog } from '../EPToolkitDialog';
 import ExportProjectDialog from './ExportProjectDialog';
 
 function ExportProject() {
-  const [open, setOpen] = useState(false);
+  const [dialog, setDialog] = useState<'closed' | 'toolkit' | 'export'>('closed');
   const appState = useAppState();
 
   return (
@@ -13,7 +14,7 @@ function ExportProject() {
       <div className="flex gap-2 ">
         <Button
           variant="secondary"
-          onClick={() => setOpen(true)}
+          onClick={() => setDialog(shouldShowEPToolkitDialog() ? 'toolkit' : 'export')}
           disabled={!appState.includes(APP_STATES.CAN_EXPORT_PROJECT)}
           size="sm"
         >
@@ -24,7 +25,13 @@ function ExportProject() {
         </Button>
       </div>
 
-      {open && <ExportProjectDialog open={open} onOpenChange={setOpen} />}
+      {dialog === 'toolkit' && <EPToolkitDialog onClose={() => setDialog('export')} />}
+      {dialog === 'export' && (
+        <ExportProjectDialog
+          open={true}
+          onOpenChange={(open) => setDialog(open ? 'export' : 'closed')}
+        />
+      )}
     </>
   );
 }

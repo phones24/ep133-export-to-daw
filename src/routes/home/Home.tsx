@@ -9,7 +9,6 @@ import useDevice from '~/hooks/useDevice';
 import useDroppedFile from '~/hooks/useDroppedFile';
 import { usePageMeta } from '~/hooks/usePageMeta';
 import AppStateDisplay from './AppStateDisplay';
-import EPToolkitDialog from './EPToolkitDialog';
 import FacePlateHeader from './FacePlateHeader';
 import FeedbackDialog from './FeedbackDialog';
 import Menu from './Menu';
@@ -122,7 +121,6 @@ function Home() {
       </div>
 
       <FeedbackDialog />
-      <EPToolkitDialog />
       <RiddimDialog />
       <Toast />
     </div>

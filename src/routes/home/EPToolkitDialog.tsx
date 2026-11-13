@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import Button from '~/components/ui/Button';
 import Dialog from '../../components/ui/Dialog';
 
@@ -30,27 +30,24 @@ const FEATURES = [
   'Back up a single project or the whole device. Export projects and samples from backups without connecting your EP.',
 ];
 
-function EPToolkitDialog() {
-  const [open, setOpen] = useState(false);
+export function shouldShowEPToolkitDialog() {
+  const storedVersion = Number(localStorage.getItem(DIALOG_STORAGE_KEY));
+
+  return !Number.isFinite(storedVersion) || storedVersion !== DIALOG_VERSION;
+}
+
+function EPToolkitDialog({ onClose }: { onClose: () => void }) {
   const [screenshotIndex, setScreenshotIndex] = useState(0);
   const screenshot = SCREENSHOTS[screenshotIndex];
 
-  useEffect(() => {
-    const storedVersion = Number(localStorage.getItem(DIALOG_STORAGE_KEY));
-
-    if (!Number.isFinite(storedVersion) || storedVersion !== DIALOG_VERSION) {
-      setOpen(true);
-    }
-  }, []);
-
   const handleClose = () => {
     localStorage.setItem(DIALOG_STORAGE_KEY, String(DIALOG_VERSION));
-    setOpen(false);
+    onClose();
   };
 
   return (
     <Dialog
-      isOpen={open}
+      isOpen={true}
       onClose={handleClose}
       className="w-240 max-w-[calc(100vw-2rem)] shadow-[6px_6px_0_#00000055]"
       containerClassName="bg-creme! p-0! rounded-none! min-w-0! bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] [background-size:40px_40px]"
@@ -134,7 +131,7 @@ function EPToolkitDialog() {
       <footer className="flex items-center justify-end gap-4 border-t border-black bg-white/50 px-6 py-4 max-sm:p-4">
         <div className="flex items-center gap-3 max-sm:w-full max-sm:flex-col max-sm:items-stretch">
           <Button onClick={handleClose} variant="ghost">
-            Back to the exporter
+            Continue to export
           </Button>
           <a
             href="https://eptoolkit.ep133-to-daw.cc/"
